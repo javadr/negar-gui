@@ -1,6 +1,6 @@
 from pathlib import Path
 
-__version__ = "0.1"
+__version__ = "0.1.1"
 
 LOGO = (Path(__file__).parent.absolute()/"logo.png").as_posix()
 
