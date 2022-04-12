@@ -1,6 +1,6 @@
 ﻿Negar
 -----
-GUI interface for `negar`
+Graphical User interface for `negar`
 
 
 ![Negar's Main Tab](https://github.com/javadr/negar-gui/blob/main//images/maintab.png)
