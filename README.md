@@ -1,7 +1,7 @@
 ﻿Negar
-======
+-----
 GUI interface for `negar`
----
+
 
 ![Negar's Main Tab](https://github.com/javadr/negar-gui/blob/main//images/maintab.png)
 ![Negar's Config Tab](https://github.com/javadr/negar-gui/blob/main/images/configtab.png)
@@ -52,7 +52,7 @@ If you want to just run it by calling the script, you need to install its depend
 
     $ pip install python-negar PyQt5 pyuca pyperclip regex
 
-## Runnig the negar-gui
+## Usage
 Just use one of the following in your terminal.
 
     $ negar-gui
