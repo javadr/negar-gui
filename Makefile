@@ -35,10 +35,10 @@ nuCompile: ver
 
 piCompile: ver
 	rm build/gui/ -rfv
-	# . .negar/bin/activate
-	pyinstaller -p negar_gui --onefile \
-	--collect-data pyuca --collect-data negar --noupx negar_gui/gui.py -n negar-gui-v$(VER)
-	# --add-data negar/data/untouchable.dat:data
+	. .negar/bin/activate
+	pyinstaller -p negar_gui --onefile --clean \
+	--collect-data pyuca --noupx negar_gui/gui.py -n negar-gui-v$(VER) \
+	--add-data ../python-negar/negar/data/untouchable.dat:data
 	ls -lh dist
 
 clean: ver
