@@ -11,7 +11,9 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QTableView,
                             QWidget, QHBoxLayout, QVBoxLayout, QFileDialog)
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
-from negar_gui.constants import __version__, INFO, LOGO
+from negar.constants import INFO
+from negar_gui.constants import __version__, LOGO
+
 
 collator = Collator()
 
@@ -122,6 +124,7 @@ class Form(QMainWindow):
         self.clnup_ex_marks = QCheckBox(self.tr("Cleanup e&xtra marks"), checked=True)
         self.clnup_spacing = QCheckBox(self.tr("C&leanup spacing"), checked=True)
         self.trim_lt_whitespaces = QCheckBox(self.tr("Tr&im Leading/Trailing Whitespaces"), checked=True)
+        self.exaggeragin_zwnj = QCheckBox(self.tr("Exaggerating &ZWNJ"), checked=True)
 
         # Add to untouchable list:
         self.untouch_word = QLineEdit()
@@ -151,6 +154,7 @@ class Form(QMainWindow):
         config_layout.addWidget(self.f_s_spacing, 3, 1)
         config_layout.addWidget(self.f_p_spacing, 3, 2)
         config_layout.addWidget(self.aggressive, 3, 3)
+        config_layout.addWidget(self.exaggeragin_zwnj, 3, 5)
         config_layout.addWidget(self.f_spacing_bq, 0, 3, 1, 2)
         config_layout.addWidget(self.hamzeh_yeh, 1, 3, 1, 2)
         config_layout.addWidget(self.trim_lt_whitespaces, 2, 3, 1, 2)
@@ -235,6 +239,7 @@ class Form(QMainWindow):
         self.clnup_ex_marks.stateChanged.connect(self.option_control)
         self.clnup_spacing.stateChanged.connect(self.option_control)
         self.trim_lt_whitespaces.stateChanged.connect(self.option_control)
+        self.exaggeragin_zwnj.stateChanged.connect(self.option_control)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -325,6 +330,8 @@ class Form(QMainWindow):
             self.editing_options.append("cleanup-spacing")
         if not self.trim_lt_whitespaces.isChecked():
             self.editing_options.append("trim-lt-whitespaces")
+        if not self.exaggeragin_zwnj.isChecked():
+            self.editing_options.append("exaggerating-zwnj")
 
     def file_dialog(self):
         fname, _ = QFileDialog.getOpenFileName(self, 'Open File - A Plain Text')
