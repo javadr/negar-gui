@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1015</width>
+    <height>665</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Negar</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::StrongFocus</enum>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+      <item row="0" column="0" colspan="6">
+       <layout class="QGridLayout" name="input_layout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="input_editor_label">
+          <property name="text">
+           <string>&amp;Original:</string>
+          </property>
+          <property name="buddy">
+           <cstring>input_editor</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTextEdit" name="input_editor"/>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="5">
+       <layout class="QGridLayout" name="button_layout">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="edit_btn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>&amp;Edit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="reset_btn">
+          <property name="text">
+           <string>&amp;Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="copy_btn">
+          <property name="text">
+           <string>&amp;Copy</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0" colspan="6">
+       <layout class="QGridLayout" name="output_layout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="output_editor_label">
+          <property name="text">
+           <string>Re&amp;vision:</string>
+          </property>
+          <property name="buddy">
+           <cstring>output_editor</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTextEdit" name="output_editor"/>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="font_slider_label">
+        <property name="text">
+         <string>&amp;Font Size</string>
+        </property>
+        <property name="buddy">
+         <cstring>font_slider</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="autoedit_chkbox">
+        <property name="text">
+         <string>Real-&amp;time Edit</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QSlider" name="font_slider">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>40</number>
+        </property>
+        <property name="value">
+         <number>18</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>168</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="4">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>138</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1015</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Setting</string>
+    </property>
+    <widget class="QMenu" name="menuOptions">
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <property name="separatorsCollapsible">
+      <bool>true</bool>
+     </property>
+     <addaction name="actionFix_Dashes"/>
+     <addaction name="actionFix_three_dots"/>
+     <addaction name="actionFix_English_quotes"/>
+     <addaction name="actionFix_hamzeh"/>
+     <addaction name="actionFix_spacing_braces_and_quotes"/>
+     <addaction name="actionFix_Arabic_numbers"/>
+     <addaction name="actionFix_English_numbers"/>
+     <addaction name="actionFix_non_Persian_chars"/>
+     <addaction name="actionFix_prefix_spacing"/>
+     <addaction name="actionFix_prefix_separating"/>
+     <addaction name="actionFix_suffix_spacing"/>
+     <addaction name="actionFix_suffix_separating"/>
+     <addaction name="actionFix_aggressive_punctuation"/>
+     <addaction name="separator"/>
+     <addaction name="actionUse_Persian_yeh_to_show_hamzeh"/>
+     <addaction name="separator"/>
+     <addaction name="actionCleanup_spacing"/>
+     <addaction name="actionCleanup_kashidas"/>
+     <addaction name="actionCleanup_extra_marks"/>
+     <addaction name="separator"/>
+     <addaction name="actionExaggerating_ZWNJ"/>
+     <addaction name="actionTrim_Leading_Trailing_Whitespaces"/>
+    </widget>
+    <widget class="QMenu" name="menuLanguage">
+     <property name="title">
+      <string>Language</string>
+     </property>
+     <addaction name="actionPersian"/>
+     <addaction name="actionEnglish"/>
+    </widget>
+    <addaction name="menuOptions"/>
+    <addaction name="menuLanguage"/>
+    <addaction name="separator"/>
+    <addaction name="actionUntouchable_Words"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionNegar_Help"/>
+    <addaction name="actionAbout"/>
+    <addaction name="actionDonate"/>
+    <addaction name="actionReport_Bugs"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSetting"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionDonate">
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
+  <action name="actionReport_Bugs">
+   <property name="text">
+    <string>Report Bugs</string>
+   </property>
+  </action>
+  <action name="actionNegar_Help">
+   <property name="text">
+    <string>Negar Help</string>
+   </property>
+  </action>
+  <action name="actionFix_Dashes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix &amp;Dashes</string>
+   </property>
+  </action>
+  <action name="actionFix_three_dots">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix &amp;three dots</string>
+   </property>
+  </action>
+  <action name="actionFix_English_quotes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix English &amp;quotes</string>
+   </property>
+  </action>
+  <action name="actionFix_hamzeh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix &amp;hamzeh</string>
+   </property>
+  </action>
+  <action name="actionUse_Persian_yeh_to_show_hamzeh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use 'Persian &amp;yeh' to show hamzeh</string>
+   </property>
+  </action>
+  <action name="actionFix_spacing_braces_and_quotes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix &amp;spacing braces and quotes</string>
+   </property>
+  </action>
+  <action name="actionFix_Arabic_numbers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix Arabic &amp;numbers</string>
+   </property>
+  </action>
+  <action name="actionFix_English_numbers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix &amp;English numbers</string>
+   </property>
+  </action>
+  <action name="actionFix_non_Persian_chars">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix non Persian &amp;chars</string>
+   </property>
+  </action>
+  <action name="actionFix_prefix_spacing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix &amp;prefix spacing</string>
+   </property>
+  </action>
+  <action name="actionFix_prefix_separating">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix p&amp;refix separating</string>
+   </property>
+  </action>
+  <action name="actionFix_suffix_spacing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix su&amp;ffix spacing</string>
+   </property>
+  </action>
+  <action name="actionFix_suffix_separating">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix s&amp;uffix separating</string>
+   </property>
+  </action>
+  <action name="actionFix_aggressive_punctuation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix a&amp;ggressive punctuation</string>
+   </property>
+  </action>
+  <action name="actionCleanup_kashidas">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cleanup &amp;kashidas</string>
+   </property>
+  </action>
+  <action name="actionCleanup_extra_marks">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cleanup e&amp;xtra marks</string>
+   </property>
+  </action>
+  <action name="actionCleanup_spacing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>C&amp;leanup spacing</string>
+   </property>
+  </action>
+  <action name="actionTrim_Leading_Trailing_Whitespaces">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tr&amp;im Leading/Trailing Whitespaces</string>
+   </property>
+  </action>
+  <action name="actionExaggerating_ZWNJ">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Exaggerating &amp;ZWNJ</string>
+   </property>
+  </action>
+  <action name="actionUntouchable_Words">
+   <property name="text">
+    <string>Untouchable Words</string>
+   </property>
+  </action>
+  <action name="actionPersian">
+   <property name="text">
+    <string>Persian</string>
+   </property>
+  </action>
+  <action name="actionEnglish">
+   <property name="text">
+    <string>English</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>autoedit_chkbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>edit_btn</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>638</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>791</x>
+     <y>638</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reset_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>input_editor</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>877</x>
+     <y>638</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reset_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>output_editor</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>877</x>
+     <y>638</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
