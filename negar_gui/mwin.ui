@@ -47,22 +47,51 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetMaximumSize</enum>
       </property>
-      <item row="0" column="0" colspan="6">
-       <layout class="QGridLayout" name="input_layout">
+      <item row="2" column="4">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>138</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="0" colspan="6">
+       <layout class="QGridLayout" name="output_layout">
         <item row="0" column="0">
-         <widget class="QLabel" name="input_editor_label">
+         <widget class="QLabel" name="output_editor_label">
           <property name="text">
-           <string>&amp;Original:</string>
+           <string>Re&amp;vision:</string>
           </property>
           <property name="buddy">
-           <cstring>input_editor</cstring>
+           <cstring>output_editor</cstring>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QTextEdit" name="input_editor"/>
+         <widget class="QTextEdit" name="output_editor"/>
         </item>
        </layout>
+      </item>
+      <item row="2" column="3">
+       <widget class="QSlider" name="font_slider">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>40</number>
+        </property>
+        <property name="value">
+         <number>18</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
       </item>
       <item row="2" column="5">
        <layout class="QGridLayout" name="button_layout">
@@ -92,59 +121,6 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0" colspan="6">
-       <layout class="QGridLayout" name="output_layout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="output_editor_label">
-          <property name="text">
-           <string>Re&amp;vision:</string>
-          </property>
-          <property name="buddy">
-           <cstring>output_editor</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="output_editor"/>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="font_slider_label">
-        <property name="text">
-         <string>&amp;Font Size</string>
-        </property>
-        <property name="buddy">
-         <cstring>font_slider</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="autoedit_chkbox">
-        <property name="text">
-         <string>Real-&amp;time Edit</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QSlider" name="font_slider">
-        <property name="minimum">
-         <number>10</number>
-        </property>
-        <property name="maximum">
-         <number>40</number>
-        </property>
-        <property name="value">
-         <number>18</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -158,18 +134,42 @@
         </property>
        </spacer>
       </item>
-      <item row="2" column="4">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="autoedit_chkbox">
+        <property name="text">
+         <string>Real-&amp;time Edit</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>138</width>
-          <height>20</height>
-         </size>
+        <property name="checked">
+         <bool>true</bool>
         </property>
-       </spacer>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="6">
+       <layout class="QGridLayout" name="input_layout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="input_editor_label">
+          <property name="text">
+           <string>&amp;Original:</string>
+          </property>
+          <property name="buddy">
+           <cstring>input_editor</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTextEdit" name="input_editor"/>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="font_slider_label">
+        <property name="text">
+         <string>&amp;Font Size</string>
+        </property>
+        <property name="buddy">
+         <cstring>font_slider</cstring>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -195,7 +195,7 @@
    </widget>
    <widget class="QMenu" name="menuSetting">
     <property name="title">
-     <string>Setting</string>
+     <string>Settings</string>
     </property>
     <widget class="QMenu" name="menuOptions">
      <property name="title">
@@ -248,7 +248,18 @@
     <addaction name="actionDonate"/>
     <addaction name="actionReport_Bugs"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="separator"/>
+    <addaction name="actionIncrease_Font_Size"/>
+    <addaction name="actionDecrease_Font_Size"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuSetting"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -520,6 +531,38 @@
     <string>English</string>
    </property>
   </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Font_Size">
+   <property name="text">
+    <string>Increase Font Size</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Font_Size">
+   <property name="text">
+    <string>Decrease Font Size</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+=</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -584,6 +627,102 @@
     <hint type="destinationlabel">
      <x>507</x>
      <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPaste</sender>
+   <signal>triggered()</signal>
+   <receiver>input_editor</receiver>
+   <slot>paste()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCopy</sender>
+   <signal>triggered()</signal>
+   <receiver>output_editor</receiver>
+   <slot>copy()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionIncrease_Font_Size</sender>
+   <signal>triggered()</signal>
+   <receiver>input_editor</receiver>
+   <slot>zoomIn()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionIncrease_Font_Size</sender>
+   <signal>triggered()</signal>
+   <receiver>output_editor</receiver>
+   <slot>zoomIn()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDecrease_Font_Size</sender>
+   <signal>triggered()</signal>
+   <receiver>output_editor</receiver>
+   <slot>zoomOut()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDecrease_Font_Size</sender>
+   <signal>triggered()</signal>
+   <receiver>input_editor</receiver>
+   <slot>zoomOut()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>194</y>
     </hint>
    </hints>
   </connection>
