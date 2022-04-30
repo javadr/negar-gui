@@ -1,3 +1,4 @@
 include README.md
 include AUTHORS
 include negar_gui/logo.png
+include negar_gui/fa.qm
