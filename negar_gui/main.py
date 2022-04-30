@@ -9,16 +9,15 @@ import sys
 from pyuca import Collator
 from pathlib import Path
 
-from Ui_mwin import Ui_MainWindow
-
 from PyQt5.QtCore import QTranslator, QUrl, QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtGui import QDesktopServices, QPixmap
+from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
+from negar_gui.Ui_mwin import Ui_MainWindow
 
 GTransData = ""
 
@@ -33,6 +32,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.setStyleSheet(style)
         except:
             print("open stylesheet error")
+        self.setWindowIcon(QIcon(LOGO))
         self.input_editor.setFocus(True)
         # destination language
         self.dest = "en"
@@ -220,8 +220,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         run_PE = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
         self.output_editor.append(run_PE.cleanup())
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     w = MyWindow()
     w.show()
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()

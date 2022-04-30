@@ -31,7 +31,8 @@ setup(
     url="http://github.com/javadr/negar-gui",
     entry_points={
         'console_scripts': [
-            'negar-gui = negar_gui.gui:main',
+            'negar-gui-od = negar_gui.gui:main',
+            'negar-gui = negar_gui.main:main',
         ],
     },
     long_description_content_type="text/markdown",

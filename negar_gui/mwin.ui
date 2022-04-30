@@ -101,7 +101,7 @@
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>&amp;Edit</string>
+           <string>E&amp;dit</string>
           </property>
          </widget>
         </item>
@@ -186,7 +186,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionExport"/>
@@ -195,11 +195,11 @@
    </widget>
    <widget class="QMenu" name="menuSetting">
     <property name="title">
-     <string>Settings</string>
+     <string>&amp;Settings</string>
     </property>
     <widget class="QMenu" name="menuOptions">
      <property name="title">
-      <string>Options</string>
+      <string>&amp;Options</string>
      </property>
      <property name="separatorsCollapsible">
       <bool>true</bool>
@@ -229,7 +229,7 @@
     </widget>
     <widget class="QMenu" name="menuLanguage">
      <property name="title">
-      <string>Language</string>
+      <string>&amp;Language</string>
      </property>
      <addaction name="actionPersian"/>
      <addaction name="actionEnglish"/>
@@ -241,7 +241,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionNegar_Help"/>
     <addaction name="actionAbout"/>
@@ -250,10 +250,12 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset"/>
     <addaction name="separator"/>
     <addaction name="actionIncrease_Font_Size"/>
     <addaction name="actionDecrease_Font_Size"/>
@@ -265,7 +267,7 @@
   </widget>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>&amp;Open</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -273,7 +275,7 @@
   </action>
   <action name="actionExport">
    <property name="text">
-    <string>Export</string>
+    <string>&amp;Export</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -281,7 +283,7 @@
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>E&amp;xit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -289,22 +291,22 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
   <action name="actionDonate">
    <property name="text">
-    <string>Donate</string>
+    <string>&amp;Donate</string>
    </property>
   </action>
   <action name="actionReport_Bugs">
    <property name="text">
-    <string>Report Bugs</string>
+    <string>&amp;Report Bugs</string>
    </property>
   </action>
   <action name="actionNegar_Help">
    <property name="text">
-    <string>Negar Help</string>
+    <string>Negar &amp;Help</string>
    </property>
   </action>
   <action name="actionFix_Dashes">
@@ -518,22 +520,22 @@
   </action>
   <action name="actionUntouchable_Words">
    <property name="text">
-    <string>Untouchable Words</string>
+    <string>&amp;Untouchable Words</string>
    </property>
   </action>
   <action name="actionPersian">
    <property name="text">
-    <string>Persian</string>
+    <string>&amp;Persian</string>
    </property>
   </action>
   <action name="actionEnglish">
    <property name="text">
-    <string>English</string>
+    <string>&amp;English</string>
    </property>
   </action>
   <action name="actionCopy">
    <property name="text">
-    <string>Copy</string>
+    <string>&amp;Copy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -541,7 +543,7 @@
   </action>
   <action name="actionPaste">
    <property name="text">
-    <string>Paste</string>
+    <string>&amp;Paste</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -549,7 +551,7 @@
   </action>
   <action name="actionIncrease_Font_Size">
    <property name="text">
-    <string>Increase Font Size</string>
+    <string>&amp;Increase Font Size</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+=</string>
@@ -557,10 +559,15 @@
   </action>
   <action name="actionDecrease_Font_Size">
    <property name="text">
-    <string>Decrease Font Size</string>
+    <string>&amp;Decrease Font Size</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>&amp;Reset</string>
    </property>
   </action>
  </widget>
@@ -723,6 +730,22 @@
     <hint type="destinationlabel">
      <x>507</x>
      <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionReset</sender>
+   <signal>triggered()</signal>
+   <receiver>reset_btn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>877</x>
+     <y>638</y>
     </hint>
    </hints>
   </connection>
