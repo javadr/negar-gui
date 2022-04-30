@@ -41,110 +41,10 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
-      </property>
-      <item row="2" column="4">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>138</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0" colspan="6">
-       <layout class="QGridLayout" name="output_layout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="output_editor_label">
-          <property name="text">
-           <string>Re&amp;vision:</string>
-          </property>
-          <property name="buddy">
-           <cstring>output_editor</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="output_editor"/>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="3">
-       <widget class="QSlider" name="font_slider">
-        <property name="minimum">
-         <number>10</number>
-        </property>
-        <property name="maximum">
-         <number>40</number>
-        </property>
-        <property name="value">
-         <number>18</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <layout class="QGridLayout" name="button_layout">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="edit_btn">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>E&amp;dit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="reset_btn">
-          <property name="text">
-           <string>&amp;Reset</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="copy_btn">
-          <property name="text">
-           <string>&amp;Copy</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>168</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="autoedit_chkbox">
-        <property name="text">
-         <string>Real-&amp;time Edit</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="6">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
        <layout class="QGridLayout" name="input_layout">
         <item row="0" column="0">
          <widget class="QLabel" name="input_editor_label">
@@ -161,15 +61,112 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="font_slider_label">
-        <property name="text">
-         <string>&amp;Font Size</string>
-        </property>
-        <property name="buddy">
-         <cstring>font_slider</cstring>
-        </property>
-       </widget>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="output_layout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="output_editor_label">
+          <property name="text">
+           <string>Re&amp;vision:</string>
+          </property>
+          <property name="buddy">
+           <cstring>output_editor</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QTextEdit" name="output_editor"/>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="autoedit_chkbox">
+          <property name="text">
+           <string>Real-&amp;time Edit</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>168</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="font_slider_label">
+          <property name="text">
+           <string>&amp;Font Size</string>
+          </property>
+          <property name="buddy">
+           <cstring>font_slider</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QSlider" name="font_slider">
+          <property name="minimum">
+           <number>10</number>
+          </property>
+          <property name="maximum">
+           <number>40</number>
+          </property>
+          <property name="value">
+           <number>18</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>138</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="5">
+         <widget class="QPushButton" name="edit_btn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>E&amp;dit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <widget class="QPushButton" name="reset_btn">
+          <property name="text">
+           <string>&amp;Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QPushButton" name="copy_btn">
+          <property name="text">
+           <string>&amp;Copy</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -571,6 +568,15 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>input_editor</tabstop>
+  <tabstop>output_editor</tabstop>
+  <tabstop>autoedit_chkbox</tabstop>
+  <tabstop>font_slider</tabstop>
+  <tabstop>edit_btn</tabstop>
+  <tabstop>copy_btn</tabstop>
+  <tabstop>reset_btn</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

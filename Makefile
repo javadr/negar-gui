@@ -41,6 +41,10 @@ piCompile: ver
 	--add-data ../python-negar/negar/data/untouchable.dat:data
 	ls -lh dist
 
+trans: ver
+	pylupdate5 negar_gui/Ui_mwin.py -ts negar_gui/fa.ts
+	lrelease negar_gui/fa.ts negar_gui/fa.qm
+
 clean: ver
 	rm negar_gui.egg-info/ -rfv
 	rm build/ -rfv

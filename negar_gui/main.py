@@ -6,21 +6,17 @@
 
 import re
 import sys
-from pyuca import Collator
 from pathlib import Path
 
 from PyQt5.QtCore import QTranslator, QUrl, QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtGui import QDesktopServices, QPixmap, QIcon
+from PyQt5.QtGui import QDesktopServices, QIcon
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
-
-GTransData = ""
-
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -34,10 +30,12 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             print("open stylesheet error")
         self.setWindowIcon(QIcon(LOGO))
         self.input_editor.setFocus(True)
+        #  Translator
+        self.trans = QTranslator()
         # destination language
         self.dest = "en"
         # ui language : 0->en, 1->fa
-        self.lan = 0
+        self.lan = 'English'
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
         self.connectSlots()
@@ -58,8 +56,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionDecrease_Font_Size.triggered.connect(
             lambda: (self.font_slider.setValue(self.font_slider.value()-1), self._set_font_size())
         )
-        # self.actionPersian.triggered.connect(lambda: self.changeLanguage(0))
-        # self.actionEnglish.triggered.connect(lambda: self.changeLanguage(1))
+        self.actionPersian.triggered.connect(lambda: self.changeLanguage('Persian'))
+        self.actionEnglish.triggered.connect(lambda: self.changeLanguage('English'))
 
         self.actionNegar_Help.setShortcut("F1")
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO) )
@@ -116,15 +114,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     self.output_editor.setPlainText(e.args[1])
 
     def changeLanguage(self, lan):
-        """:param lan: 0=>English, 1=>Persian
+        """
         change ui language
         """
-        if lan==0 and self.lan!=0:
-            print("[MainWindow] Change to English")
+        if lan=='Persian' and self.lan!='Persian':
+            self.lan = 'Persian'
+            self.trans.load("fa", directory=Path(__file__).parent.as_posix())
+            self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        elif lan=='English' and self.lan!='English':
+            self.lan = 'English'
             self.trans.load("en")
-        elif lan==1 and self.lan!=1:
-            print("[MainWindow] Change to Persian")
-            self.trans.load("fa")
+            self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         else:
             return
         _app = QApplication.instance()
