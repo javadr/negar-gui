@@ -40,19 +40,25 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.lan = 0
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
-        self.clipboard.dataChanged.connect(self.onClipboradChanged)
         self.connectSlots()
 
     def connectSlots(self):
         self.autoedit_handler()
         # connect to slots
+        self.clipboard.dataChanged.connect(self.onClipboradChanged)
         self.autoedit_chkbox.stateChanged.connect(self.autoedit_handler)
         self.edit_btn.clicked.connect(self.edit_text)
         self.actionOpen.triggered.connect(self.openFileSlot)
         self.actionExport.triggered.connect(self.exportFileSlot)
         self.actionExit.triggered.connect(self.close)
-
-        # self.actionChinese.triggered.connect(lambda: self.changeLanguage(0))
+        self.font_slider.valueChanged.connect(self._set_font_size)
+        self.actionIncrease_Font_Size.triggered.connect(
+            lambda: (self.font_slider.setValue(self.font_slider.value()+1), self._set_font_size())
+        )
+        self.actionDecrease_Font_Size.triggered.connect(
+            lambda: (self.font_slider.setValue(self.font_slider.value()-1), self._set_font_size())
+        )
+        # self.actionPersian.triggered.connect(lambda: self.changeLanguage(0))
         # self.actionEnglish.triggered.connect(lambda: self.changeLanguage(1))
 
         self.actionNegar_Help.setShortcut("F1")
@@ -125,21 +131,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
 
-    def transTextToEnglish(self):
-        text = self.originText.toPlainText()
-        self.originText.setPlainText(text)
-        try:
-            # self.transText.setPlainText(trans_To_zh_CN(text))
-            # self.t = GTranslator(self.dest, text)
-            # self.t.start()
-            # self.transText.setPlainText("")
-            # self.transText.setPlaceholderText("...")
-            # self.t.trigger.connect(self.translated)
-            pass
-        except Exception as e:
-            print(e.args[1])
-            self.output_editor.setPlainText("error!")
-
     def copySlot(self):
         s = self.output_editor.toPlainText()
         if s:
@@ -148,9 +139,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             clipboard.setText(s)
 
     def onClipboradChanged(self):
-        text = QApplication.clipboard().text()
+        text = self.clipboard.text()
         if text:
             self.input_editor.setPlainText(str(text))
+            self._set_font_size()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -228,36 +220,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         run_PE = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
         self.output_editor.append(run_PE.cleanup())
 
-class GTranslator(QThread):
-    trigger = pyqtSignal()
-
-    def __init__(self, dest, content):
-        super().__init__()
-        self.content = content
-        self.dest = dest
-
-    def run(self):
-        Data = []
-        global GTransData
-        T = Translator(service_urls=["translate.google.cn"])
-        # ts = T.translate(['The quick brown fox', 'jumps over', 'the lazy dog'], dest='zh-CN')
-        try:
-            ts = T.translate(self.content, dest=self.dest)
-            if isinstance(ts.text, list):
-                for i in ts:
-                    Data.append(i.text)
-                GTransData = Data
-            else:
-                GTransData = ts.text
-        except:
-            GTransData = "An error happended. Please retry..."
-        self.trigger.emit()  # emit signal once translatation is finfished
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     w = MyWindow()
     w.show()
-    # clipboard = QApplication.clipboard()
-    # clipboard.dataChanged.connect(w.onClipboradChanged)
     sys.exit(app.exec_())

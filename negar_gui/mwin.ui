@@ -560,7 +560,7 @@
     <string>Decrease Font Size</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+=</string>
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>

@@ -323,4 +323,4 @@ class Ui_MainWindow(object):
         self.actionIncrease_Font_Size.setText(_translate("MainWindow", "Increase Font Size"))
         self.actionIncrease_Font_Size.setShortcut(_translate("MainWindow", "Ctrl+="))
         self.actionDecrease_Font_Size.setText(_translate("MainWindow", "Decrease Font Size"))
-        self.actionDecrease_Font_Size.setShortcut(_translate("MainWindow", "Ctrl+Shift+="))
+        self.actionDecrease_Font_Size.setShortcut(_translate("MainWindow", "Ctrl+-"))
