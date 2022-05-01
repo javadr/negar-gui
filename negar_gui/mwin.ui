@@ -190,6 +190,9 @@
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
     <property name="title">
      <string>&amp;File</string>
     </property>

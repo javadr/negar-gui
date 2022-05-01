@@ -94,6 +94,7 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1015, 27))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.menuFile.setObjectName("menuFile")
         self.menuSetting = QtWidgets.QMenu(self.menubar)
         self.menuSetting.setObjectName("menuSetting")

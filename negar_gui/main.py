@@ -124,10 +124,12 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.lan = 'Persian'
             self.trans.load("fa", directory=NEGARGUIPATH)
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+            self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         elif lan=='English' and self.lan!='English':
             self.lan = 'English'
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+            self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         else:
             return
         _app = QApplication.instance()
@@ -151,7 +153,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def onClipboradChanged(self):
         text = self.clipboard.text()
         if text:
-            self.input_editor.setPlainText(str(text))
+            self.input_editor.setPlainText(text)
             self._set_font_size()
 
     def keyPressEvent(self, event):
