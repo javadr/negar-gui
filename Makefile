@@ -42,8 +42,9 @@ piCompile: ver
 	ls -lh dist
 
 trans: ver
-	pylupdate5 negar_gui/Ui_mwin.py -ts negar_gui/fa.ts
-	lrelease negar_gui/fa.ts negar_gui/fa.qm
+	pylupdate5 -verbose negar_gui/Ui_mwin.py -ts negar_gui/fa-uimwin.ts
+	pylupdate5 -verbose negar_gui/main.py -ts negar_gui/fa-main.ts
+	lrelease negar_gui/fa-*.ts -qm negar_gui/fa.qm
 
 clean: ver
 	rm negar_gui.egg-info/ -rfv

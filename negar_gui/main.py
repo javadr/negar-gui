@@ -17,15 +17,17 @@ from negar.virastar import PersianEditor, UnTouchable
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
+import res_rc
+
+NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
         try:
-            with open("style.qss") as f:
-                style = f.read()  # 读取样式表
-                self.setStyleSheet(style)
+            with open(f"{NEGARGUIPATH}/style.qss") as style:
+                self.setStyleSheet(style.read())
         except:
             print("open stylesheet error")
         self.setWindowIcon(QIcon(LOGO))
@@ -38,6 +40,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.lan = 'English'
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
+        self.fileDialog = QFileDialog()
         self.connectSlots()
 
     def connectSlots(self):
@@ -93,7 +96,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
 
     def openFileSlot(self):
-        filename, filetype = QFileDialog.getOpenFileName(self, "'Open File - A Plain Text'", ".")
+        filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
         if filename:
             print(filename)
             with open(filename, encoding="utf-8") as f:
@@ -105,7 +108,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def exportFileSlot(self):
         if not self.output_editor.toPlainText():
             return
-        filename, filetype = QFileDialog.getSaveFileName(self, "Save File", ".", "*.txt;;*")
+        filename, filetype = self.fileDialog.getSaveFileName(self, "Save File", ".", "*.txt;;*")
         if filename:
             with open(filename, "w", encoding="utf-8") as f:
                 try:
@@ -119,7 +122,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         """
         if lan=='Persian' and self.lan!='Persian':
             self.lan = 'Persian'
-            self.trans.load("fa", directory=Path(__file__).parent.as_posix())
+            self.trans.load("fa", directory=NEGARGUIPATH)
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         elif lan=='English' and self.lan!='English':
             self.lan = 'English'
@@ -130,6 +133,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         _app = QApplication.instance()
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
+
+    # def retranslateUi(self, MyWindow):
+        # super(MyWindow, self).retranslateUi()
+        # _translate = QtCore.QCoreApplication.translate
+        # print(dir(self))
+        # MyWindow.fileDialog.setText(_translate(self.fileDialog.name(), "Open File - A Plain Text"))
+        # pass
 
     def copySlot(self):
         s = self.output_editor.toPlainText()
