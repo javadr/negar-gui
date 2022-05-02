@@ -400,3 +400,4 @@ class Ui_MainWindow(object):
         self.actionDecrease_Font_Size.setShortcut(_translate("MainWindow", "Ctrl+-"))
         self.actionReset.setText(_translate("MainWindow", "&Reset"))
         self.actionReset.setShortcut(_translate("MainWindow", "Ctrl+R"))
+from . import resource_rc

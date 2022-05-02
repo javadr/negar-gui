@@ -17,7 +17,6 @@ from negar.virastar import PersianEditor, UnTouchable
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
-import negar_gui.resource_rc
 
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
