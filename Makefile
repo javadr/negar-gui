@@ -46,6 +46,10 @@ trans: ver
 	pylupdate5 -verbose negar_gui/main.py -ts negar_gui/fa-main.ts
 	lrelease negar_gui/fa-*.ts -qm negar_gui/fa.qm
 
+res: ver
+	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
+	# pyside6-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
+
 clean: ver
 	rm negar_gui.egg-info/ -rfv
 	rm build/ -rfv

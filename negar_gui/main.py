@@ -17,7 +17,7 @@ from negar.virastar import PersianEditor, UnTouchable
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
-import res_rc
+import negar_gui.resource_rc
 
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
@@ -122,7 +122,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         """
         if lan=='Persian' and self.lan!='Persian':
             self.lan = 'Persian'
-            self.trans.load("fa", directory=NEGARGUIPATH)
+            self.trans.load("fa", directory=f"{NEGARGUIPATH}/ts")
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         elif lan=='English' and self.lan!='English':
@@ -146,9 +146,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def copySlot(self):
         s = self.output_editor.toPlainText()
         if s:
-            self.isCopyFromTrans = True
-            clipboard = QApplication.clipboard()
-            clipboard.setText(s)
+            QApplication.clipboard().setText(s)
 
     def onClipboradChanged(self):
         text = self.clipboard.text()

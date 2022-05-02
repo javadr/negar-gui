@@ -190,9 +190,6 @@
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -208,6 +205,10 @@
     <widget class="QMenu" name="menuOptions">
      <property name="title">
       <string>&amp;Options</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/images/icons/options.svg</normaloff>:/images/icons/options.svg</iconset>
      </property>
      <property name="separatorsCollapsible">
       <bool>true</bool>
@@ -238,6 +239,10 @@
     <widget class="QMenu" name="menuLanguage">
      <property name="title">
       <string>&amp;Language</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/images/icons/languages.svg</normaloff>:/images/icons/languages.svg</iconset>
      </property>
      <addaction name="actionPersian"/>
      <addaction name="actionEnglish"/>
@@ -280,6 +285,10 @@
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/open.svg</normaloff>:/images/icons/open.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Open</string>
    </property>
@@ -288,6 +297,10 @@
    </property>
   </action>
   <action name="actionExport">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/export.svg</normaloff>:/images/icons/export.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Export</string>
    </property>
@@ -296,6 +309,10 @@
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/exit.svg</normaloff>:/images/icons/exit.svg</iconset>
+   </property>
    <property name="text">
     <string>E&amp;xit</string>
    </property>
@@ -304,21 +321,37 @@
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/about.svg</normaloff>:/images/icons/about.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;About</string>
    </property>
   </action>
   <action name="actionDonate">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/donate.svg</normaloff>:/images/icons/donate.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Donate</string>
    </property>
   </action>
   <action name="actionReport_Bugs">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/bugs.svg</normaloff>:/images/icons/bugs.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Report Bugs</string>
    </property>
   </action>
   <action name="actionNegar_Help">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/logo.png</normaloff>:/images/icons/logo.png</iconset>
+   </property>
    <property name="text">
     <string>Negar &amp;Help</string>
    </property>
@@ -533,21 +566,43 @@
    </property>
   </action>
   <action name="actionUntouchable_Words">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/words.png</normaloff>:/images/icons/words.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Untouchable Words</string>
    </property>
   </action>
   <action name="actionPersian">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/Fa.svg</normaloff>:/images/icons/Fa.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Persian</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+L, Ctrl+F</string>
+   </property>
   </action>
   <action name="actionEnglish">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/En.svg</normaloff>:/images/icons/En.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;English</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+L, Ctrl+E</string>
+   </property>
   </action>
   <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/copy.svg</normaloff>:/images/icons/copy.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Copy</string>
    </property>
@@ -556,6 +611,10 @@
    </property>
   </action>
   <action name="actionPaste">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/paste.svg</normaloff>:/images/icons/paste.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Paste</string>
    </property>
@@ -564,6 +623,10 @@
    </property>
   </action>
   <action name="actionIncrease_Font_Size">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/increase.svg</normaloff>:/images/icons/increase.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Increase Font Size</string>
    </property>
@@ -572,6 +635,10 @@
    </property>
   </action>
   <action name="actionDecrease_Font_Size">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/decrease.svg</normaloff>:/images/icons/decrease.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Decrease Font Size</string>
    </property>
@@ -580,8 +647,15 @@
    </property>
   </action>
   <action name="actionReset">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
@@ -594,7 +668,9 @@
   <tabstop>copy_btn</tabstop>
   <tabstop>reset_btn</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>

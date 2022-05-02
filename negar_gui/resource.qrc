@@ -1,0 +1,24 @@
+<RCC>
+  <qresource prefix="images">
+    <file>icons/about.svg</file>
+    <file>icons/bugs.svg</file>
+    <file>icons/copy.svg</file>
+    <file>icons/decrease.svg</file>
+    <file>icons/donate.svg</file>
+    <file>icons/En.svg</file>
+    <file>icons/exit.svg</file>
+    <file>icons/exit.svg</file>
+    <file>icons/export.svg</file>
+    <file>icons/export.svg</file>
+    <file>icons/increase.svg</file>
+    <file>icons/Fa.svg</file>
+    <file>icons/languages.svg</file>
+    <file>icons/logo.ico</file>
+    <file>icons/logo.png</file>
+    <file>icons/open.svg</file>
+    <file>icons/options.svg</file>
+    <file>icons/paste.svg</file>
+    <file>icons/reset.svg</file>
+    <file>icons/words.png</file>
+  </qresource>
+</RCC>
