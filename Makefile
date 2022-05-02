@@ -50,6 +50,9 @@ res: ver
 	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
 	# pyside6-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
 
+ui: ver
+	pyuic5 --from-imports negar_gui/mwin.ui -o negar_gui/Ui_mwin.py
+
 clean: ver
 	rm negar_gui.egg-info/ -rfv
 	rm build/ -rfv
