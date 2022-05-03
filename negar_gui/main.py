@@ -42,6 +42,16 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.fileDialog = QFileDialog()
         self.connectSlots()
 
+        # l = [self.input_layout, self.output_layout]
+        # self._rotable_widgets = [self.input_editor, self.input_editor_label,
+                                # self.output_editor, self.output_editor_label ]
+        # self.input_layout.removeWidget(self.input_editor)
+        # self.input_layout.removeWidget(self.input_editor_label)
+        # self.output_layout.removeWidget(self.output_editor)
+        # self.output_layout.removeWidget(self.output_editor_label)
+        # self.inout_layout.changeLayout(self.input_layout, 0, 0, 1, 1)
+        # self.inout_layout.addLayout(self.output_layout, 0, 1, 1, 1)
+
     def connectSlots(self):
         self.autoedit_handler()
         # connect to slots
@@ -159,6 +169,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             if sanitizedText:
                 self.destroyed.connect(lambda: QApplication.clipboard().setText(sanitizedText) )
             self.close()
+        elif event.key() == Qt.Key.Key_F11 or event.key() == Qt.Key.Key_F:
+            if self.isFullScreen():
+                self.showNormal()
+            else:
+                self.showFullScreen()
         else:
             super().keyPressEvent(event)
 

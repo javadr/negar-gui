@@ -41,45 +41,49 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <layout class="QGridLayout" name="gridLayout_5">
+   <layout class="QGridLayout" name="gridLayout_7">
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout_4">
+     <layout class="QGridLayout" name="whole_layout">
       <item row="0" column="0">
-       <layout class="QGridLayout" name="input_layout">
+       <layout class="QGridLayout" name="inout_layout">
         <item row="0" column="0">
-         <widget class="QLabel" name="input_editor_label">
-          <property name="text">
-           <string>&amp;Original:</string>
-          </property>
-          <property name="buddy">
-           <cstring>input_editor</cstring>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="input_layout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="input_editor_label">
+            <property name="text">
+             <string>&amp;Original:</string>
+            </property>
+            <property name="buddy">
+             <cstring>input_editor</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QTextEdit" name="input_editor"/>
+          </item>
+         </layout>
         </item>
         <item row="1" column="0">
-         <widget class="QTextEdit" name="input_editor"/>
+         <layout class="QGridLayout" name="output_layout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="output_editor_label">
+            <property name="text">
+             <string>Re&amp;vision:</string>
+            </property>
+            <property name="buddy">
+             <cstring>output_editor</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QTextEdit" name="output_editor"/>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
       <item row="1" column="0">
-       <layout class="QGridLayout" name="output_layout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="output_editor_label">
-          <property name="text">
-           <string>Re&amp;vision:</string>
-          </property>
-          <property name="buddy">
-           <cstring>output_editor</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="output_editor"/>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0">
-       <layout class="QGridLayout" name="gridLayout_3">
+       <layout class="QGridLayout" name="bottom_layout">
         <item row="0" column="0">
          <widget class="QCheckBox" name="autoedit_chkbox">
           <property name="text">
@@ -104,7 +108,7 @@
          </spacer>
         </item>
         <item row="0" column="2">
-         <layout class="QGridLayout" name="gridLayout_2">
+         <layout class="QGridLayout" name="fontslider_layout">
           <item row="0" column="0">
            <widget class="QLabel" name="font_slider_label">
             <property name="text">
@@ -147,7 +151,7 @@
          </spacer>
         </item>
         <item row="0" column="4">
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="button_layout">
           <item row="0" column="0">
            <widget class="QPushButton" name="edit_btn">
             <property name="enabled">
@@ -248,6 +252,7 @@
      <addaction name="actionEnglish"/>
     </widget>
     <addaction name="menuOptions"/>
+    <addaction name="actionSide_by_Side_View"/>
     <addaction name="menuLanguage"/>
     <addaction name="separator"/>
     <addaction name="actionUntouchable_Words"/>
@@ -656,6 +661,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionSide_by_Side_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Side-by-Side View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
