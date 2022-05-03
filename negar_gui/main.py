@@ -169,13 +169,20 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             if sanitizedText:
                 self.destroyed.connect(lambda: QApplication.clipboard().setText(sanitizedText) )
             self.close()
-        elif event.key() == Qt.Key.Key_F11 or event.key() == Qt.Key.Key_F:
+        elif event.key() == Qt.Key.Key_F11:
             if self.isFullScreen():
                 self.showNormal()
             else:
                 self.showFullScreen()
         else:
             super().keyPressEvent(event)
+
+    def wheelEvent(self, event):
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == Qt.ControlModifier:
+            delta_notches = int(event.angleDelta().y() / 120)
+            self.font_slider.setValue(self.font_slider.value()+delta_notches),
+            self._set_font_size()
 
     def autoedit_handler(self):
         """Edits the input text automatically if `autoedit` is checked."""
