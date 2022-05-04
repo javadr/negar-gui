@@ -157,7 +157,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO) )
         self.actionAbout.setShortcut("CTRL+H")
         self.actionAbout.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/python-negar"))
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui"))
         )
         self.actionDonate.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation"))

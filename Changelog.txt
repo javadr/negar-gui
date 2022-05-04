@@ -1,3 +1,6 @@
+0.2.0 - 2022-05-04
+-- minor issue with logo and url
+
 0.2 - 2022-05-04
 -- New GUI design
 -- Right-to-left GUI support
