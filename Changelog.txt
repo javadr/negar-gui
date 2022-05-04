@@ -1,3 +1,6 @@
+0.2.2 - 2022-05-04
+-- encoding issue on Windows
+
 0.2.1 - 2022-05-04
 -- minor issue with logo and url
 
