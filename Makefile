@@ -16,10 +16,10 @@ pins: ver
 	pip install negar-gui==$(VER)
 
 upypi: setup
-	twine upload dist/negar-gui-$(VER).tar.gz
+	twine upload "dist/negar-gui-$(VER).tar.gz"
 
 utest: setup
-	twine upload -r testpypi dist/negar-gui-$(VER).tar.gz
+	twine upload -r testpypi "dist/negar-gui-$(VER).tar.gz"
 
 upload: setup upypi utest
 
