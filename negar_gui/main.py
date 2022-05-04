@@ -9,8 +9,8 @@ import sys
 from pathlib import Path
 from pyuca import Collator
 
-from PyQt5.QtCore import QTranslator, QUrl, QThread, pyqtSignal, Qt, QAbstractTableModel, QSize
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QMessageBox, QHeaderView
+from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QSize
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDesktopWidget
 from PyQt5.QtGui import QDesktopServices, QIcon, QColor
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
@@ -23,6 +23,14 @@ from negar_gui.Ui_uwin import Ui_uwWindow
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
+
+def checkScreenSize(self):
+    """it adjusts Frame Size maximized
+    if its height or width would be bigger than its counterpart on the real screen"""
+    screen = QApplication.desktop().screenGeometry()
+    h, w = screen.height(), screen.width()
+    if self.width() > w or self.height() > h:
+        self.showMaximized()
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
@@ -66,6 +74,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
         self.parent = parent
         super(UntouchWindow, self).__init__(parent)
         self.setupUi(self)
+        checkScreenSize(self)
         if parent: self.centralwidget.setLayoutDirection(parent.layoutDirection())
         self.setup_table()
         self.connectSlots()
@@ -116,6 +125,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
+        checkScreenSize(self)
         try:
             with open(f"{NEGARGUIPATH}/style.qss") as style:
                 self.setStyleSheet(style.read())

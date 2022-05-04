@@ -1,3 +1,6 @@
+0.2.3 - 2022-05-04
+-- Check screen size and set the maximum size if its height/width is bigger than its counterparts
+
 0.2.2 - 2022-05-04
 -- encoding issue on Windows
 
