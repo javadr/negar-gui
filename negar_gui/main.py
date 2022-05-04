@@ -7,18 +7,110 @@
 import re
 import sys
 from pathlib import Path
+from pyuca import Collator
 
-from PyQt5.QtCore import QTranslator, QUrl, QThread, pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtGui import QDesktopServices, QIcon
+from PyQt5.QtCore import QTranslator, QUrl, QThread, pyqtSignal, Qt, QAbstractTableModel, QSize
+from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QFileDialog, QMessageBox, QHeaderView
+from PyQt5.QtGui import QDesktopServices, QIcon, QColor
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
+from negar_gui.Ui_uwin import Ui_uwWindow
 
 NEGARGUIPATH = Path(__file__).parent.as_posix()
+
+collator = Collator()
+
+class TableModel(QAbstractTableModel):
+    def __init__(self, data):
+        super(TableModel, self).__init__()
+        self._data = data
+
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignVCenter
+        if role == Qt.ItemDataRole.BackgroundRole:
+            if index.row()%2:
+                return QColor('gray')
+        if role == Qt.ItemDataRole.ForegroundRole:
+            if index.row()%2:
+                return QColor('white')
+        if role == Qt.ItemDataRole.DisplayRole:
+            try:
+                return self._data[index.row()][index.column()]
+            except:
+                return ''
+
+    def rowCount(self, index):
+        # The length of the outer list.
+        return len(self._data)
+
+    def columnCount(self, index):
+        # The following takes the first sub-list, and returns
+        # the length (only works if all rows are an equal length)
+        return len(self._data[0])
+
+    def headerData(self, section, orientation, role):
+        # section is the index of the column/row.
+        if role == Qt.ItemDataRole.DisplayRole:
+            if orientation == Qt.Orientation.Horizontal:
+                return ''
+            if orientation == Qt.Orientation.Vertical:
+                return str(section+1)
+
+class UntouchWindow(QMainWindow, Ui_uwWindow):
+    def __init__(self, parent=None):
+        self.parent = parent
+        super(UntouchWindow, self).__init__(parent)
+        self.setupUi(self)
+        if parent: self.centralwidget.setLayoutDirection(parent.layoutDirection())
+        self.setup_table()
+        self.connectSlots()
+
+    def setup_table(self, col=8):
+        self.untouch_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        data = sorted(list(UnTouchable().get()), key=collator.sort_key)
+        data = [data[i*col:(i+1)*col] for i in range(int(len(data)//col)+1)]
+        model = TableModel(data)
+        self.untouch_table.setModel(model)
+
+    def connectSlots(self):
+        self.untouch_word.textChanged.connect(self.untouch_add_enabler)
+        self.untouch_button.clicked.connect(self.untouch_add)
+
+    def untouch_add_enabler(self):
+        """Checks untouchable word text input to enable the `Add` button if just one word is typed."""
+        word_list = self.untouch_word.text().split()
+        if len(word_list) == 1:
+            self.untouch_button.setEnabled(True)
+        else:
+            self.untouch_button.setEnabled(False)
+
+    def untouch_add(self):
+        """Adds a new word into untouchable words"""
+        word = [self.untouch_word.text()]
+        UnTouchable.add(word)
+        self.untouch_word.clear()
+        #self.edit_text()  # retouches the input text
+        self.setup_table() # updates untouchable list
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.close()
+        elif event.key() == Qt.Key.Key_F11:
+            if self.isMaximized():
+                self.showNormal()
+            else:
+                self.showMaximized()
+        else:
+            super().keyPressEvent(event)
+
+    def closeEvent(self, event):
+        if self.parent: self.parent.show()
+
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -41,16 +133,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
         self.connectSlots()
-
-        # l = [self.input_layout, self.output_layout]
-        # self._rotable_widgets = [self.input_editor, self.input_editor_label,
-                                # self.output_editor, self.output_editor_label ]
-        # self.input_layout.removeWidget(self.input_editor)
-        # self.input_layout.removeWidget(self.input_editor_label)
-        # self.output_layout.removeWidget(self.output_editor)
-        # self.output_layout.removeWidget(self.output_editor_label)
-        # self.inout_layout.changeLayout(self.input_layout, 0, 0, 1, 1)
-        # self.inout_layout.addLayout(self.output_layout, 0, 1, 1, 1)
 
     def connectSlots(self):
         self.autoedit_handler()
@@ -103,6 +185,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionTrim_Leading_Trailing_Whitespaces.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
         self.actionExaggerating_ZWNJ.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
 
+        self.actionUntouchable_Words.triggered.connect(lambda: (UntouchWindow(self).show(), MainWindow.hide()))
 
     def openFileSlot(self):
         filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
@@ -170,10 +253,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.destroyed.connect(lambda: QApplication.clipboard().setText(sanitizedText) )
             self.close()
         elif event.key() == Qt.Key.Key_F11:
-            if self.isFullScreen():
+            if self.isMaximized():
                 self.showNormal()
             else:
-                self.showFullScreen()
+                self.showMaximized()
         else:
             super().keyPressEvent(event)
 
@@ -253,8 +336,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    w = MyWindow()
-    w.show()
+    global MainWindow
+    MainWindow = MyWindow()
+    MainWindow.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

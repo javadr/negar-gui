@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="images">
+    <file>icons/add_right.svg</file>
+    <file>icons/add_left.svg</file>
+    <file>icons/add_bottom.svg</file>
+    <file>icons/add_top.svg</file>
     <file>icons/about.svg</file>
     <file>icons/bugs.svg</file>
     <file>icons/copy.svg</file>

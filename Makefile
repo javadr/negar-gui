@@ -42,9 +42,10 @@ piCompile: ver
 	ls -lh dist
 
 trans: ver
-	pylupdate5 -verbose negar_gui/Ui_mwin.py -ts negar_gui/fa-uimwin.ts
-	pylupdate5 -verbose negar_gui/main.py -ts negar_gui/fa-main.ts
-	lrelease negar_gui/fa-*.ts -qm negar_gui/fa.qm
+	pylupdate5 -verbose negar_gui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
+	pylupdate5 -verbose negar_gui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
+	pylupdate5 -verbose negar_gui/main.py -ts negar_gui/ts/fa-main.ts
+	lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 
 res: ver
 	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
