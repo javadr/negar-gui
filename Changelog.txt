@@ -1,3 +1,8 @@
+0.2.4 - 2022-05-05
+-- init decorator for QMainWindow
+-- issue witd addition of a untouchable word
+-- edit the output text when a new word added to the untouchable words list
+
 0.2.3 - 2022-05-04
 -- Check screen size and set the maximum size if its height/width is bigger than its counterparts
 
@@ -11,6 +16,27 @@
 -- New GUI design
 -- Right-to-left GUI support
 -- Persian UI support
+
+New Design Branch - 2022-04-29 -- 2022-05-03
+[2022-05-03]
+-- First stable release of new design
+-- Ctrl+MouseWheel zoon in/out the text
+-- F11 toggle maximized screen
+[2022-05-02]
+-- pyuic5 with `--from-imports` option
+-- Fully iconized menu items
+[2022-05-01]
+-- issue with centralwidget layoutDirection
+-- icons added via resource file
+-- stylesheet
+-- qm file for translation
+-- Persian translation support
+[2022-04-30]
+-- menu retouch + application icon
+-- font resize via menu
+-- addition of edit menu
+[2022-04-29]
+-- first try
 
 0.1.2 - 2022-04-15
 -- In compliance with new option of `python-negar` -- `exaggeragin_zwnj`

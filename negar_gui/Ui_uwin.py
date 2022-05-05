@@ -29,8 +29,6 @@ class Ui_uwWindow(object):
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
         self.untouch_word = QtWidgets.QLineEdit(self.centralwidget)
-        self.untouch_word.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.untouch_word.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.untouch_word.setObjectName("untouch_word")
         self.gridLayout.addWidget(self.untouch_word, 0, 0, 1, 1)
         self.untouch_button = QtWidgets.QPushButton(self.centralwidget)

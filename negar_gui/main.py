@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# @Date    : 2022-04-28
-# @Author  : Javad Razavian
-# @Link    : https://github.com/javadr/negar-gui
-# @Version : Python3.6
 
 import re
 import sys
@@ -23,6 +19,21 @@ from negar_gui.Ui_uwin import Ui_uwWindow
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
+
+def init_decorator(func):
+    def wrapper(*args, **kwargs):
+        func(*args, **kwargs)
+        self, parent = args[0], kwargs.pop('parent', None)
+        # it adjusts Frame Size maximized if its height or width would be bigger than its counterpart on the real screen
+        screen = QApplication.desktop().screenGeometry()
+        h, w = screen.height(), screen.width()
+        if self.width() > w or self.height() > h:
+            self.showMaximized()
+        # set layout direction automatically
+        if parent: self.centralwidget.setLayoutDirection(parent.layoutDirection())
+        # connect widgets to their proper slot
+        self.connectSlots()
+    return wrapper
 
 def checkScreenSize(self):
     """it adjusts Frame Size maximized
@@ -70,14 +81,13 @@ class TableModel(QAbstractTableModel):
                 return str(section+1)
 
 class UntouchWindow(QMainWindow, Ui_uwWindow):
+    @init_decorator
     def __init__(self, parent=None):
         self.parent = parent
         super(UntouchWindow, self).__init__(parent)
         self.setupUi(self)
-        checkScreenSize(self)
-        if parent: self.centralwidget.setLayoutDirection(parent.layoutDirection())
         self.setup_table()
-        self.connectSlots()
+        # if parent: self.centralwidget.setLayoutDirection(parent.layoutDirection())
 
     def setup_table(self, col=8):
         self.untouch_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
@@ -93,17 +103,13 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
     def untouch_add_enabler(self):
         """Checks untouchable word text input to enable the `Add` button if just one word is typed."""
         word_list = self.untouch_word.text().split()
-        if len(word_list) == 1:
-            self.untouch_button.setEnabled(True)
-        else:
-            self.untouch_button.setEnabled(False)
+        self.untouch_button.setEnabled(len(word_list) == 1)
 
     def untouch_add(self):
         """Adds a new word into untouchable words"""
-        word = [self.untouch_word.text()]
+        word = [self.untouch_word.text().strip()]
         UnTouchable.add(word)
         self.untouch_word.clear()
-        #self.edit_text()  # retouches the input text
         self.setup_table() # updates untouchable list
 
     def keyPressEvent(self, event):
@@ -118,14 +124,16 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
             super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        if self.parent: self.parent.show()
+        if self.parent:
+            self.parent.show()
+            self.parent.edit_text()
 
 
 class MyWindow(QMainWindow, Ui_MainWindow):
+    @init_decorator
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
-        checkScreenSize(self)
         try:
             with open(f"{NEGARGUIPATH}/style.qss") as style:
                 self.setStyleSheet(style.read())
@@ -142,7 +150,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
-        self.connectSlots()
+
 
     def connectSlots(self):
         self.autoedit_handler()
@@ -195,7 +203,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionTrim_Leading_Trailing_Whitespaces.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
         self.actionExaggerating_ZWNJ.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
 
-        self.actionUntouchable_Words.triggered.connect(lambda: (UntouchWindow(self).show(), MainWindow.hide()))
+        self.actionUntouchable_Words.triggered.connect(lambda: (UntouchWindow(parent=self).show(), MainWindow.hide()))
 
     def openFileSlot(self):
         filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
