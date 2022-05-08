@@ -49,10 +49,23 @@ trans: ver
 
 res: ver
 	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
-	# pyside6-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
 
 ui: ver
 	pyuic5 --from-imports negar_gui/mwin.ui -o negar_gui/Ui_mwin.py
+	pyuic5 --from-imports negar_gui/uwin.ui -o negar_gui/Ui_uwin.py
+
+sres: ver
+	pyside2-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
+
+sui: ver
+	pyside2-uic --from-imports negar_gui/mwin.ui -o negar_gui/Ui_mwin.py
+	pyside2-uic --from-imports negar_gui/uwin.ui -o negar_gui/Ui_uwin.py
+
+strans: ver
+	pyside2-lupdate -verbose negar_gui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
+	pyside2-lupdate -verbose negar_gui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
+	pyside2-lupdate -verbose negar_gui/main.py -ts negar_gui/ts/fa-main.ts
+	pyside2-lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 
 clean: ver
 	rm negar_gui.egg-info/ -rfv

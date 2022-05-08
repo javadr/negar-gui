@@ -16,6 +16,13 @@ from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
 from negar_gui.Ui_uwin import Ui_uwWindow
 
+# ########################################################################
+# # IMPORT Custom widgets
+# from Custom_Widgets.Widgets import *
+# # INITIALIZE APP SETTINGS
+# settings = QSettings()
+# ########################################################################
+
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
@@ -134,9 +141,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
+        self.vertical_btn.setEnabled(False)
+        self.horizontal_btn.setEnabled(False)
+        self.paste_btn.setEnabled(False)
         try:
-            with open(f"{NEGARGUIPATH}/style.qss") as style:
-                self.setStyleSheet(style.read())
+            # with open(f"{NEGARGUIPATH}/style.qss") as style:
+            #     self.setStyleSheet(style.read())
+            pass
         except:
             print("open stylesheet error")
         self.setWindowIcon(QIcon(LOGO))
