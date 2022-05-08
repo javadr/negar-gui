@@ -1,6 +1,9 @@
-0.2.5 - 2022-05-08
--- buttons have been moved under the menu
+0.2.6 - 2022-05-08
+-- Paste button
 -- tooltip for toolbar buttons
+
+0.2.5 - 2022-05-08
+-- new face design; buttons have been moved under the menu bar
 
 0.2.4 - 2022-05-05
 -- init decorator for QMainWindow
