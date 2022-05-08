@@ -4,239 +4,264 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../Ui_mwin.py" line="371"/>
+        <location filename="../Ui_mwin.py" line="455"/>
         <source>Negar</source>
         <translation>نگار</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="373"/>
+        <location filename="../Ui_mwin.py" line="464"/>
         <source>Re&amp;vision:</source>
         <translation>متن ویرایش‌شده:</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="376"/>
+        <location filename="../Ui_mwin.py" line="461"/>
         <source>E&amp;dit</source>
         <translation>ویرایش</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="418"/>
+        <location filename="../Ui_mwin.py" line="505"/>
         <source>&amp;Reset</source>
         <translation>ریست</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="414"/>
+        <location filename="../Ui_mwin.py" line="501"/>
         <source>&amp;Copy</source>
         <translation>کپی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="374"/>
+        <location filename="../Ui_mwin.py" line="462"/>
         <source>Real-&amp;time Edit</source>
         <translation>ویرایش آنلاین</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="372"/>
+        <location filename="../Ui_mwin.py" line="465"/>
         <source>&amp;Original:</source>
         <translation>متن اصلی:</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="375"/>
+        <location filename="../Ui_mwin.py" line="463"/>
         <source>&amp;Font Size</source>
         <translation>اندازه قلم</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="379"/>
+        <location filename="../Ui_mwin.py" line="466"/>
         <source>&amp;File</source>
         <translation>فایل</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="380"/>
+        <location filename="../Ui_mwin.py" line="467"/>
         <source>&amp;Settings</source>
         <translation>تنظیمات</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="381"/>
+        <location filename="../Ui_mwin.py" line="468"/>
         <source>&amp;Options</source>
         <translation>گزینه‌ها</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="382"/>
+        <location filename="../Ui_mwin.py" line="469"/>
         <source>&amp;Language</source>
         <translation>زبان</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="383"/>
+        <location filename="../Ui_mwin.py" line="470"/>
         <source>&amp;Help</source>
         <translation>راهنما</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="384"/>
+        <location filename="../Ui_mwin.py" line="471"/>
         <source>&amp;Edit</source>
         <translation>ویرایش</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="385"/>
+        <location filename="../Ui_mwin.py" line="472"/>
         <source>&amp;Open</source>
         <translation>بازکردن</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="386"/>
+        <location filename="../Ui_mwin.py" line="473"/>
         <source>&amp;Export</source>
         <translation>صادرکردن</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="387"/>
+        <location filename="../Ui_mwin.py" line="474"/>
         <source>E&amp;xit</source>
         <translation>خروج</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="388"/>
+        <location filename="../Ui_mwin.py" line="475"/>
         <source>&amp;About</source>
         <translation>درباره</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="389"/>
+        <location filename="../Ui_mwin.py" line="476"/>
         <source>&amp;Donate</source>
         <translation>پشتیبانی مالی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="390"/>
+        <location filename="../Ui_mwin.py" line="477"/>
         <source>&amp;Report Bugs</source>
         <translation>گزارش خطا</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="391"/>
+        <location filename="../Ui_mwin.py" line="478"/>
         <source>Negar &amp;Help</source>
         <translation>راهنمای نگار</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="392"/>
+        <location filename="../Ui_mwin.py" line="479"/>
         <source>Fix &amp;Dashes</source>
         <translation>تصحیح خط‌تیره‌ها</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="393"/>
+        <location filename="../Ui_mwin.py" line="480"/>
         <source>Fix &amp;three dots</source>
         <translation>تصحیح سه‌نقطه‌ها</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="394"/>
+        <location filename="../Ui_mwin.py" line="481"/>
         <source>Fix English &amp;quotes</source>
         <translation>تصحیح علامت‌های نقل‌قول</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="395"/>
+        <location filename="../Ui_mwin.py" line="482"/>
         <source>Fix &amp;hamzeh</source>
         <translation>تصحیح همزه</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="396"/>
+        <location filename="../Ui_mwin.py" line="483"/>
         <source>Use &apos;Persian &amp;yeh&apos; to show hamzeh</source>
         <translation>استفاده از ی بجای همزه</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="397"/>
+        <location filename="../Ui_mwin.py" line="484"/>
         <source>Fix &amp;spacing braces and quotes</source>
         <translation>تصحیح فاصله براکت‌ها</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="398"/>
+        <location filename="../Ui_mwin.py" line="485"/>
         <source>Fix Arabic &amp;numbers</source>
         <translation>تصحیح اعداد عربی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="399"/>
+        <location filename="../Ui_mwin.py" line="486"/>
         <source>Fix &amp;English numbers</source>
         <translation>تصحیح اعداد انگلیسی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="400"/>
+        <location filename="../Ui_mwin.py" line="487"/>
         <source>Fix non Persian &amp;chars</source>
         <translation>تصحیح کاراکترهای غیر فارسی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="401"/>
+        <location filename="../Ui_mwin.py" line="488"/>
         <source>Fix &amp;prefix spacing</source>
         <translation>تنظیم فاصله پیشوندی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="402"/>
+        <location filename="../Ui_mwin.py" line="489"/>
         <source>Fix p&amp;refix separating</source>
         <translation>جداسازی پیشوندی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="403"/>
+        <location filename="../Ui_mwin.py" line="490"/>
         <source>Fix su&amp;ffix spacing</source>
         <translation>تصحیح فاصله پسوندی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="404"/>
+        <location filename="../Ui_mwin.py" line="491"/>
         <source>Fix s&amp;uffix separating</source>
         <translation>جداسازی پسوندی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="405"/>
+        <location filename="../Ui_mwin.py" line="492"/>
         <source>Fix a&amp;ggressive punctuation</source>
         <translation>تصحیح نقطه‌گذاری‌های پرخاشگرانه</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="406"/>
+        <location filename="../Ui_mwin.py" line="493"/>
         <source>Cleanup &amp;kashidas</source>
         <translation>حذف کشیدگی درون کلمه‌ای</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="407"/>
+        <location filename="../Ui_mwin.py" line="494"/>
         <source>Cleanup e&amp;xtra marks</source>
         <translation>حذف علائم اضافی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="408"/>
+        <location filename="../Ui_mwin.py" line="495"/>
         <source>C&amp;leanup spacing</source>
         <translation>حذف فضاهای سفید</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="409"/>
+        <location filename="../Ui_mwin.py" line="496"/>
         <source>Tr&amp;im Leading/Trailing Whitespaces</source>
         <translation>حذف فضاهای سفید در ابتدا و انتهای خط</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="410"/>
+        <location filename="../Ui_mwin.py" line="497"/>
         <source>Exaggerating &amp;ZWNJ</source>
         <translation>جداسازی اغراق‌شده</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="411"/>
+        <location filename="../Ui_mwin.py" line="498"/>
         <source>&amp;Untouchable Words</source>
         <translation>کلمات بدون تغییر در سند</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="412"/>
+        <location filename="../Ui_mwin.py" line="499"/>
         <source>&amp;Persian</source>
         <translation>فارسی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="413"/>
+        <location filename="../Ui_mwin.py" line="500"/>
         <source>&amp;English</source>
         <translation>انگلیسی</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="415"/>
+        <location filename="../Ui_mwin.py" line="502"/>
         <source>&amp;Paste</source>
         <translation>چسباندن از کلیپ‌برد</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="416"/>
+        <location filename="../Ui_mwin.py" line="503"/>
         <source>&amp;Increase Font Size</source>
         <translation>افزایش سایز قلم</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="417"/>
+        <location filename="../Ui_mwin.py" line="504"/>
         <source>&amp;Decrease Font Size</source>
         <translation>کاهش سایز قلم</translation>
     </message>
     <message>
-        <location filename="../Ui_mwin.py" line="419"/>
+        <location filename="../Ui_mwin.py" line="506"/>
         <source>&amp;Side-by-Side View</source>
         <translation>نمایش پهلو به پهلو</translation>
+    </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="459"/>
+        <source>vertical view</source>
+        <translation>نمای عمودی</translation>
+    </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="460"/>
+        <source>horizontal view</source>
+        <translation>نمای افقی</translation>
+    </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="456"/>
+        <source>Reset Ctrl+R</source>
+        <translation>ریست Ctrl+R</translation>
+    </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="457"/>
+        <source>Copy Ctrl+C</source>
+        <translation>کپی Ctrl+C</translation>
+    </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="458"/>
+        <source>Paste Ctrl+V</source>
+        <translation>چسباندن Ctrl+V</translation>
     </message>
 </context>
 </TS>

@@ -143,7 +143,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.vertical_btn.setEnabled(False)
         self.horizontal_btn.setEnabled(False)
-        self.paste_btn.setEnabled(False)
         try:
             # with open(f"{NEGARGUIPATH}/style.qss") as style:
             #     self.setStyleSheet(style.read())

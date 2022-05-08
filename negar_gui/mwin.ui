@@ -140,6 +140,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
                 <widget class="QPushButton" name="reset_btn">
+                 <property name="toolTip">
+                  <string>Reset Ctrl+R</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -157,6 +160,9 @@
                </item>
                <item>
                 <widget class="QPushButton" name="copy_btn">
+                 <property name="toolTip">
+                  <string>Copy Ctrl+C</string>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -171,6 +177,9 @@
                </item>
                <item>
                 <widget class="QPushButton" name="paste_btn">
+                 <property name="toolTip">
+                  <string>Paste Ctrl+V</string>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -185,6 +194,9 @@
                </item>
                <item>
                 <widget class="QPushButton" name="vertical_btn">
+                 <property name="toolTip">
+                  <string>vertical view</string>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -199,6 +211,9 @@
                </item>
                <item>
                 <widget class="QPushButton" name="horizontal_btn">
+                 <property name="toolTip">
+                  <string>horizontal view</string>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -904,7 +919,7 @@
   <action name="actionReset">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
+     <normaloff>:/images/icons/reset.png</normaloff>:/images/icons/reset.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Reset</string>
@@ -1113,6 +1128,22 @@
     <hint type="destinationlabel">
      <x>701</x>
      <y>587</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>paste_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>input_editor</receiver>
+   <slot>paste()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>91</x>
+     <y>42</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>529</x>
+     <y>245</y>
     </hint>
    </hints>
   </connection>

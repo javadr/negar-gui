@@ -26,7 +26,6 @@
     <file>icons/open.svg</file>
     <file>icons/options.svg</file>
     <file>icons/paste.svg</file>
-    <file>icons/reset.svg</file>
     <file>icons/words.png</file>
   </qresource>
 </RCC>

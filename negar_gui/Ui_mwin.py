@@ -370,9 +370,7 @@ class Ui_MainWindow(object):
         self.actionDecrease_Font_Size.setShortcut("Ctrl+-")
         self.actionDecrease_Font_Size.setObjectName("actionDecrease_Font_Size")
         self.actionReset = QtWidgets.QAction(MainWindow)
-        icon20 = QtGui.QIcon()
-        icon20.addPixmap(QtGui.QPixmap(":/images/icons/reset.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionReset.setIcon(icon20)
+        self.actionReset.setIcon(icon)
         self.actionReset.setShortcut("Ctrl+R")
         self.actionReset.setObjectName("actionReset")
         self.actionSide_by_Side_View = QtWidgets.QAction(MainWindow)
@@ -444,6 +442,7 @@ class Ui_MainWindow(object):
         self.actionDecrease_Font_Size.triggered.connect(self.output_editor.zoomOut) # type: ignore
         self.actionDecrease_Font_Size.triggered.connect(self.input_editor.zoomOut) # type: ignore
         self.actionReset.triggered.connect(self.reset_btn.click) # type: ignore
+        self.paste_btn.clicked.connect(self.input_editor.paste) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         MainWindow.setTabOrder(self.input_editor, self.output_editor)
         MainWindow.setTabOrder(self.output_editor, self.autoedit_chkbox)
@@ -454,6 +453,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Negar"))
+        self.reset_btn.setToolTip(_translate("MainWindow", "Reset Ctrl+R"))
+        self.copy_btn.setToolTip(_translate("MainWindow", "Copy Ctrl+C"))
+        self.paste_btn.setToolTip(_translate("MainWindow", "Paste Ctrl+V"))
+        self.vertical_btn.setToolTip(_translate("MainWindow", "vertical view"))
+        self.horizontal_btn.setToolTip(_translate("MainWindow", "horizontal view"))
         self.edit_btn.setText(_translate("MainWindow", "E&dit"))
         self.autoedit_chkbox.setText(_translate("MainWindow", "Real-&time Edit"))
         self.font_slider_label.setText(_translate("MainWindow", "&Font Size"))
