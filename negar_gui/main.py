@@ -6,7 +6,7 @@ from pathlib import Path
 from pyuca import Collator
 
 from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QSize
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDesktopWidget, QDialog
 from PyQt5.QtGui import QDesktopServices, QIcon, QColor
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
@@ -15,6 +15,7 @@ from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
 from negar_gui.Ui_uwin import Ui_uwWindow
+from negar_gui.Ui_hwin import Ui_Dialog
 
 # ########################################################################
 # # IMPORT Custom widgets
@@ -37,7 +38,11 @@ def init_decorator(func):
         if self.width() > w or self.height() > h:
             self.showMaximized()
         # set layout direction automatically
-        if parent: self.centralwidget.setLayoutDirection(parent.layoutDirection())
+        if parent:
+            try:
+                self.centralwidget.setLayoutDirection(parent.layoutDirection())
+            except: # QDialog  has no centralwidget
+                pass
         # connect widgets to their proper slot
         self.connectSlots()
     return wrapper
@@ -135,6 +140,24 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
             self.parent.show()
             self.parent.edit_text()
 
+class HelpWindow(QDialog, Ui_Dialog):
+    @init_decorator
+    def __init__(self, parent=None, title=None, label=None):
+        self.parent = parent
+        super(HelpWindow, self).__init__(parent)
+        self.setupUi(self)
+        self.setWindowTitle(title)
+        self.label.setText(label)
+
+    def connectSlots(self):
+        pass
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            self.close()
+        else:
+            super().keyPressEvent(event)
+
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     @init_decorator
@@ -181,10 +204,12 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionPersian.triggered.connect(lambda: self.changeLanguage('Persian'))
         self.actionEnglish.triggered.connect(lambda: self.changeLanguage('English'))
 
-        self.actionNegar_Help.setShortcut("F1")
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO) )
-        self.actionAbout.setShortcut("CTRL+H")
-        self.actionAbout.triggered.connect(
+        self.actionAbout_Negar.setShortcut("CTRL+H")
+        self.actionAbout_Negar.triggered.connect(
+            lambda: (HelpWindow(parent=self, title='About Negar', label=self.edit_text(INFO)).show())
+        )
+        self.actionAbout_Negar_GUI.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui"))
         )
         self.actionDonate.triggered.connect(
@@ -357,10 +382,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         if not self.actionExaggerating_ZWNJ.isChecked():
             self.editing_options.append("exaggerating-zwnj")
 
-    def edit_text(self):
-        self.output_editor.clear()
-        run_PE = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
-        self.output_editor.append(run_PE.cleanup())
+    def edit_text(self, text=None):
+        if text==None:
+            self.output_editor.clear()
+            run_PE = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
+            self.output_editor.append(run_PE.cleanup())
+        else:
+            return PersianEditor(text, *self.editing_options).cleanup()
 
 def main():
     app = QApplication(sys.argv)

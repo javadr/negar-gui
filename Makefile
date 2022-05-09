@@ -44,6 +44,7 @@ piCompile: ver
 trans: ver
 	pylupdate5 -verbose negar_gui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
 	pylupdate5 -verbose negar_gui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
+	pylupdate5 -verbose negar_gui/Ui_hwin.py -ts negar_gui/ts/fa-uihwin.ts
 	pylupdate5 -verbose negar_gui/main.py -ts negar_gui/ts/fa-main.ts
 	lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 

@@ -518,7 +518,10 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="actionNegar_Help"/>
-    <addaction name="actionAbout"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_Negar"/>
+    <addaction name="actionAbout_Negar_GUI"/>
+    <addaction name="separator"/>
     <addaction name="actionDonate"/>
     <addaction name="actionReport_Bugs"/>
    </widget>
@@ -575,13 +578,13 @@
     <string notr="true">Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="actionAbout_Negar">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/images/icons/about.svg</normaloff>:/images/icons/about.svg</iconset>
    </property>
    <property name="text">
-    <string>&amp;About</string>
+    <string>&amp;About Negar</string>
    </property>
    <property name="shortcut">
     <string notr="true"/>
@@ -940,6 +943,11 @@
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionAbout_Negar_GUI">
+   <property name="text">
+    <string>About &amp;Negar-GUI</string>
    </property>
   </action>
  </widget>
