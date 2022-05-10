@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images">
+    <file>icons/edit.png</file>
     <file>icons/horizontal.png</file>
     <file>icons/vertical.png</file>
     <file>icons/copy.png</file>

@@ -270,11 +270,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.trans.load("fa", directory=f"{NEGARGUIPATH}/ts")
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+            self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         elif lan=='English' and self.lan!='English':
             self.lan = 'English'
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+            self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         else:
             return
         _app = QApplication.instance()
@@ -383,7 +385,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.editing_options.append("exaggerating-zwnj")
 
     def edit_text(self, text=None):
-        if text==None:
+        if not text:
             self.output_editor.clear()
             run_PE = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
             self.output_editor.append(run_PE.cleanup())

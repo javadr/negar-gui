@@ -232,6 +232,19 @@
            </widget>
           </item>
           <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -243,6 +256,36 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="font_slider_label">
+              <property name="text">
+               <string>&amp;Font Size</string>
+              </property>
+              <property name="buddy">
+               <cstring>font_slider</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="font_slider">
+              <property name="minimum">
+               <number>10</number>
+              </property>
+              <property name="maximum">
+               <number>40</number>
+              </property>
+              <property name="value">
+               <number>18</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QFrame" name="frame_3">
@@ -271,17 +314,10 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
-                <widget class="QPushButton" name="edit_btn">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>E&amp;dit</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QCheckBox" name="autoedit_chkbox">
+                 <property name="layoutDirection">
+                  <enum>Qt::RightToLeft</enum>
+                 </property>
                  <property name="text">
                   <string>Real-&amp;time Edit</string>
                  </property>
@@ -290,23 +326,24 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QPushButton" name="edit_btn">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>E&amp;dit</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resource.qrc">
+                   <normaloff>:/images/icons/edit.png</normaloff>:/images/icons/edit.png</iconset>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
            </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item>
            <widget class="QFrame" name="frame_4">
@@ -332,36 +369,6 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <widget class="QLabel" name="font_slider_label">
-                 <property name="text">
-                  <string>&amp;Font Size</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>font_slider</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="font_slider">
-                 <property name="minimum">
-                  <number>10</number>
-                 </property>
-                 <property name="maximum">
-                  <number>40</number>
-                 </property>
-                 <property name="value">
-                  <number>18</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
             </layout>
            </widget>
           </item>
@@ -954,7 +961,6 @@
  <tabstops>
   <tabstop>input_editor</tabstop>
   <tabstop>output_editor</tabstop>
-  <tabstop>autoedit_chkbox</tabstop>
   <tabstop>font_slider</tabstop>
   <tabstop>copy_btn</tabstop>
   <tabstop>reset_btn</tabstop>
