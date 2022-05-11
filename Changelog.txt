@@ -1,3 +1,6 @@
+0.2.9 - 2022-05-11
+-- Copies the ouput text into the system clipboard via pyperclip
+
 0.2.8 - 2022-05-10
 -- Minor issue with text edition
 -- retouching the face design

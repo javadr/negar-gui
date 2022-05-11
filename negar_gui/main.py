@@ -4,10 +4,11 @@ import re
 import sys
 from pathlib import Path
 from pyuca import Collator
+from pyperclip import copy as pyclipcopy
 
-from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QSize
+from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QSize, QEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDesktopWidget, QDialog
-from PyQt5.QtGui import QDesktopServices, QIcon, QColor
+from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QClipboard
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
@@ -239,6 +240,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionExaggerating_ZWNJ.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
 
         self.actionUntouchable_Words.triggered.connect(lambda: (UntouchWindow(parent=self).show(), MainWindow.hide()))
+        self.actionCopy.triggered.connect(self.copySlot)
+        self.copy_btn.clicked.connect(self.copySlot)
 
     def openFileSlot(self):
         filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
@@ -294,6 +297,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         s = self.output_editor.toPlainText()
         if s:
             QApplication.clipboard().setText(s)
+        return s
 
     def onClipboradChanged(self):
         text = self.clipboard.text()
@@ -301,11 +305,13 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.input_editor.setPlainText(text)
             self._set_font_size()
 
+    def closeEvent(self, event):
+        # event = QEvent(QEvent.Clipboard)
+        # QApplication.sendEvent(QApplication.clipboard(), event)
+        pyclipcopy(self.copySlot())
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
-            sanitizedText = self.output_editor.toPlainText()
-            if sanitizedText:
-                self.destroyed.connect(lambda: QApplication.clipboard().setText(sanitizedText) )
             self.close()
         elif event.key() == Qt.Key.Key_F11:
             if self.isMaximized():
