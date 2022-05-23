@@ -447,7 +447,7 @@
      <x>0</x>
      <y>0</y>
      <width>1059</width>
-     <height>27</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -465,7 +465,7 @@
     </property>
     <widget class="QMenu" name="menuOptions">
      <property name="title">
-      <string>&amp;Options</string>
+      <string>Editing &amp;Options</string>
      </property>
      <property name="icon">
       <iconset resource="resource.qrc">
@@ -509,6 +509,7 @@
      <addaction name="actionEnglish"/>
     </widget>
     <addaction name="menuOptions"/>
+    <addaction name="actionInteractive_Clipboard"/>
     <addaction name="actionSide_by_Side_View"/>
     <addaction name="menuLanguage"/>
     <addaction name="separator"/>
@@ -955,6 +956,17 @@
   <action name="actionAbout_Negar_GUI">
    <property name="text">
     <string>About &amp;Negar-GUI</string>
+   </property>
+  </action>
+  <action name="actionInteractive_Clipboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Interactive Clipboard</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">Ctrl+I</string>
    </property>
   </action>
  </widget>

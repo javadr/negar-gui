@@ -189,7 +189,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def connectSlots(self):
         self.autoedit_handler()
         # connect to slots
-        self.clipboard.dataChanged.connect(self.onClipboradChanged)
         self.autoedit_chkbox.stateChanged.connect(self.autoedit_handler)
         self.edit_btn.clicked.connect(self.edit_text)
         self.actionOpen.triggered.connect(self.openFileSlot)
@@ -242,6 +241,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionUntouchable_Words.triggered.connect(lambda: (UntouchWindow(parent=self).show(), MainWindow.hide()))
         self.actionCopy.triggered.connect(self.copySlot)
         self.copy_btn.clicked.connect(self.copySlot)
+
+        self.actionInteractive_Clipboard.triggered.connect(lambda:
+            self.clipboard.dataChanged.connect(self.onClipboardChanged) if self.actionInteractive_Clipboard.isChecked()
+            else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
 
     def openFileSlot(self):
         filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
@@ -299,7 +302,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             QApplication.clipboard().setText(s)
         return s
 
-    def onClipboradChanged(self):
+    def onClipboardChanged(self):
         text = self.clipboard.text()
         if text:
             self.input_editor.setPlainText(text)
