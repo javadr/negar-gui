@@ -210,8 +210,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             notification = message.format('negar', 'python-negar')
         if negargui_nv>negargui_ov:
             notification = message.format('negar-gui', 'negar-gui')
-        if notification!=message:
-            self._statusBar(f"{notification}")
+        self._statusBar(f"{notification}" if notification!=message else '')
 
     def connectSlots(self):
         self.autoedit_handler()
@@ -274,7 +273,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
 
     def _statusBar(self, notification=''):
-        self.statusBar.showMessage(f'Negar v{negar__version}, Negar-GUI v{__version__}. {notification}')
+        self.statusBar.showMessage(f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}')
 
     def openFileSlot(self):
         filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
