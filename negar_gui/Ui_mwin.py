@@ -391,6 +391,8 @@ class Ui_MainWindow(object):
         self.actionInteractive_Clipboard.setCheckable(True)
         self.actionInteractive_Clipboard.setShortcut("Ctrl+I")
         self.actionInteractive_Clipboard.setObjectName("actionInteractive_Clipboard")
+        self.actionUpdate = QtWidgets.QAction(MainWindow)
+        self.actionUpdate.setObjectName("actionUpdate")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionExport)
         self.menuFile.addSeparator()
@@ -522,6 +524,7 @@ class Ui_MainWindow(object):
         self.actionSide_by_Side_View.setText(_translate("MainWindow", "&Side-by-Side View"))
         self.actionAbout_Negar_GUI.setText(_translate("MainWindow", "About &Negar-GUI"))
         self.actionInteractive_Clipboard.setText(_translate("MainWindow", "&Interactive Clipboard"))
+        self.actionUpdate.setText(_translate("MainWindow", "Update Check"))
 from . import resource_rc
 
 

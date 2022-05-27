@@ -970,6 +970,11 @@
     <string notr="true">Ctrl+I</string>
    </property>
   </action>
+  <action name="actionUpdate">
+   <property name="text">
+    <string>Update Check</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>input_editor</tabstop>

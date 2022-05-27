@@ -2,6 +2,9 @@
 
 import re
 import sys
+import asyncio
+import requests
+from threading import Thread
 from pathlib import Path
 from pyuca import Collator
 from pyperclip import copy as pyclipcopy
@@ -185,9 +188,30 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
         self._statusBar()
+        # Checks for new release
+        Thread(target=lambda: asyncio.run(self.updateCheck())).start()
 
-    def _statusBar(self, notification=''):
-        self.statusBar.showMessage(f'Negar ver. {negar__version}, Negar-GUI ver. {__version__}. {notification}')
+    async def updateCheck(self):
+        nurl  = 'https://raw.github.com/shahinism/python-negar/master/negar/constants.py'
+        ngurl = 'https://raw.github.com/javadr/negar-gui/master/negar_gui/constants.py'
+        async def get(link):
+            with requests.get(link) as response:
+                return re.search(r'(__version__ = "(\d\.\d(\.\d+)?)")', response.text, re.M).group(2)
+        negar_t = asyncio.create_task(get(nurl))
+        negargui_t = asyncio.create_task(get(ngurl))
+        negar_v = await negar_t
+        negargui_v = await negargui_t
+        version = lambda v: list(map(int,v.split('.')))
+        negar_nv, negargui_nv = [version(i) for i in (negar_v, negargui_v)]
+        negar_ov, negargui_ov = [version(i) for i in (negar__version, __version__)]
+        notification = ''
+        message = 'New version is available for {}. Use `pip install --upgrade {}` to update'
+        if negar_nv>negar_ov:
+            notification = message.format('negar', 'python-negar')
+        if negargui_nv>negargui_ov:
+            notification = message.format('negar-gui', 'negar-gui')
+        if notification!=message:
+            self._statusBar(f"{notification}")
 
     def connectSlots(self):
         self.autoedit_handler()
@@ -248,6 +272,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionInteractive_Clipboard.triggered.connect(lambda:
             self.clipboard.dataChanged.connect(self.onClipboardChanged) if self.actionInteractive_Clipboard.isChecked()
             else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
+
+    def _statusBar(self, notification=''):
+        self.statusBar.showMessage(f'Negar v{negar__version}, Negar-GUI v{__version__}. {notification}')
 
     def openFileSlot(self):
         filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
@@ -405,8 +432,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             return PersianEditor(text, *self.editing_options).cleanup()
 
 def main():
-    app = QApplication(sys.argv)
     global MainWindow
+    app = QApplication(sys.argv)
     MainWindow = MyWindow()
     MainWindow.show()
     sys.exit(app.exec_())

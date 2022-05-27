@@ -1,3 +1,6 @@
+0.2.12 - 2022-05-27
+-- Automatically checks for new update and print the result in the status bar in case of the new update.
+
 0.2.11 - 2022-05-27
 -- Status Bar to show the current version of Negar and Negar-GUI
 

@@ -3,9 +3,8 @@
 Graphical User interface for `negar`
 
 
-![Negar's English view](https://github.com/javadr/negar-gui/blob/main/images/negar-en.png)
-![Negar's Persian view](https://github.com/javadr/negar-gui/blob/main/images/negar-fa.png)
-
+![Negar's English view](https://raw.github.com/javadr/negar-gui/master/images/negar-en.png)
+![Negar's Persian view](https://raw.github.com/javadr/negar-gui/master/images/negar-fa.png)
 
 Installation
 ==============
