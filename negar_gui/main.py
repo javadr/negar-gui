@@ -12,7 +12,7 @@ from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QClipboard
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
-from negar.constants import INFO
+from negar.constants import INFO, __version__ as negar__version
 from negar_gui.constants import __version__, LOGO
 from negar_gui.Ui_mwin import Ui_MainWindow
 from negar_gui.Ui_uwin import Ui_uwWindow
@@ -184,7 +184,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
+        self._statusBar()
 
+    def _statusBar(self, notification=''):
+        self.statusBar.showMessage(f'Negar ver. {negar__version}, Negar-GUI ver. {__version__}. {notification}')
 
     def connectSlots(self):
         self.autoedit_handler()

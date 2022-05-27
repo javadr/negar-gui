@@ -447,7 +447,7 @@
      <x>0</x>
      <y>0</y>
      <width>1059</width>
-     <height>32</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -550,6 +550,7 @@
    <addaction name="menuSetting"/>
    <addaction name="menuHelp"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="resource.qrc">
