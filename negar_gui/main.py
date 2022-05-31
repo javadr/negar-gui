@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from email.mime import image
 import re
 import sys
 import asyncio
@@ -8,10 +9,12 @@ from threading import Thread
 from pathlib import Path
 from pyuca import Collator
 from pyperclip import copy as pyclipcopy
-
+from qrcode import QRCode, ERROR_CORRECT_L
+from qrcode.image.pil import PilImage
+from PIL.ImageQt import ImageQt
 from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QSize, QEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDesktopWidget, QDialog
-from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QClipboard
+from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QClipboard, QPixmap, QImage
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
@@ -151,7 +154,12 @@ class HelpWindow(QDialog, Ui_Dialog):
         super(HelpWindow, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle(title)
-        self.label.setText(label)
+        if isinstance(label, str):
+            self.label.setText(label)
+        if isinstance(label, QPixmap):
+            self.label.setPixmap(label)
+            # self.setFixedSize(QSize(600,600))
+
 
     def connectSlots(self):
         pass
@@ -271,6 +279,29 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionInteractive_Clipboard.triggered.connect(lambda:
             self.clipboard.dataChanged.connect(self.onClipboardChanged) if self.actionInteractive_Clipboard.isChecked()
             else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
+        self.actionQr_Code.triggered.connect(self.qrcode)
+
+    def qrcode(self):
+        if len(self.output_editor.toPlainText().strip())==0:
+            self.statusBar
+            self._statusBar('There is no text to to feed the QR Code!')
+            return
+        qr = QRCode(
+            version = 1,
+            error_correction = ERROR_CORRECT_L,
+            box_size = 10,
+            border = 4
+        )
+        qr.add_data(self.output_editor.toPlainText())
+        qr.make(fit = True)
+        img = qr.make_image()
+        img.save('/tmp/test.png')
+        pixmap = QPixmap('/tmp/test.png')
+        screen = QApplication.desktop().screenGeometry()
+        w = min(screen.height(), screen.width())
+        if w-90 < img.size[0]:
+            pixmap = pixmap.scaled(w-90, w-90, Qt.KeepAspectRatio)
+        HelpWindow(parent=self, title='Qr Code', label=pixmap).show()
 
     def _statusBar(self, notification=''):
         self.statusBar.showMessage(f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}')
