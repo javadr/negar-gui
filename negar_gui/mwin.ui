@@ -48,22 +48,7 @@
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
-   <layout class="QGridLayout" name="gridLayout_3">
-    <property name="leftMargin">
-     <number>9</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>9</number>
-    </property>
-    <property name="bottomMargin">
-     <number>9</number>
-    </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout_6">
     <item row="0" column="0">
      <widget class="QFrame" name="frame_6">
       <property name="frameShape">
@@ -90,16 +75,19 @@
        </property>
        <item>
         <widget class="QFrame" name="frame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <property name="spacing">
-           <number>0</number>
-          </property>
+         <layout class="QGridLayout" name="gridLayout_5">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -112,7 +100,7 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item>
+          <item row="0" column="0">
            <widget class="QFrame" name="frame_2">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -120,10 +108,7 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <property name="spacing">
-              <number>0</number>
-             </property>
+            <layout class="QGridLayout" name="gridLayout_4">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -136,216 +121,144 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QPushButton" name="reset_btn">
-                 <property name="toolTip">
-                  <string>Reset Ctrl+R</string>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/icons/reset.png</normaloff>:/images/icons/reset.png</iconset>
-                 </property>
-                 <property name="shortcut">
-                  <string notr="true"/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="copy_btn">
-                 <property name="toolTip">
-                  <string>Copy Ctrl+C</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/icons/copy.png</normaloff>:/images/icons/copy.png</iconset>
-                 </property>
-                 <property name="shortcut">
-                  <string notr="true"/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="paste_btn">
-                 <property name="toolTip">
-                  <string>Paste Ctrl+V</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/icons/paste.svg</normaloff>:/images/icons/paste.svg</iconset>
-                 </property>
-                 <property name="shortcut">
-                  <string notr="true"/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="vertical_btn">
-                 <property name="toolTip">
-                  <string>vertical view</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/icons/vertical.png</normaloff>:/images/icons/vertical.png</iconset>
-                 </property>
-                 <property name="shortcut">
-                  <string notr="true"/>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="horizontal_btn">
-                 <property name="toolTip">
-                  <string>horizontal view</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/icons/horizontal.png</normaloff>:/images/icons/horizontal.png</iconset>
-                 </property>
-                 <property name="shortcut">
-                  <string notr="true"/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="reset_btn">
+               <property name="toolTip">
+                <string>Reset Ctrl+R</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/reset.png</normaloff>:/images/icons/reset.png</iconset>
+               </property>
+               <property name="shortcut">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="copy_btn">
+               <property name="toolTip">
+                <string>Copy Ctrl+C</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/copy.png</normaloff>:/images/icons/copy.png</iconset>
+               </property>
+               <property name="shortcut">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="paste_btn">
+               <property name="toolTip">
+                <string>Paste Ctrl+V</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/paste.svg</normaloff>:/images/icons/paste.svg</iconset>
+               </property>
+               <property name="shortcut">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="qrcode_btn">
+               <property name="toolTip">
+                <string>Paste Ctrl+V</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/qr.png</normaloff>:/images/icons/qr.png</iconset>
+               </property>
+               <property name="shortcut">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QPushButton" name="vertical_btn">
+               <property name="toolTip">
+                <string>vertical view</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/vertical.png</normaloff>:/images/icons/vertical.png</iconset>
+               </property>
+               <property name="shortcut">
+                <string notr="true"/>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="QPushButton" name="horizontal_btn">
+               <property name="toolTip">
+                <string>horizontal view</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/horizontal.png</normaloff>:/images/icons/horizontal.png</iconset>
+               </property>
+               <property name="shortcut">
+                <string notr="true"/>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
           </item>
-          <item>
+          <item row="0" column="1">
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>210</width>
               <height>20</height>
              </size>
             </property>
            </spacer>
           </item>
-          <item>
+          <item row="0" column="2">
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>210</width>
               <height>20</height>
              </size>
             </property>
            </spacer>
           </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="font_slider_label">
-              <property name="text">
-               <string>&amp;Font Size</string>
-              </property>
-              <property name="buddy">
-               <cstring>font_slider</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="font_slider">
-              <property name="minimum">
-               <number>10</number>
-              </property>
-              <property name="maximum">
-               <number>40</number>
-              </property>
-              <property name="value">
-               <number>18</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_3">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <widget class="QCheckBox" name="autoedit_chkbox">
-                 <property name="layoutDirection">
-                  <enum>Qt::RightToLeft</enum>
-                 </property>
-                 <property name="text">
-                  <string>Real-&amp;time Edit</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="edit_btn">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>E&amp;dit</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resource.qrc">
-                   <normaloff>:/images/icons/edit.png</normaloff>:/images/icons/edit.png</iconset>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
+          <item row="0" column="3">
            <widget class="QFrame" name="frame_4">
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
@@ -353,10 +266,7 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <property name="spacing">
-              <number>0</number>
-             </property>
+            <layout class="QGridLayout" name="gridLayout_3">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -369,6 +279,89 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
+             <property name="verticalSpacing">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="font_slider_label">
+               <property name="text">
+                <string>&amp;Font Size</string>
+               </property>
+               <property name="buddy">
+                <cstring>font_slider</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSlider" name="font_slider">
+               <property name="minimum">
+                <number>10</number>
+               </property>
+               <property name="maximum">
+                <number>40</number>
+               </property>
+               <property name="value">
+                <number>18</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QFrame" name="frame_3">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>0</number>
+             </property>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="edit_btn">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>E&amp;dit</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resource.qrc">
+                 <normaloff>:/images/icons/edit.png</normaloff>:/images/icons/edit.png</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="autoedit_chkbox">
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
+               <property name="text">
+                <string>Real-&amp;time Edit</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -403,9 +396,6 @@
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
              <layout class="QGridLayout" name="input_layout">
-              <item row="1" column="0">
-               <widget class="QTextEdit" name="input_editor"/>
-              </item>
               <item row="0" column="0">
                <widget class="QLabel" name="input_editor_label">
                 <property name="text">
@@ -416,10 +406,10 @@
                 </property>
                </widget>
               </item>
+              <item row="1" column="0">
+               <widget class="QTextEdit" name="input_editor"/>
+              </item>
              </layout>
-            </item>
-            <item row="2" column="0">
-             <widget class="QTextEdit" name="output_editor"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="output_editor_label">
@@ -430,6 +420,9 @@
                <cstring>output_editor</cstring>
               </property>
              </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QTextEdit" name="output_editor"/>
             </item>
            </layout>
           </item>
@@ -989,7 +982,6 @@
  <tabstops>
   <tabstop>input_editor</tabstop>
   <tabstop>output_editor</tabstop>
-  <tabstop>font_slider</tabstop>
   <tabstop>reset_btn</tabstop>
  </tabstops>
  <resources>
@@ -1185,6 +1177,22 @@
     <hint type="destinationlabel">
      <x>529</x>
      <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>qrcode_btn</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>actionQr_Code</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>106</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
