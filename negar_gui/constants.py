@@ -1,5 +1,5 @@
 from pathlib import Path
 
-__version__ = "0.2.14"
+__version__ = "0.2.15"
 
 LOGO = (Path(__file__).parent.absolute()/"icons/logo.png").as_posix()

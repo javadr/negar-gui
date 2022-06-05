@@ -197,7 +197,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.fileDialog = QFileDialog()
         self._statusBar()
         # Checks for new release
-        Thread(target=lambda: asyncio.run(self.updateCheck())).start()
+        Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
 
     async def updateCheck(self):
         nurl  = 'https://raw.github.com/shahinism/python-negar/master/negar/constants.py'

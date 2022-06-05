@@ -1,3 +1,6 @@
+0.2.15 -- 2022-06-05
+-- Daemon thread to check the new version.
+
 0.2.14 -- 2022-06-05
 -- QR button added in toolbar
 
