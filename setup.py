@@ -21,7 +21,10 @@ setup(
         'PyQt5',
         'pyperclip',
         'pyuca',
-        'regex'
+        'regex',
+        'requests',
+        'qrcode',
+        'Image'
     ],
     python_requires=">=3.5",
     package_dir={'negar_gui': 'negar_gui'},
