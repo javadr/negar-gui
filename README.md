@@ -1,5 +1,11 @@
-﻿Negar
------
+﻿Negar-GUI
+==============
+[![repo size](https://img.shields.io/github/repo-size/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/archive/master.zip)
+[![GitHub forks](https://img.shields.io/github/forks/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/network/members)
+[![GitHub license](https://img.shields.io/github/license/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/issues)
+
 Graphical User interface for `negar`
 
 
