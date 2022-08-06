@@ -6,6 +6,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/issues)
 [![Downloads](https://pepy.tech/badge/negar-gui)](https://pepy.tech/project/negar-gui)
+[![Downloads](https://pepy.tech/badge/negar-gui/month)](https://pepy.tech/project/negar-gui)
 
 Graphical User interface for `negar`
 
