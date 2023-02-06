@@ -23,22 +23,25 @@ utest: setup
 
 upload: setup upypi utest
 
-nuCompile: ver
-	nuitka3 negar_gui/gui.py --standalone --onefile --linux-onefile-icon=negar_gui/logo.png \
-	--include-data-dir=.negar/lib/python3.10/site-packages/pyuca=pyuca \
-	--include-data-dir=.negar/lib/python3.10/site-packages/negar=negar/data \
+nuCompile: setup ver
+	nuitka3 negar_gui/main.py --standalone --onefile --linux-onefile-icon=negar_gui/icons/logo.png \
+	--enable-plugin=pyqt5 --nofollow-import-to=tkinter --lto=no \
 	-o dist/negar-gui-v$(VER).bin \
-	--output-dir=dist --remove-output --enable-plugin=pyqt5
-	# --include-data-file=negar/data/untouchable.dat=data/untouchable.dat \
+	--output-dir=dist --remove-output \
+	--include-data-file=.negar/lib/python3.10/site-packages/pyuca/allkeys-9.0.0.txt=pyuca/allkeys-9.0.0.txt \
+	--include-data-file=.negar/lib/python3.10/site-packages/negar/data/untouchable.dat=negar/data/untouchable.dat
+	# --include-data-dir=.negar/lib/python3.10/site-packages/negar=negar/data \
+	# --module python-negar --include-package=python-negar
+	# --include-package-data=python-negar=*.dat \
 
 	ls -lh dist
 
-piCompile: ver
+piCompile: setup ver
 	rm build/gui/ -rfv
 	. .negar/bin/activate
-	pyinstaller -p negar_gui --onefile --clean \
-	--collect-data pyuca --noupx negar_gui/gui.py -n negar-gui-v$(VER) \
-	--add-data ../python-negar/negar/data/untouchable.dat:data
+	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
+	--collect-data pyuca --noupx negar_gui/main.py -n negar-gui-v$(VER) \
+	--add-data .negar/lib/python3.10/site-packages/negar/data/untouchable.dat:negar/data
 	ls -lh dist
 
 trans: ver
