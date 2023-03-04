@@ -5,6 +5,7 @@ on:
     branches:
     - "Production"
   release:
+    types: [released]
 
 env:
   APP_NAME: 'negar-gui'
