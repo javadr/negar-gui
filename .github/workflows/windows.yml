@@ -30,8 +30,7 @@ jobs:
       shell: powershell
       run: |
         python -m pip install --upgrade pip
-        pip install wheel
-        pip install python-negar
+        pip install wheel python-negar Pillow PyQt5 pyperclip pyuca qrcode Image
         pip install PyInstaller
         
     - name: 'Clone Python-negar repository'
