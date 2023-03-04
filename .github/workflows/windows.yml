@@ -7,14 +7,13 @@ on:
   release:
 
 env:
-  APP_NAME: 'negar-gui'   # set this to your function app name on Azure
-  PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
-  PYTHON_VERSION: '3.9'                     # set this to the python version to use (e.g. '3.6', '3.7', '3.8')
+  APP_NAME: 'negar-gui'
+  PACKAGE_PATH: '.'
+  PYTHON_VERSION: '3.9'
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-    environment: dev
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v3
