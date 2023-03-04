@@ -11,6 +11,9 @@ env:
   PACKAGE_PATH: '.'
   PYTHON_VERSION: '3.9'
 
+# Declare default permissions as read only.
+permissions: read-all
+
 jobs:
   build-and-deploy:
     runs-on: windows-latest
