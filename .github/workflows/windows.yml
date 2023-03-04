@@ -1,0 +1,54 @@
+name: Deploy Python Executable file
+
+on:
+  push:
+    branches:
+    - "Production"
+  release:
+
+env:
+  APP_NAME: 'negar-gui'   # set this to your function app name on Azure
+  PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
+  PYTHON_VERSION: '3.9'                     # set this to the python version to use (e.g. '3.6', '3.7', '3.8')
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    environment: dev
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v3
+    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Pip'
+      shell: powershell
+      run: |
+        python -m pip install --upgrade pip
+        pip install python-negar --target=".python_packages/lib/site-packages"
+        pip install PyInstaller --target=".python_packages/lib/site-packages"
+        
+    - name: 'Clone Python-negar repository'
+      shell: powershell
+      run: |
+        git clone https://github.com/shahinism/python-negar.git
+    
+    - name: 'Use PyInstaller tool to get executable output'
+      shell: powershell
+      run: ./.github/build.ps1
+    
+    - name: 'Upload artifacts'
+      uses: actions/upload-artifact@v3
+      with:
+        name: Built
+        path: dist/
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "Release Build"
+        files: |
+          dist/*.exe
