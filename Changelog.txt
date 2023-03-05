@@ -1,3 +1,9 @@
+0.2.17 -- 2023-03-04
+-- Support for logo in Windows app.
+
+0.2.16 -- 2022-06-13
+-- Resolve dependencies for setup
+
 0.2.15 -- 2022-06-05
 -- Daemon thread to check the new version.
 
