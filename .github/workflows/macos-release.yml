@@ -1,4 +1,4 @@
-name: Deploy Python Executable file for Windows
+name: Deploy Python Executable file for macos
 
 on:
   release:
@@ -49,6 +49,7 @@ jobs:
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "${{ env.CURRENT_VERSION }}"
         prerelease: false
         title: "Release Build"
         files: |
