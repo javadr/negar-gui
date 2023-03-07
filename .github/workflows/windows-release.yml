@@ -46,11 +46,8 @@ jobs:
         path: dist/
 
     - name: 'Automatic release'
-      uses: "marvinpinto/action-automatic-releases@latest"
+      uses: "softprops/action-gh-release@v1"
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "${{ env.CURRENT_VERSION }}"
-        prerelease: false
-        title: "Release Build"
+        token: "${{ secrets.GITHUB_TOKEN }}"
         files: |
           dist/*.exe
