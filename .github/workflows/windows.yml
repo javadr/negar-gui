@@ -1,4 +1,4 @@
-name: Deploy Python Executable file
+name: Deploy Python Executable file for Windows
 
 on:
   push:
