@@ -17,7 +17,7 @@ permissions: write-all
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
 
     - name: 'Use PyInstaller tool to get executable output'
       shell: powershell
-      run: ./.github/build.ps1
+      run: ./.github/build.sh
 
     - name: 'Upload artifacts'
       uses: actions/upload-artifact@v3
@@ -56,4 +56,4 @@ jobs:
         prerelease: false
         title: "Release Build"
         files: |
-          dist/*.exe
+          dist/*
