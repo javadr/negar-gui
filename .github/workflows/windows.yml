@@ -32,22 +32,22 @@ jobs:
         python -m pip install --upgrade pip
         pip install wheel python-negar Pillow PyQt5 pyperclip pyuca qrcode Image
         pip install PyInstaller
-        
+
     - name: 'Clone Python-negar repository'
       shell: powershell
       run: |
         git clone https://github.com/shahinism/python-negar.git
-    
+
     - name: 'Use PyInstaller tool to get executable output'
       shell: powershell
       run: ./.github/build.ps1
-    
+
     - name: 'Upload artifacts'
       uses: actions/upload-artifact@v3
       with:
         name: Built
         path: dist/
-    
+
     - name: 'Automatic release'
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
