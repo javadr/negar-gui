@@ -52,7 +52,7 @@ jobs:
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
+        automatic_release_tag: "v0.2.17-test"
         prerelease: false
         title: "Release Build"
         files: |
