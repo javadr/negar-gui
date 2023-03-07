@@ -1,10 +1,8 @@
 name: Deploy Python Executable file for Windows
 
 on:
-  push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types: [released]
 
 env:
   APP_NAME: 'negar-gui'
