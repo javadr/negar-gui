@@ -37,7 +37,7 @@ nuCompile: setup ver
 	ls -lh dist
 
 piCompile: setup ver
-	rm build/gui/ -rfv
+	@rm build/gui/ -rfv
 	. .negar/bin/activate
 	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
 	--collect-data pyuca --noupx negar_gui/main.py -n negar-gui-v$(VER) \
@@ -72,9 +72,9 @@ strans: ver
 	pyside2-lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 
 clean: ver
-	rm negar_gui.egg-info/ -rfv
-	rm build/ -rfv
-	rm dist/ -rfv
-	rm gui.build/ -rfv
-	rm gui.dist/ -rfv
-	rm negar*.spec -rfv
+	@rm negar_gui.egg-info/ -rfv
+	@rm build/ -rfv
+	@rm dist/ -rfv
+	@rm gui.build/ -rfv
+	@rm gui.dist/ -rfv
+	@rm negar*.spec -rfv
