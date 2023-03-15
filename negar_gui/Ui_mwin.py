@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/javad/Current Works/github/Mine/negar-gui/negar_gui/mwin.ui'
+# Form implementation generated from reading ui file 'negar_gui/mwin.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
@@ -478,7 +478,7 @@ class Ui_MainWindow(object):
         self.reset_btn.setToolTip(_translate("MainWindow", "Reset Ctrl+R"))
         self.copy_btn.setToolTip(_translate("MainWindow", "Copy Ctrl+C"))
         self.paste_btn.setToolTip(_translate("MainWindow", "Paste Ctrl+V"))
-        self.qrcode_btn.setToolTip(_translate("MainWindow", "Paste Ctrl+V"))
+        self.qrcode_btn.setToolTip(_translate("MainWindow", "QR code"))
         self.vertical_btn.setToolTip(_translate("MainWindow", "vertical view"))
         self.horizontal_btn.setToolTip(_translate("MainWindow", "horizontal view"))
         self.font_slider_label.setText(_translate("MainWindow", "&Font Size"))

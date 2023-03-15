@@ -181,7 +181,7 @@
              <item row="0" column="3">
               <widget class="QPushButton" name="qrcode_btn">
                <property name="toolTip">
-                <string>Paste Ctrl+V</string>
+                <string>QR code</string>
                </property>
                <property name="text">
                 <string/>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/javad/Current Works/github/Mine/negar-gui/negar_gui/uwin.ui'
+# Form implementation generated from reading ui file 'negar_gui/uwin.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #
