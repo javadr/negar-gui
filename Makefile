@@ -54,8 +54,8 @@ res: ver
 	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
 
 ui: ver
-	pyuic5 --from-imports negar_gui/mwin.ui -o negar_gui/Ui_mwin.py
-	pyuic5 --from-imports negar_gui/uwin.ui -o negar_gui/Ui_uwin.py
+	pyuic5 --from-imports negar_gui/mwin.ui -xo negar_gui/Ui_mwin.py
+	pyuic5 --from-imports negar_gui/uwin.ui -xo negar_gui/Ui_uwin.py
 
 sres: ver
 	pyside2-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
