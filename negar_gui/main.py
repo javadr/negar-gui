@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from email.mime import image
 import re
 import sys
 import asyncio
@@ -10,11 +9,9 @@ from pathlib import Path
 from pyuca import Collator
 from pyperclip import copy as pyclipcopy
 from qrcode import QRCode, ERROR_CORRECT_L
-from qrcode.image.pil import PilImage
-from PIL.ImageQt import ImageQt
-from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QSize, QEvent
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDesktopWidget, QDialog
-from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QClipboard, QPixmap, QImage
+from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDialog
+from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QPixmap
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
@@ -176,8 +173,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
-        self.vertical_btn.setEnabled(False)
-        self.horizontal_btn.setEnabled(False)
         try:
             # with open(f"{NEGARGUIPATH}/style.qss") as style:
             #     self.setStyleSheet(style.read())
@@ -280,6 +275,34 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.clipboard.dataChanged.connect(self.onClipboardChanged) if self.actionInteractive_Clipboard.isChecked()
             else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
         self.actionQr_Code.triggered.connect(self.qrcode)
+
+        # Change GridLayout Orientation
+        def grid_layout(self, layout='h'):
+            if layout=='v':
+                self.gridLayout.setHorizontalSpacing(5)
+            elif layout == 'h':
+                self.gridLayout.setVerticalSpacing(0)
+            widgets = (self.input_editor_label, self.input_editor,
+                        self.output_editor_label, self.output_editor)
+            for widget in widgets:
+                self.gridLayout.removeWidget(widget)
+                widget.setParent(None)
+            elements = (
+                (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
+                (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
+                (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
+                (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
+            ) if layout=='v' else (
+                (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
+                (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
+                (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
+                (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
+            )
+            for i, widget in enumerate(widgets):
+                self.gridLayout.addWidget(widget, *elements[i])
+
+        self.vertical_btn.clicked.connect(lambda: grid_layout(self, 'v'))
+        self.horizontal_btn.clicked.connect(lambda: grid_layout(self, 'h'))
 
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
