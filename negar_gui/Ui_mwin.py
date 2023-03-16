@@ -131,7 +131,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.font_slider_label, 0, 0, 1, 1)
         self.font_slider = QtWidgets.QSlider(self.frame_4)
         self.font_slider.setMinimum(10)
-        self.font_slider.setMaximum(40)
+        self.font_slider.setMaximum(72)
         self.font_slider.setProperty("value", 18)
         self.font_slider.setOrientation(QtCore.Qt.Horizontal)
         self.font_slider.setObjectName("font_slider")
