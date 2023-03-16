@@ -1,3 +1,6 @@
+0.5 -- 2023-03-16
+-- Several menu items moved under View menu.
+
 0.4.2 -- 2023-03-16
 -- Font-size incread to 72point.
 

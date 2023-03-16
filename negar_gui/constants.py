@@ -1,7 +1,7 @@
 from pathlib import Path
 import platform
 
-__version__ = "0.4.2"
+__version__ = "0.5"
 
 if platform.system() == 'Windows':
     LOGO = ":/images/icons/logo_small.png"

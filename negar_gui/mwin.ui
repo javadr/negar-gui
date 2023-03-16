@@ -505,9 +505,6 @@
     <addaction name="actionInteractive_Clipboard"/>
     <addaction name="menuLanguage"/>
     <addaction name="separator"/>
-    <addaction name="actionSide_by_Side_View"/>
-    <addaction name="actionFull_Screen_Input"/>
-    <addaction name="separator"/>
     <addaction name="actionUntouchable_Words"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -534,15 +531,24 @@
     </property>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
-    <addaction name="actionQr_Code"/>
-    <addaction name="separator"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
+    <addaction name="actionQr_Code"/>
+   </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
     <addaction name="actionIncrease_Font_Size"/>
     <addaction name="actionDecrease_Font_Size"/>
+    <addaction name="separator"/>
+    <addaction name="actionSide_by_Side_View"/>
+    <addaction name="actionFull_Screen_Input"/>
+    <addaction name="action_Dark_Mode"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menu_View"/>
    <addaction name="menuSetting"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -986,6 +992,20 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="action_Dark_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Dark Mode</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>
