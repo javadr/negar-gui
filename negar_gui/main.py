@@ -277,7 +277,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionQr_Code.triggered.connect(self.qrcode)
 
         # Change GridLayout Orientation
-        def grid_layout(self, layout='h'):
+        def grid_layout(layout='h'):
             if layout=='v':
                 self.gridLayout.setHorizontalSpacing(5)
             elif layout == 'h':
@@ -301,8 +301,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             for i, widget in enumerate(widgets):
                 self.gridLayout.addWidget(widget, *elements[i])
 
-        self.vertical_btn.clicked.connect(lambda: grid_layout(self, 'v'))
-        self.horizontal_btn.clicked.connect(lambda: grid_layout(self, 'h'))
+        self.vertical_btn.clicked.connect(lambda: grid_layout('v'))
+        self.horizontal_btn.clicked.connect(lambda: grid_layout('h'))
+        self.actionSide_by_Side_View.triggered.connect(lambda:
+            grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h'))
 
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:

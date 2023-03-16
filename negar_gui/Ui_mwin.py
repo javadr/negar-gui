@@ -383,7 +383,6 @@ class Ui_MainWindow(object):
         self.actionReset.setObjectName("actionReset")
         self.actionSide_by_Side_View = QtWidgets.QAction(MainWindow)
         self.actionSide_by_Side_View.setCheckable(True)
-        self.actionSide_by_Side_View.setEnabled(False)
         self.actionSide_by_Side_View.setShortcut("Ctrl+S")
         self.actionSide_by_Side_View.setObjectName("actionSide_by_Side_View")
         self.actionAbout_Negar_GUI = QtWidgets.QAction(MainWindow)

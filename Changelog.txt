@@ -1,3 +1,6 @@
+0.3.1 -- 2023-03-16
+-- side-by-side view via menu item
+
 0.3 -- 2023-03-15
 -- Vertical/Horizontal layout for input/output textbox
 
