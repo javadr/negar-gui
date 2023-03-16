@@ -503,8 +503,10 @@
     </widget>
     <addaction name="menuOptions"/>
     <addaction name="actionInteractive_Clipboard"/>
-    <addaction name="actionSide_by_Side_View"/>
     <addaction name="menuLanguage"/>
+    <addaction name="separator"/>
+    <addaction name="actionSide_by_Side_View"/>
+    <addaction name="actionFull_Screen_Input"/>
     <addaction name="separator"/>
     <addaction name="actionUntouchable_Words"/>
    </widget>
@@ -973,6 +975,17 @@
    </property>
    <property name="text">
     <string>Qr Code</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen_Input">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Full Screen Input</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

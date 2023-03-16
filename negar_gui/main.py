@@ -306,6 +306,16 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionSide_by_Side_View.triggered.connect(lambda:
             grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h'))
 
+        def grid_full_input():
+            widgets = (self.output_editor_label, self.output_editor)
+            for widget in widgets:
+                self.gridLayout.removeWidget(widget)
+                widget.setParent(None)
+        self.actionFull_Screen_Input.triggered.connect(lambda: (
+            grid_full_input() if self.actionFull_Screen_Input.isChecked() else
+                grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h') )
+        )
+
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
             self.statusBar

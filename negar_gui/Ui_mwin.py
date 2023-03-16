@@ -396,6 +396,9 @@ class Ui_MainWindow(object):
         self.actionQr_Code = QtWidgets.QAction(MainWindow)
         self.actionQr_Code.setIcon(icon3)
         self.actionQr_Code.setObjectName("actionQr_Code")
+        self.actionFull_Screen_Input = QtWidgets.QAction(MainWindow)
+        self.actionFull_Screen_Input.setCheckable(True)
+        self.actionFull_Screen_Input.setObjectName("actionFull_Screen_Input")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionExport)
         self.menuFile.addSeparator()
@@ -426,8 +429,10 @@ class Ui_MainWindow(object):
         self.menuLanguage.addAction(self.actionEnglish)
         self.menuSetting.addAction(self.menuOptions.menuAction())
         self.menuSetting.addAction(self.actionInteractive_Clipboard)
-        self.menuSetting.addAction(self.actionSide_by_Side_View)
         self.menuSetting.addAction(self.menuLanguage.menuAction())
+        self.menuSetting.addSeparator()
+        self.menuSetting.addAction(self.actionSide_by_Side_View)
+        self.menuSetting.addAction(self.actionFull_Screen_Input)
         self.menuSetting.addSeparator()
         self.menuSetting.addAction(self.actionUntouchable_Words)
         self.menuHelp.addAction(self.actionNegar_Help)
@@ -530,6 +535,8 @@ class Ui_MainWindow(object):
         self.actionInteractive_Clipboard.setText(_translate("MainWindow", "&Interactive Clipboard"))
         self.actionUpdate.setText(_translate("MainWindow", "Update Check"))
         self.actionQr_Code.setText(_translate("MainWindow", "Qr Code"))
+        self.actionFull_Screen_Input.setText(_translate("MainWindow", "&Full Screen Input"))
+        self.actionFull_Screen_Input.setShortcut(_translate("MainWindow", "Ctrl+F"))
 from . import resource_rc
 
 
