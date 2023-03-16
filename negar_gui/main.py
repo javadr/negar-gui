@@ -186,7 +186,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # destination language
         self.dest = "en"
         # ui language : 0->en, 1->fa
-        self.lan = 'English'
+        self.lang = 'English'
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
@@ -319,7 +319,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
             self.statusBar
-            self._statusBar('There is no text to to feed the QR Code!')
+            if self.lang == 'Persian':
+                self._statusBar('هیچ متنی برای نمایش از طریق کد QR وجود ندارد!')
+            else: # English
+                self._statusBar('There is no text to to feed the QR Code!')
             return
         qr = QRCode(
             version = 1,
@@ -362,18 +365,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 except Exception as e:
                     self.output_editor.setPlainText(e.args[1])
 
-    def changeLanguage(self, lan):
+    def changeLanguage(self, lang):
         """
         change ui language
         """
-        if lan=='Persian' and self.lan!='Persian':
-            self.lan = 'Persian'
+        if lang=='Persian' and self.lang!='Persian':
+            self.lang = 'Persian'
             self.trans.load("fa", directory=f"{NEGARGUIPATH}/ts")
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        elif lan=='English' and self.lan!='English':
-            self.lan = 'English'
+            self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        elif lang=='English' and self.lang!='English':
+            self.lang = 'English'
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)

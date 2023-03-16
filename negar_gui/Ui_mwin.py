@@ -534,7 +534,7 @@ class Ui_MainWindow(object):
         self.actionAbout_Negar_GUI.setText(_translate("MainWindow", "About &Negar-GUI"))
         self.actionInteractive_Clipboard.setText(_translate("MainWindow", "&Interactive Clipboard"))
         self.actionUpdate.setText(_translate("MainWindow", "Update Check"))
-        self.actionQr_Code.setText(_translate("MainWindow", "Qr Code"))
+        self.actionQr_Code.setText(_translate("MainWindow", "&QR Code"))
         self.actionFull_Screen_Input.setText(_translate("MainWindow", "&Full Screen Input"))
         self.actionFull_Screen_Input.setShortcut(_translate("MainWindow", "Ctrl+F"))
 from . import resource_rc

@@ -974,7 +974,7 @@
      <normaloff>:/images/icons/qr.png</normaloff>:/images/icons/qr.png</iconset>
    </property>
    <property name="text">
-    <string>Qr Code</string>
+    <string>&amp;QR Code</string>
    </property>
   </action>
   <action name="actionFull_Screen_Input">

@@ -1,5 +1,6 @@
 0.4 -- 2023-03-16
 -- Full-Screen input box
+-- fix QR error empty string in Persian mode
 
 0.3.2 -- 2023-03-16
 -- fix issue in connecting side-by-side view menu item and H/V buttons
