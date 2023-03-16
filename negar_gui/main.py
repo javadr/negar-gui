@@ -301,8 +301,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             for i, widget in enumerate(widgets):
                 self.gridLayout.addWidget(widget, *elements[i])
 
-        self.vertical_btn.clicked.connect(lambda: grid_layout('v'))
-        self.horizontal_btn.clicked.connect(lambda: grid_layout('h'))
+        self.vertical_btn.clicked.connect(lambda: (self.actionSide_by_Side_View.setChecked(True), grid_layout('v')) )
+        self.horizontal_btn.clicked.connect(lambda: (self.actionSide_by_Side_View.setChecked(False), grid_layout('h')) )
         self.actionSide_by_Side_View.triggered.connect(lambda:
             grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h'))
 
