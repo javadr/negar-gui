@@ -7,7 +7,7 @@ on:
 env:
   APP_NAME: 'negar-gui'
   PACKAGE_PATH: '.'
-  PYTHON_VERSION: '3.9'
+  PYTHON_VERSION: '3.8'
 
 # Declare default permissions as write-all.
 permissions: write-all

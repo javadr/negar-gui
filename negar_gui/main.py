@@ -318,7 +318,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
-            self.statusBar
             if self.lang == 'Persian':
                 self._statusBar('هیچ متنی برای نمایش از طریق کد QR وجود ندارد!')
             else: # English
