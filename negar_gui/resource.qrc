@@ -3,12 +3,12 @@
     <file>icons/edit.png</file>
     <file>icons/horizontal.png</file>
     <file>icons/vertical.png</file>
-    <file>icons/copy.png</file>
     <file>icons/reset.png</file>
     <file>icons/add_right.svg</file>
     <file>icons/qr.png</file>
     <file>icons/add_left.svg</file>
     <file>icons/add_bottom.svg</file>
+    <file>icons/words.svg</file>
     <file>icons/add_top.svg</file>
     <file>icons/about.svg</file>
     <file>icons/bugs.svg</file>
@@ -28,6 +28,5 @@
     <file>icons/open.svg</file>
     <file>icons/options.svg</file>
     <file>icons/paste.svg</file>
-    <file>icons/words.png</file>
   </qresource>
 </RCC>

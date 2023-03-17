@@ -1,3 +1,6 @@
+0.6 -- 2023-03-17
+-- Dark mode enabled
+
 0.5 -- 2023-03-16
 -- Several menu items moved under View menu.
 

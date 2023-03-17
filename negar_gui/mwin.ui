@@ -154,7 +154,7 @@
                </property>
                <property name="icon">
                 <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/copy.png</normaloff>:/images/icons/copy.png</iconset>
+                 <normaloff>:/images/icons/copy.svg</normaloff>:/images/icons/copy.svg</iconset>
                </property>
                <property name="shortcut">
                 <string notr="true"/>
@@ -849,7 +849,7 @@
   <action name="actionUntouchable_Words">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/words.png</normaloff>:/images/icons/words.png</iconset>
+     <normaloff>:/images/icons/words.svg</normaloff>:/images/icons/words.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Untouchable Words</string>
@@ -999,7 +999,7 @@
     <bool>true</bool>
    </property>
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>&amp;Dark Mode</string>

@@ -12,6 +12,7 @@ from qrcode import QRCode, ERROR_CORRECT_L
 from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDialog
 from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QPixmap
+import qdarktheme
 
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, UnTouchable
@@ -173,12 +174,6 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
-        try:
-            # with open(f"{NEGARGUIPATH}/style.qss") as style:
-            #     self.setStyleSheet(style.read())
-            pass
-        except:
-            print("open stylesheet error")
         self.setWindowIcon(QIcon(LOGO))
         self.input_editor.setFocus(True)
         #  Translator
@@ -316,6 +311,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h') )
         )
 
+        self.action_Dark_Mode.triggered.connect(lambda: (
+            qdarktheme.setup_theme("dark",
+            custom_colors={
+                "[dark]": {
+                    "primary": "#D0BCFF",
+                    "primary>button.hoverBackground": "#ffffff",
+                }
+            },) if self.action_Dark_Mode.isChecked()
+            else qdarktheme.setup_theme("light")
+            )
+        )
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
             if self.lang == 'Persian':
@@ -501,7 +507,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
 def main():
     global MainWindow
+    qdarktheme.enable_hi_dpi()
     app = QApplication(sys.argv)
+    qdarktheme.setup_theme("light")
     MainWindow = MyWindow()
     MainWindow.show()
     sys.exit(app.exec_())

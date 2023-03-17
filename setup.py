@@ -24,7 +24,8 @@ setup(
         'regex',
         'requests',
         'qrcode',
-        'Image'
+        'Image',
+        'pyqtdarktheme'
     ],
     python_requires=">=3.5",
     package_dir={'negar_gui': 'negar_gui'},
