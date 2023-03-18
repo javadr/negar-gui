@@ -1,3 +1,8 @@
+0.6.1 -- 2023-03-18
+-- Font-size incread to 84point.
+    -- In digital typefaces, one point is equal to 1/72 of an inch.
+-- Colored border of QTextEdit
+
 0.6 -- 2023-03-17
 -- Dark mode enabled
 

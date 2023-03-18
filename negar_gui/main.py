@@ -174,6 +174,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
+        self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
+        self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
         self.input_editor.setFocus(True)
         #  Translator
