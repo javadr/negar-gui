@@ -313,17 +313,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h') )
         )
 
-        self.action_Dark_Mode.triggered.connect(lambda: (
+        self.action_dark.triggered.connect(lambda:
             qdarktheme.setup_theme("dark",
             custom_colors={
                 "[dark]": {
                     "primary": "#D0BCFF",
                     "primary>button.hoverBackground": "#ffffff",
                 }
-            },) if self.action_Dark_Mode.isChecked()
-            else qdarktheme.setup_theme("light")
-            )
-        )
+            },) )
+        self.action_Light.triggered.connect(lambda: qdarktheme.setup_theme("light") )
+        self.action_Auto.triggered.connect(lambda: qdarktheme.setup_theme("auto") )
+
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
             if self.lang == 'Persian':
@@ -511,7 +511,7 @@ def main():
     global MainWindow
     qdarktheme.enable_hi_dpi()
     app = QApplication(sys.argv)
-    qdarktheme.setup_theme("light")
+    qdarktheme.setup_theme("auto")
     MainWindow = MyWindow()
     MainWindow.show()
     sys.exit(app.exec_())

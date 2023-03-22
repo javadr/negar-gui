@@ -394,6 +394,12 @@
           </property>
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout">
+            <item row="4" column="0">
+             <widget class="QTextEdit" name="output_editor"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QTextEdit" name="input_editor"/>
+            </item>
             <item row="0" column="0">
              <layout class="QGridLayout" name="input_layout">
               <item row="0" column="0">
@@ -406,12 +412,9 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QTextEdit" name="input_editor"/>
-              </item>
              </layout>
             </item>
-            <item row="1" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="output_editor_label">
               <property name="text">
                <string>Re&amp;vision:</string>
@@ -420,9 +423,6 @@
                <cstring>output_editor</cstring>
               </property>
              </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QTextEdit" name="output_editor"/>
             </item>
            </layout>
           </item>
@@ -539,12 +539,20 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <widget class="QMenu" name="menu_Theme">
+     <property name="title">
+      <string>&amp;Theme</string>
+     </property>
+     <addaction name="action_dark"/>
+     <addaction name="action_Light"/>
+     <addaction name="action_Auto"/>
+    </widget>
     <addaction name="actionIncrease_Font_Size"/>
     <addaction name="actionDecrease_Font_Size"/>
     <addaction name="separator"/>
     <addaction name="actionSide_by_Side_View"/>
     <addaction name="actionFull_Screen_Input"/>
-    <addaction name="action_Dark_Mode"/>
+    <addaction name="menu_Theme"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -571,10 +579,10 @@
      <normaloff>:/images/icons/export.svg</normaloff>:/images/icons/export.svg</iconset>
    </property>
    <property name="text">
-    <string>&amp;Export</string>
+    <string>Save &amp;As ...</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+E</string>
+    <string notr="true">Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionExit">
@@ -950,7 +958,7 @@
     <string>&amp;Side-by-Side View</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+S</string>
+    <string notr="true">Ctrl+I</string>
    </property>
   </action>
   <action name="actionAbout_Negar_GUI">
@@ -966,7 +974,7 @@
     <string>&amp;Interactive Clipboard</string>
    </property>
    <property name="shortcut">
-    <string notr="true">Ctrl+I</string>
+    <string notr="true">Ctrl+B</string>
    </property>
   </action>
   <action name="actionUpdate">
@@ -994,23 +1002,29 @@
     <string>Ctrl+F</string>
    </property>
   </action>
-  <action name="action_Dark_Mode">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
+  <action name="action_dark">
    <property name="text">
-    <string>&amp;Dark Mode</string>
+    <string>&amp;Dark</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+D</string>
+    <string>Ctrl+T, Ctrl+D</string>
+   </property>
+  </action>
+  <action name="action_Light">
+   <property name="text">
+    <string>&amp;Light</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T, Ctrl+L</string>
+   </property>
+  </action>
+  <action name="action_Auto">
+   <property name="text">
+    <string>&amp;Auto</string>
    </property>
   </action>
  </widget>
  <tabstops>
-  <tabstop>input_editor</tabstop>
   <tabstop>output_editor</tabstop>
   <tabstop>reset_btn</tabstop>
  </tabstops>
