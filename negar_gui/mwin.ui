@@ -543,6 +543,10 @@
      <property name="title">
       <string>&amp;Theme</string>
      </property>
+     <property name="icon">
+      <iconset resource="resource.qrc">
+       <normaloff>:/images/icons/theme.svg</normaloff>:/images/icons/theme.svg</iconset>
+     </property>
      <addaction name="action_dark"/>
      <addaction name="action_Light"/>
      <addaction name="action_Auto"/>
@@ -1003,6 +1007,10 @@
    </property>
   </action>
   <action name="action_dark">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/dark.svg</normaloff>:/images/icons/dark.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Dark</string>
    </property>
@@ -1011,6 +1019,10 @@
    </property>
   </action>
   <action name="action_Light">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/light.svg</normaloff>:/images/icons/light.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Light</string>
    </property>
@@ -1019,6 +1031,10 @@
    </property>
   </action>
   <action name="action_Auto">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/autobrightness.svg</normaloff>:/images/icons/autobrightness.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Auto</string>
    </property>

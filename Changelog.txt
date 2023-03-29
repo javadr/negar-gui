@@ -1,3 +1,6 @@
+0.6.5 -- 2023-03-29
+-- Theme/Dark/Light/Auto icon added
+
 0.6.4 -- 2023-03-22
 -- themes: auto, dark, light
 -- Several shortcuts changed.

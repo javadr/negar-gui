@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images">
+    <file>icons/theme.svg</file>
     <file>icons/edit.png</file>
     <file>icons/horizontal.png</file>
     <file>icons/vertical.png</file>
@@ -16,6 +17,9 @@
     <file>icons/decrease.svg</file>
     <file>icons/donate.svg</file>
     <file>icons/En.svg</file>
+    <file>icons/autobrightness.svg</file>
+    <file>icons/dark.svg</file>
+    <file>icons/light.svg</file>
     <file>icons/exit.svg</file>
     <file>icons/exit.svg</file>
     <file>icons/export.svg</file>
