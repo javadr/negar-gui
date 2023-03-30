@@ -1,17 +1,17 @@
 <RCC>
   <qresource prefix="images">
     <file>icons/theme.svg</file>
-    <file>icons/edit.png</file>
-    <file>icons/horizontal.png</file>
-    <file>icons/vertical.png</file>
-    <file>icons/reset.png</file>
     <file>icons/add_right.svg</file>
-    <file>icons/qr.png</file>
+    <file>icons/edit.svg</file>
     <file>icons/add_left.svg</file>
     <file>icons/add_bottom.svg</file>
     <file>icons/words.svg</file>
     <file>icons/add_top.svg</file>
     <file>icons/about.svg</file>
+    <file>icons/vertical.svg</file>
+    <file>icons/horizontal.svg</file>
+    <file>icons/qr.svg</file>
+    <file>icons/reset.svg</file>
     <file>icons/bugs.svg</file>
     <file>icons/copy.svg</file>
     <file>icons/decrease.svg</file>

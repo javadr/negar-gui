@@ -137,7 +137,7 @@
                </property>
                <property name="icon">
                 <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/reset.png</normaloff>:/images/icons/reset.png</iconset>
+                 <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
                </property>
                <property name="shortcut">
                 <string notr="true"/>
@@ -188,7 +188,7 @@
                </property>
                <property name="icon">
                 <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/qr.png</normaloff>:/images/icons/qr.png</iconset>
+                 <normaloff>:/images/icons/qr.svg</normaloff>:/images/icons/qr.svg</iconset>
                </property>
                <property name="shortcut">
                 <string notr="true"/>
@@ -205,7 +205,7 @@
                </property>
                <property name="icon">
                 <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/vertical.png</normaloff>:/images/icons/vertical.png</iconset>
+                 <normaloff>:/images/icons/vertical.svg</normaloff>:/images/icons/vertical.svg</iconset>
                </property>
                <property name="shortcut">
                 <string notr="true"/>
@@ -222,7 +222,7 @@
                </property>
                <property name="icon">
                 <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/horizontal.png</normaloff>:/images/icons/horizontal.png</iconset>
+                 <normaloff>:/images/icons/horizontal.svg</normaloff>:/images/icons/horizontal.svg</iconset>
                </property>
                <property name="shortcut">
                 <string notr="true"/>
@@ -345,7 +345,7 @@
                </property>
                <property name="icon">
                 <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/edit.png</normaloff>:/images/icons/edit.png</iconset>
+                 <normaloff>:/images/icons/edit.svg</normaloff>:/images/icons/edit.svg</iconset>
                </property>
               </widget>
              </item>
@@ -945,7 +945,7 @@
   <action name="actionReset">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/images/icons/reset.png</normaloff>:/images/icons/reset.png</iconset>
+     <normaloff>:/images/icons/reset.svg</normaloff>:/images/icons/reset.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Reset</string>
@@ -988,7 +988,7 @@
   </action>
   <action name="actionQr_Code">
    <property name="icon">
-    <iconset resource="resource.qrc">
+    <iconset>
      <normaloff>:/images/icons/qr.png</normaloff>:/images/icons/qr.png</iconset>
    </property>
    <property name="text">

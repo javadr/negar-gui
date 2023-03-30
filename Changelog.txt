@@ -1,3 +1,6 @@
+0.6.6 -- 2023-03-30
+-- icons improvement
+
 0.6.5 -- 2023-03-29
 -- Theme/Dark/Light/Auto icon added
 

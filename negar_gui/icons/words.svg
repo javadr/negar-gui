@@ -1,9 +1,6 @@
 <?xml version="1.0" standalone="no"?>
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- width="128.000000pt" height="128.000000pt" viewBox="0 0 128.000000 128.000000"
- preserveAspectRatio="xMidYMid meet">
-
-<g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
+<svg version="1.0" width="100px" height="100px" viewBox="8 8 110 110" preserveAspectRatio="xMidYMid meet">
+<g transform="translate(0,128) scale(0.1,-0.1)"
 fill="#d89e76" stroke="none">
 <path d="M320 1040 l0 -80 -40 0 -40 0 0 -40 0 -40 40 0 40 0 0 -40 0 -40 -80
 0 -80 0 0 -40 0 -40 80 0 80 0 0 -40 0 -40 -120 0 -120 0 0 -40 0 -40 120 0
