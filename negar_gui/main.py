@@ -511,7 +511,7 @@ def main():
     global MainWindow
     qdarktheme.enable_hi_dpi()
     app = QApplication(sys.argv)
-    qdarktheme.setup_theme("auto")
+    qdarktheme.setup_theme("dark")
     MainWindow = MyWindow()
     MainWindow.show()
     sys.exit(app.exec_())

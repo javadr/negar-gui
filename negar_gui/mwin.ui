@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1059</width>
+    <width>1128</width>
     <height>790</height>
    </rect>
   </property>
@@ -439,7 +439,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1059</width>
+     <width>1128</width>
      <height>27</height>
     </rect>
    </property>
@@ -988,8 +988,8 @@
   </action>
   <action name="actionQr_Code">
    <property name="icon">
-    <iconset>
-     <normaloff>:/images/icons/qr.png</normaloff>:/images/icons/qr.png</iconset>
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/qr.svg</normaloff>:/images/icons/qr.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;QR Code</string>
