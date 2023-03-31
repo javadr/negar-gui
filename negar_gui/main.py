@@ -9,7 +9,7 @@ from pathlib import Path
 from pyuca import Collator
 from pyperclip import copy as pyclipcopy
 from qrcode import QRCode, ERROR_CORRECT_L
-from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel
+from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDialog
 from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QPixmap
 import qdarktheme
@@ -327,9 +327,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
             if self.lang == 'Persian':
-                self._statusBar('هیچ متنی برای نمایش از طریق کد QR وجود ندارد!')
+                statusBar_Timeout(self, 'هیچ متنی برای نمایش از طریق کد QR وجود ندارد!')
             else: # English
-                self._statusBar('There is no text to to feed the QR Code!')
+                statusBar_Timeout(self, 'There is no text to be fed the QR Code!')
             return
         qr = QRCode(
             version = 1,
@@ -348,23 +348,25 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             pixmap = pixmap.scaled(w-90, w-90, Qt.KeepAspectRatio)
         HelpWindow(parent=self, title='Qr Code', label=pixmap).show()
 
-    def _statusBar(self, notification=''):
-        self.statusBar.showMessage(f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}')
+    def _statusBar(self, notification='', timeout=0):
+        self.statusBar.showMessage(f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}', timeout)
 
     def openFileSlot(self):
-        filename, filetype = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
+        filename, _ = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
         if filename:
-            print(filename)
             with open(filename, encoding="utf-8") as f:
                 try:
                     self.input_editor.setPlainText(str(f.read()))
+                    self.filename = Path(filename)
+                    MainWindow.setWindowTitle(f"Negar - {self.filename.name}")
+                    statusBar_Timeout(self,'File Opened.')
                 except Exception as e:
                     self.input_editor.setPlainText(e.args[1])
 
     def exportFileSlot(self):
         if not self.output_editor.toPlainText():
             return
-        filename, filetype = self.fileDialog.getSaveFileName(self, "Save File", ".", "*.txt;;*")
+        filename, _ = self.fileDialog.getSaveFileName(self, "Save File", ".", "*.txt;;*")
         if filename:
             with open(filename, "w", encoding="utf-8") as f:
                 try:
@@ -506,6 +508,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.output_editor.append(run_PE.cleanup())
         else:
             return PersianEditor(text, *self.editing_options).cleanup()
+
+
+def statusBar_Timeout(self, notification, timeout=5000): # Timeout in milliseconds
+    self.statusBar.showMessage(notification, timeout)
+    timer = QTimer()
+    timer.setSingleShot( True )
+    timer.timeout.connect( self.statusBar.clearMessage )
+    timer.start(timeout)
 
 def main():
     global MainWindow
