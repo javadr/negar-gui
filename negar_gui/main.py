@@ -329,7 +329,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             if self.lang == 'Persian':
                 statusBar_Timeout(self, 'هیچ متنی برای نمایش از طریق کد QR وجود ندارد!')
             else: # English
-                statusBar_Timeout(self, 'There is no text to be fed the QR Code!')
+                statusBar_Timeout(self, 'There is no text to be fed to the QR Code!')
             return
         qr = QRCode(
             version = 1,
