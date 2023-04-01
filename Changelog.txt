@@ -1,3 +1,6 @@
+0.6.8 -- 2023-04-01
+-- fix issue with fa translataion of Windows standalone
+
 0.6.8 -- 2023-03-31
 -- better status bar
 -- Show opened filename in the title bar
