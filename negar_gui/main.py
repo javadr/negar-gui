@@ -52,13 +52,13 @@ def init_decorator(func):
         self.connectSlots()
     return wrapper
 
-def checkScreenSize(self):
+def checkScreenSize(window):
     """it adjusts Frame Size maximized
     if its height or width would be bigger than its counterpart on the real screen"""
     screen = QApplication.desktop().screenGeometry()
     h, w = screen.height(), screen.width()
-    if self.width() > w or self.height() > h:
-        self.showMaximized()
+    if window.width() > w or window.height() > h:
+        window.showMaximized()
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
