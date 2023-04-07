@@ -6,6 +6,7 @@ import asyncio
 import requests
 from threading import Thread
 from pathlib import Path
+import tempfile
 from pyuca import Collator
 from pyperclip import copy as pyclipcopy
 from qrcode import QRCode, ERROR_CORRECT_L
@@ -341,13 +342,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         qr.add_data(self.output_editor.toPlainText())
         qr.make(fit = True)
         img = qr.make_image()
-        img.save('/tmp/test.png')
-        pixmap = QPixmap('/tmp/test.png')
+        temp_path = Path(tempfile.mkdtemp())
+        img.save(temp_path/'negar_qr.png')
+        pixmap = QPixmap(f"{(temp_path/'negar_qr.png').absolute()}")
         screen = QApplication.desktop().screenGeometry()
         w = min(screen.height(), screen.width())
         if w-90 < img.size[0]:
             pixmap = pixmap.scaled(w-90, w-90, Qt.KeepAspectRatio)
-        HelpWindow(parent=self, title='Qr Code', label=pixmap).show()
+        HelpWindow(parent=self, title='QR Code', label=pixmap).show()
 
     def _statusBar(self, notification='', timeout=0):
         self.statusBar.showMessage(f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}', timeout)

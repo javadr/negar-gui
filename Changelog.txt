@@ -1,3 +1,6 @@
+0.7.2 -- 2023-04-07
+-- Fix issue #10, QR crash in Windows
+
 0.7.1 -- 2023-04-07
 -- Negar icon for Windows OS, fix issue #11
 
