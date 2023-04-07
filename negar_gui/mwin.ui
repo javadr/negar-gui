@@ -448,6 +448,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
     <addaction name="actionExport"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -1037,6 +1038,18 @@
    </property>
    <property name="text">
     <string>&amp;Auto</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/images/icons/save.svg</normaloff>:/images/icons/save.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

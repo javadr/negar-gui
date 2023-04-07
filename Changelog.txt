@@ -1,3 +1,6 @@
+0.7 -- 2023-04-07
+-- Save menu with Ctrl+S hotkey, fix issue #8
+
 0.6.9 -- 2023-04-05
 -- fix issue with fa translataion of Windows standalone
 

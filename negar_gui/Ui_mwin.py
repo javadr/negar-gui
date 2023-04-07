@@ -419,7 +419,13 @@ class Ui_MainWindow(object):
         icon24.addPixmap(QtGui.QPixmap(":/images/icons/autobrightness.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_Auto.setIcon(icon24)
         self.action_Auto.setObjectName("action_Auto")
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        icon25 = QtGui.QIcon()
+        icon25.addPixmap(QtGui.QPixmap(":/images/icons/save.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionSave.setIcon(icon25)
+        self.actionSave.setObjectName("actionSave")
         self.menuFile.addAction(self.actionOpen)
+        self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionExport)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
@@ -567,6 +573,8 @@ class Ui_MainWindow(object):
         self.action_Light.setText(_translate("MainWindow", "&Light"))
         self.action_Light.setShortcut(_translate("MainWindow", "Ctrl+T, Ctrl+L"))
         self.action_Auto.setText(_translate("MainWindow", "&Auto"))
+        self.actionSave.setText(_translate("MainWindow", "&Save"))
+        self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
 from . import resource_rc
 
 

@@ -218,6 +218,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.autoedit_chkbox.stateChanged.connect(self.autoedit_handler)
         self.edit_btn.clicked.connect(self.edit_text)
         self.actionOpen.triggered.connect(self.openFileSlot)
+        self.actionSave.triggered.connect(self.saveFileSlot)
         self.actionExport.triggered.connect(self.exportFileSlot)
         self.actionExit.triggered.connect(self.close)
         self.font_slider.valueChanged.connect(self._set_font_size)
@@ -363,14 +364,30 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 except Exception as e:
                     self.input_editor.setPlainText(e.args[1])
 
+    def saveFileSlot(self):
+        if not self.output_editor.toPlainText():
+            return
+        if hasattr(self, 'filename') and self.filename:
+            with open(self.filename, "w", encoding="utf-8") as f:
+                try:
+                    f.write(self.output_editor.toPlainText())
+                    statusBar_Timeout(self,'File Saved.')
+                except Exception as e:
+                    self.output_editor.setPlainText(e.args[1])
+        else:
+            self.exportFileSlot()
+
     def exportFileSlot(self):
         if not self.output_editor.toPlainText():
             return
-        filename, _ = self.fileDialog.getSaveFileName(self, "Save File", ".", "*.txt;;*")
+        filename, _ = self.fileDialog.getSaveFileName(self, "Save File", ".")
         if filename:
             with open(filename, "w", encoding="utf-8") as f:
                 try:
                     f.write(self.output_editor.toPlainText())
+                    self.filename = Path(filename)
+                    MainWindow.setWindowTitle(f"Negar - {self.filename.name}")
+                    statusBar_Timeout(self,'File Saved.')
                 except Exception as e:
                     self.output_editor.setPlainText(e.args[1])
 

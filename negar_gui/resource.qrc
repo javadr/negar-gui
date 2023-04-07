@@ -1,7 +1,7 @@
 <RCC>
   <qresource prefix="images">
-    <file>icons/theme.svg</file>
     <file>icons/add_right.svg</file>
+    <file>icons/theme.svg</file>
     <file>icons/edit.svg</file>
     <file>icons/add_left.svg</file>
     <file>icons/add_bottom.svg</file>
@@ -26,6 +26,7 @@
     <file>icons/export.svg</file>
     <file>icons/increase.svg</file>
     <file>icons/Fa.svg</file>
+    <file>icons/save.svg</file>
     <file>icons/languages.svg</file>
     <file>icons/logo.ico</file>
     <file>icons/logo.png</file>
