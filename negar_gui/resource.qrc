@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="images">
+    <file>icons/logo_small.png</file>
     <file>icons/add_right.svg</file>
     <file>icons/theme.svg</file>
     <file>icons/edit.svg</file>

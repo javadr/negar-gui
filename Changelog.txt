@@ -1,3 +1,6 @@
+0.7.1 -- 2023-04-07
+-- Negar icon for Windows OS, fix issue #11
+
 0.7 -- 2023-04-07
 -- Save menu with Ctrl+S hotkey, fix issue #8
 
