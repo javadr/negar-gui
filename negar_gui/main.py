@@ -342,9 +342,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         qr.add_data(self.output_editor.toPlainText())
         qr.make(fit = True)
         img = qr.make_image()
-        temp_path = Path(tempfile.mkdtemp())
-        img.save(temp_path/'negar_qr.png')
-        pixmap = QPixmap(f"{(temp_path/'negar_qr.png').absolute()}")
+        temp_path = Path(tempfile.gettempdir())
+        img.save(temp_path/'negar-gui_qrcode.png')
+        pixmap = QPixmap(f"{(temp_path/'negar-gui_qrcode.png').absolute()}")
         screen = QApplication.desktop().screenGeometry()
         w = min(screen.height(), screen.width())
         if w-90 < img.size[0]:
