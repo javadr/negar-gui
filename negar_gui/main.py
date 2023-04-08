@@ -350,6 +350,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         if w-90 < img.size[0]:
             pixmap = pixmap.scaled(w-90, w-90, Qt.KeepAspectRatio)
         HelpWindow(parent=self, title='QR Code', label=pixmap).show()
+        (Path(temp_path)/'negar-gui_qrcode.png').unlink()
 
     def _statusBar(self, notification='', timeout=0):
         self.statusBar.showMessage(f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}', timeout)

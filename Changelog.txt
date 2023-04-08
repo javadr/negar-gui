@@ -1,5 +1,9 @@
+0.7.4 -- 2023-04-08
+-- Delete the generated QR code file.
+-- Use lego.png from resource.
+
 0.7.3 -- 2023-04-08
--- Use the samefile for QR Code in each run to save disk.
+-- Use the same file for QR Code in each run to save disk space
 
 0.7.2 -- 2023-04-07
 -- Fix issue #10, QR crash in Windows
