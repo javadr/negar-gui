@@ -78,3 +78,4 @@ clean: ver
 	@rm gui.build/ -rfv
 	@rm gui.dist/ -rfv
 	@rm negar*.spec -rfv
+	@rm negar_gui/__pycache__ -rfv
