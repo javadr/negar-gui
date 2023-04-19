@@ -159,7 +159,6 @@ class HelpWindow(QDialog, Ui_Dialog):
             self.label.setPixmap(label)
             # self.setFixedSize(QSize(600,600))
 
-
     def connectSlots(self):
         pass
 
@@ -198,10 +197,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         async def get(link):
             with requests.get(link) as response:
                 return re.search(r'(__version__ = "(\d\.\d(\.\d+)?)")', response.text, re.M).group(2)
-        negar_t = asyncio.create_task(get(nurl))
-        negargui_t = asyncio.create_task(get(ngurl))
-        negar_v = await negar_t
-        negargui_v = await negargui_t
+        try:
+            requests.get('https://github.com') # check the internet connection
+            negar_t = asyncio.create_task(get(nurl))
+            negargui_t = asyncio.create_task(get(ngurl))
+            negar_v = await negar_t
+            negargui_v = await negargui_t
+        except:
+            negar_v, negargui_v = '0.0', '0.0'
         version = lambda v: list(map(int,v.split('.')))
         negar_nv, negargui_nv = [version(i) for i in (negar_v, negargui_v)]
         negar_ov, negargui_ov = [version(i) for i in (negar__version, __version__)]

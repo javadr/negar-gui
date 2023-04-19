@@ -1,143 +1,146 @@
-0.7.4 -- 2023-04-08
--- Delete the generated QR code file.
--- Use lego.png from resource.
+2023-04-20 -- v0.7.5
+-- Added feature to automatically check for internet connection before proceeding
 
-0.7.3 -- 2023-04-08
--- Use the same file for QR Code in each run to save disk space
+2023-04-08 -- v0.7.4
+-- Deleted the generated QR code file.
+-- Used lego.png from resource.
 
-0.7.2 -- 2023-04-07
--- Fix issue #10, QR crash in Windows
+2023-04-08 -- v0.7.3
+-- Used the same file for QR Code in each run to save disk space
 
-0.7.1 -- 2023-04-07
--- Negar icon for Windows OS, fix issue #11
+2023-04-07 -- v0.7.2
+-- Fixed issue #10, QR crash in Windows
 
-0.7 -- 2023-04-07
--- Save menu with Ctrl+S hotkey, fix issue #8
+2023-04-07 -- v0.7.1
+-- Added Negar icon for Windows OS, fixed issue #11
 
-0.6.9 -- 2023-04-05
--- fix issue with fa translataion of Windows standalone
+2023-04-07 -- v0.7
+-- Save menu with Ctrl+S hotkey, fixed issue #8
 
-0.6.8 -- 2023-03-31
--- better status bar
--- Show opened filename in the title bar
+2023-04-05 -- v0.6.9
+-- Fixed issue with fa translation of Windows standalone
 
-0.6.7 -- 2023-03-30
--- default theme changed to dark
+2023-03-31 -- v0.6.8
+-- improved status bar
+-- Showing opened filename in the title bar
 
-0.6.6 -- 2023-03-30
--- icons improvement
+2023-03-30 -- v0.6.7
+-- Changed the default theme to dark
 
-0.6.5 -- 2023-03-29
--- Theme/Dark/Light/Auto icon added
+2023-03-30 -- v0.6.6
+-- Improved icons
 
-0.6.4 -- 2023-03-22
--- themes: auto, dark, light
--- Several shortcuts changed.
+2023-03-29 -- v0.6.5
+-- Added Theme/Dark/Light/Auto icon
+
+2023-03-22 -- v0.6.4
+-- Added themes: auto, dark, light
+-- Changed Several shortcuts.
     -- Save As                --> Ctrl + Shift + S
     -- Dark Theme             --> Ctrl+T, Ctrl+D
     -- Light Theme            --> Ctrl+T, Ctrl+L
     -- Interactive Clipboard  --> Ctrl+B
     -- side-by-side view      --> Ctrl+I
 
-0.6.3 -- 2023-03-21
--- fix issue with translataion
+2023-03-21 -- v0.6.3
+-- Fixed issue with translataion
 
-0.6.2 -- 2023-03-18
--- Better logo shape
+2023-03-18 -- v0.6.2
+-- Improved logo shape
 
-0.6.1 -- 2023-03-18
--- Font-size incread to 84point.
+2023-03-18 -- v0.6.1
+-- Incread font-size to 84 point.
     -- In digital typefaces, one point is equal to 1/72 of an inch.
 -- Colored border of QTextEdit
 
-0.6 -- 2023-03-17
--- Dark mode enabled
+2023-03-17 -- v0.6
+-- Enabled dark mode
 
-0.5 -- 2023-03-16
--- Several menu items moved under View menu.
+2023-03-16 -- v0.5
+-- Moved several menu items under View menu.
 
-0.4.2 -- 2023-03-16
--- Font-size incread to 72point.
+2023-03-16 -- v0.4.2
+-- Increased font-size to 72 point.
 
-0.4.1 -- 2023-03-16
--- Fix issue #5
+2023-03-16 -- v0.4.1
+-- Fixed issue #5
 
-0.4 -- 2023-03-16
--- Full-Screen input box
--- fix QR error empty string in Persian mode
+2023-03-16 -- v0.4
+-- Added full-Screen input box
+-- Fixed QR error empty string in Persian mode
 
-0.3.2 -- 2023-03-16
--- fix issue in connecting side-by-side view menu item and H/V buttons
+2023-03-16 -- v0.3.2
+-- Fixed issue in connecting side-by-side view menu item and H/V buttons
 
-0.3.1 -- 2023-03-16
--- side-by-side view via menu item
+2023-03-16 -- v0.3.1
+-- Added side-by-side view via menu item
 
-0.3 -- 2023-03-15
--- Vertical/Horizontal layout for input/output textbox
+2023-03-15 -- v0.3
+-- Added Vertical/Horizontal layout for input/output textbox
 
-0.2.18 -- 2023-03-15
--- toolip fix for QR code
+2023-03-15 -- v0.2.18
+-- Fixed toolip fix for QR code
 
-0.2.17 -- 2023-03-04
--- Support for logo in Windows app.
+2023-03-04 -- v0.2.17
+-- Added support for logo in Windows app.
 
-0.2.16 -- 2022-06-13
--- Resolve dependencies for setup
+2022-06-13 -- v0.2.16
+-- Resolved dependencies for setup
 
-0.2.15 -- 2022-06-05
--- Daemon thread to check the new version.
+2022-06-05 -- v0.2.15
+-- Added daemon thread to check the new version.
 
-0.2.14 -- 2022-06-05
--- QR button added in toolbar
+2022-06-05 -- v0.2.14
+-- Added QR button in toolbar
 
-0.2.13 -- 2022-05-31
--- Shows the edited text in a QR code accessible via Menu.
--- Resizing the window to fill all of its space with QR code.
+2022-05-31 -- v0.2.13
+-- Showed the edited text in a QR code accessible via Menu.
+-- Resized the window to fill all of its space with QR code.
 
-0.2.12 - 2022-05-27
--- Automatically checks for new update and print the result in the status bar in case of the new update.
+2022-05-27 -- v0.2.12
+-- Added feature to automatically check for new updates and display result in status bar.
 
-0.2.11 - 2022-05-27
--- Status Bar to show the current version of Negar and Negar-GUI
+2022-05-27 -- v0.2.11
+-- Added status bar to display current version of Negar and Negar-GUI.
 
-0.2.10 - 2022-05-23
--- Interactive Clipboard; gets the clipboard automatically and pastes it in the inputbox.
+2022-05-23 -- v0.2.10
+-- Added interactive clipboard feature that automatically pastes clipboard content into input box.
 
-0.2.9 - 2022-05-11
--- Copies the ouput text into the system clipboard via pyperclip
+2022-05-11 -- v0.2.9
+-- Added feature to copy output text to system clipboard using pyperclip.
 
-0.2.8 - 2022-05-10
--- Minor issue with text edition
--- retouching the face design
+2022-05-10 -- v0.2.8
+-- Fixed minor issue with text edition.
+-- Retouched face design.
 
-0.2.7 - 2022-05-09
--- About_Negar menu item
+2022-05-09 -- v0.2.7
+-- Added About_Negar menu item
 
-0.2.6 - 2022-05-08
--- Paste button
--- tooltip for toolbar buttons
+2022-05-08 -- v0.2.6
+-- Added Paste button to toolbar.
+-- Added tooltip for toolbar buttons.
 
-0.2.5 - 2022-05-08
--- new face design; buttons have been moved under the menu bar
+2022-05-08 -- v0.2.5
+-- Updated face design; moved buttons under menu bar.
 
-0.2.4 - 2022-05-05
--- init decorator for QMainWindow
--- issue witd addition of a untouchable word
--- edit the output text when a new word added to the untouchable words list
+2022-05-05 -- v0.2.4
+-- Added init decorator for QMainWindow.
+-- Fixed issue with addition of untouchable word.
+-- Edited output text when a new word is added to the untouchable words list.
 
-0.2.3 - 2022-05-04
--- Check screen size and set the maximum size if its height/width is bigger than its counterparts
+2022-05-04 -- v0.2.3
+-- Added feature to check screen size and set maximum size if height/width is bigger than counterparts.
 
-0.2.2 - 2022-05-04
--- encoding issue on Windows
+2022-05-04 -- v0.2.2
+-- Fixed encoding issue on Windows
 
-0.2.1 - 2022-05-04
--- minor issue with logo and url
+2022-05-04 -- v0.2.1
+-- Fixed minor issue with logo and URL
 
-0.2 - 2022-05-04
--- New GUI design
--- Right-to-left GUI support
--- Persian UI support
+2022-05-04 -- v0.2
+-- Implemented new GUI design.
+-- Added right-to-left GUI support.
+-- Added Persian UI support.
 
 New Design Branch - 2022-04-29 -- 2022-05-03
 [2022-05-03]
@@ -160,11 +163,11 @@ New Design Branch - 2022-04-29 -- 2022-05-03
 [2022-04-29]
 -- first try
 
-0.1.2 - 2022-04-15
--- In compliance with new option of `python-negar` -- `exaggeragin_zwnj`
+2022-04-15 -- v0.1.2
+-- Updated to comply with new option of `python-negar` -- `exaggerating_zwnj`.
 
-0.1.1 - 2022-04-10
--- Make sure that at leaset the `python-negar` ver 1.1.4 is installed.
+2022-04-10 -- v0.1.1
+-- Added check to ensure at least the `python-negar` ver 1.1.4 is installed.
 
-0.1 - 2022-04-10
+2022-04-10 -- v0.1
 -- Initial release.
