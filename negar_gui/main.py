@@ -1,7 +1,21 @@
 #!/usr/bin/env python
 
+'''
+negar-gui
+
+Usage:
+    negar-gui -h
+    negar-gui -v
+    negar-gui
+
+Options:
+    -h, --help          Show this screen.
+    -v, --version       Show version and exit
+'''
+
 import re
 import sys
+from docopt import docopt
 import asyncio
 import requests
 from threading import Thread
@@ -540,7 +554,12 @@ def statusBar_Timeout(self, notification, timeout=5000): # Timeout in millisecon
     timer.timeout.connect( self.statusBar.clearMessage )
     timer.start(timeout)
 
-def main():
+def main(args=docopt(__doc__)):
+
+    if args['--version']:
+        print (f"negar-gui, Version {__version__}")
+        sys.exit()
+
     global MainWindow
     qdarktheme.enable_hi_dpi()
     app = QApplication(sys.argv)

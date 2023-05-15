@@ -1,3 +1,6 @@
+2023-05-15 -- v0.7.6
+-- Show version via `-v` option.
+
 2023-04-20 -- v0.7.5
 -- Added feature to automatically check for internet connection before proceeding
 
