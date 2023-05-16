@@ -24,6 +24,7 @@ setup(
         'regex',
         'requests',
         'qrcode',
+        'docopt',
         'Image',
         'pyqtdarktheme'
     ],
