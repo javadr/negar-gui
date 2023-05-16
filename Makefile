@@ -1,18 +1,54 @@
 VER=$(shell grep __version__ negar_gui/constants.py|cut -d= -f2|tr -d '\" ')
 
+# Check if running inside a virtual environment
+VENV:=$(shell echo "$${VIRTUAL_ENV-}")
+# Virtual environment Python interpreter
+NEGAR:=$(if $(VENV),$(VIRTUAL_ENV)/bin/negar-gui,$(HOME)/.local/bin/negar-gui)
+APP_DESKTOP:="$(HOME)/.local/share/applications/negar.desktop"
+
 .ONESHELL:
 
 ver:
-	@echo negar-gui ver. $(VER)
+	@echo negar-gui, Ver. $(VER)
+	@echo $(VENV)
+	@echo $(NEGAR)
+	@echo $(APP_DESKTOP)
+
+.PHONY: generate_desktop_file
+generate_desktop_file:
+	@cp negar_gui/icons/logo.png $(HOME)/.local/share/icons/negar.png
+	@echo "Generating the desktop file..."
+	cat <<EOF > $(APP_DESKTOP)
+	[Desktop Entry]
+	Name=Negar
+	Exec=$(NEGAR)
+	Icon=negar.png
+	Version=$(VER)
+	Hidden=false
+	Terminal=false
+	Type=Application
+	Categories=Utility;
+	Comment=Graphical User Interface for Negar -- Persian Text Editor
+	EOF
+	@chmod +x $(APP_DESKTOP)
+	@echo "Desktop file generated successfully."
+
+.PHONY: uninstall
+uninstall:
+	@echo "Uninstalling negar-gui ..."
+	pip uninstall negar-gui
+	@echo "Removing the desktop file and its icon ..."
+	rm -fv $(APP_DESKTOP) $(HOME)/.local/share/icons/negar.png
+	@echo "Desktop file removed successfully."
 
 setup: ver
 	python setup.py sdist
 	python setup.py bdist_wheel
 
-lins: ver
+lins: ver generate_desktop_file
 	python setup.py install
 
-pins: ver
+pins: ver generate_desktop_file
 	pip install negar-gui==$(VER)
 
 upypi: setup
