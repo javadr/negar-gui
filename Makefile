@@ -2,7 +2,6 @@ VER=$(shell grep __version__ negar_gui/constants.py|cut -d= -f2|tr -d '\" ')
 
 # Check if running inside a virtual environment
 VENV:=$(shell echo "$${VIRTUAL_ENV-}")
-# Virtual environment Python interpreter
 NEGAR:=$(if $(VENV),$(VIRTUAL_ENV)/bin/negar-gui,$(HOME)/.local/bin/negar-gui)
 APP_DESKTOP:="$(HOME)/.local/share/applications/negar.desktop"
 
@@ -10,9 +9,6 @@ APP_DESKTOP:="$(HOME)/.local/share/applications/negar.desktop"
 
 ver:
 	@echo negar-gui, Ver. $(VER)
-	@echo $(VENV)
-	@echo $(NEGAR)
-	@echo $(APP_DESKTOP)
 
 .PHONY: generate_desktop_file
 generate_desktop_file:
