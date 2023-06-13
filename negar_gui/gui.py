@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-from pyuca import Collator
 from pathlib import Path
+from pyuca import Collator
 from pyperclip import copy
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtCore import Qt, QAbstractTableModel, QSize
@@ -19,7 +19,7 @@ collator = Collator()
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
-        super(TableModel, self).__init__()
+        super().__init__()
         self._data = data
 
     def data(self, index, role):
@@ -36,14 +36,17 @@ class TableModel(QAbstractTableModel):
                 return self._data[index.row()][index.column()]
             except:
                 return ''
+        return None
 
     def rowCount(self, index):
-        # The length of the outer list.
+        """The length of the outer list."""
+        del index
         return len(self._data)
 
     def columnCount(self, index):
-        # The following takes the first sub-list, and returns
-        # the length (only works if all rows are an equal length)
+        """The following takes the first sub-list, and returns
+        the length (only works if all rows are an equal length)"""
+        del index
         return len(self._data[0])
 
     def headerData(self, section, orientation, role):
@@ -53,10 +56,11 @@ class TableModel(QAbstractTableModel):
                 return ''
             if orientation == Qt.Orientation.Vertical:
                 return str(section+1)
+        return None
 
 class Form(QMainWindow):
     def __init__(self, parent = None):
-        super(Form, self).__init__(parent)
+        super().__init__(parent)
         self.editing_options = []
 
         self.table = QTableView(layoutDirection=Qt.LayoutDirection.RightToLeft,)
@@ -221,27 +225,17 @@ class Form(QMainWindow):
         self.untouch_button.clicked.connect(self.untouch_add)
 
         # Option checkbox lists signal control
-        self.f_dashes.stateChanged.connect(self.option_control)
-        self.f_three_dots.stateChanged.connect(self.option_control)
-        self.f_english_quotes.stateChanged.connect(self.option_control)
-        self.f_hamzeh.stateChanged.connect(self.option_control)
-        self.hamzeh_yeh.stateChanged.connect(self.option_control)
-        self.f_spacing_bq.stateChanged.connect(self.option_control)
-        self.f_arab_num.stateChanged.connect(self.option_control)
-        self.f_eng_num.stateChanged.connect(self.option_control)
-        self.f_non_persian_ch.stateChanged.connect(self.option_control)
-        self.f_p_spacing.stateChanged.connect(self.option_control)
-        self.f_p_separate.stateChanged.connect(self.option_control)
-        self.f_s_spacing.stateChanged.connect(self.option_control)
-        self.f_s_separate.stateChanged.connect(self.option_control)
-        self.aggressive.stateChanged.connect(self.option_control)
-        self.clnup_kashidas.stateChanged.connect(self.option_control)
-        self.clnup_ex_marks.stateChanged.connect(self.option_control)
-        self.clnup_spacing.stateChanged.connect(self.option_control)
-        self.trim_lt_whitespaces.stateChanged.connect(self.option_control)
-        self.exaggeragin_zwnj.stateChanged.connect(self.option_control)
+        _options = [self.f_dashes, self.f_three_dots, self.f_english_quotes, self.f_hamzeh,
+                    self.hamzeh_yeh, self.f_spacing_bq, self.f_arab_num, self.f_eng_num,
+                    self.f_non_persian_ch, self.f_p_spacing, self.f_p_separate, self.f_s_spacing,
+                    self.f_s_separate, self.aggressive, self.clnup_kashidas, self.clnup_ex_marks,
+                    self.clnup_spacing, self.trim_lt_whitespaces, self.exaggeragin_zwnj
+                    ]
+        for opt in _options:
+            opt.stateChanged.connect(self.option_control)
 
     def keyPressEvent(self, event):
+        """KeyPress event handler"""
         if event.key() == Qt.Key.Key_Escape:
             self.save_to_clipboard()
             self.close()
@@ -294,64 +288,42 @@ class Form(QMainWindow):
 
     def option_control(self):
         """Enable/Disable Editing features"""
-        if not self.f_dashes.isChecked():
-            self.editing_options.append("fix-dashes")
-        if not self.f_three_dots.isChecked():
-            self.editing_options.append("fix-three-dots")
-        if not self.f_english_quotes.isChecked():
-            self.editing_options.append("fix-english-quotes")
-        if not self.f_hamzeh.isChecked():
-            self.editing_options.append("fix-hamzeh")
-        if not self.hamzeh_yeh.isChecked():
-            self.editing_options.append("hamzeh-with-yeh")
-        if not self.f_spacing_bq.isChecked():
-            self.editing_options.append("fix-spacing-bq")
-        if not self.f_arab_num.isChecked():
-            self.editing_options.append("fix-arabic-num")
-        if not self.f_eng_num.isChecked():
-            self.editing_options.append("fix-english-num")
-        if not self.f_non_persian_ch.isChecked():
-            self.editing_options.append("fix-non-persian-chars")
-        if not self.f_p_spacing.isChecked():
-            self.editing_options.append("fix-p-spacing")
-        if not self.f_p_separate.isChecked():
-            self.editing_options.append("fix-p-separate")
-        if not self.f_s_spacing.isChecked():
-            self.editing_options.append("fix-s-spacing")
-        if not self.f_s_separate.isChecked():
-            self.editing_options.append("fix-s-separate")
-        if not self.aggressive.isChecked():
-            self.editing_options.append("aggressive")
-        if not self.clnup_kashidas.isChecked():
-            self.editing_options.append("cleanup-kashidas")
-        if not self.clnup_ex_marks.isChecked():
-            self.editing_options.append("cleanup-ex-marks")
-        if not self.clnup_spacing.isChecked():
-            self.editing_options.append("cleanup-spacing")
-        if not self.trim_lt_whitespaces.isChecked():
-            self.editing_options.append("trim-lt-whitespaces")
-        if not self.exaggeragin_zwnj.isChecked():
-            self.editing_options.append("exaggerating-zwnj")
+        options = [(self.f_dashes, "fix-dashes"), (self.f_three_dots, "fix-three-dots"),
+                    (self.f_english_quotes, "fix-english-quotes"), (self.f_hamzeh, "fix-hamzeh"),
+                    (self.hamzeh_yeh, "hamzeh-with-yeh"), (self.f_spacing_bq, "fix-spacing-bq"),
+                    (self.f_arab_num, "fix-arabic-num"), (self.f_eng_num, "fix-english-num"),
+                    (self.f_non_persian_ch, "fix-non-persian-chars"), (self.f_p_spacing, "fix-p-spacing"),
+                    (self.f_p_separate, "fix-p-separate"), (self.f_s_spacing, "fix-s-spacing"),
+                    (self.f_s_separate, "fix-s-separate"), (self.aggressive, "aggressive"),
+                    (self.clnup_kashidas, "cleanup-kashidas"), (self.clnup_ex_marks, "cleanup-ex-marks"),
+                    (self.clnup_spacing, "cleanup-spacing"), (self.trim_lt_whitespaces, "trim-lt-whitespaces"),
+                    (self.exaggeragin_zwnj, "exaggerating-zwnj")]
+        for obj, opt in options:
+            if not obj.isChecked(): self.editing_options.append(opt)
 
     def file_dialog(self):
+        """Open file for importing text."""
         fname, _ = QFileDialog.getOpenFileName(self, 'Open File - A Plain Text')
         try:
-            with open(fname, 'r', encoding="utf8") as f:
-                self.input_editor.setText(f.read())
+            with open(fname, 'r', encoding="utf8") as file_:
+                self.input_editor.setText(file_.read())
         except:
             pass
 
     def edit_text(self):
+        """Edit input text"""
         self.output_editor.clear()
-        run_PE = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
-        self.output_editor.append(run_PE.cleanup())
+        persian_editor = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
+        self.output_editor.append(persian_editor.cleanup())
 
     def save_to_clipboard(self):
-        sanitizedText = self.output_editor.toPlainText()
-        if sanitizedText:
-            copy(sanitizedText)
+        """Save edited text to clipboard"""
+        sanitized_text = self.output_editor.toPlainText()
+        if sanitized_text:
+            copy(sanitized_text)
 
 def main():
+    """Program entry point"""
     app = QApplication(sys.argv)
     run = Form()
     run.show()
