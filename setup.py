@@ -17,7 +17,7 @@ setup(
     include_package_data=True,
     packages=['negar_gui',],
     install_requires=[
-        'python-negar>=1.2.1',
+        'python-negar>=1.2.2',
         'PyQt5',
         'pyperclip',
         'pyuca',
@@ -28,7 +28,7 @@ setup(
         'Image',
         'pyqtdarktheme'
     ],
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     package_dir={'negar_gui': 'negar_gui'},
     description="Graphical User Interface for Negar -- Persian Text Editor",
     license="GPLv3",

@@ -1,3 +1,6 @@
+2023-06-13 -- v0.7.7
+-- In compliance with python-negar Ver. 1.2.2
+
 2023-05-15 -- v0.7.6
 -- Show version via `-v` option.
 
