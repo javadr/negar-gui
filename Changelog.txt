@@ -1,3 +1,6 @@
+2023-06-15 -- v0.7.8
+-- In compliance with python-negar Ver. 1.2.4; critical fix
+
 2023-06-13 -- v0.7.7
 -- In compliance with python-negar Ver. 1.2.2
 

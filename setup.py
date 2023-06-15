@@ -17,7 +17,7 @@ setup(
     include_package_data=True,
     packages=['negar_gui',],
     install_requires=[
-        'python-negar>=1.2.2',
+        'python-negar>=1.2.4',
         'PyQt5',
         'pyperclip',
         'pyuca',
