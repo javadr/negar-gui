@@ -41,8 +41,8 @@ setup: ver
 	python setup.py sdist
 	python setup.py bdist_wheel
 
-lins: ver generate_desktop_file
-	python setup.py install
+lins: ver setup generate_desktop_file
+	pip install "dist/negar_gui-$(VER)-py3-none-any.whl"
 
 pins: ver generate_desktop_file
 	pip install negar-gui==$(VER)
