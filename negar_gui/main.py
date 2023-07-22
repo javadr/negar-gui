@@ -19,13 +19,13 @@ import tempfile
 from pathlib import Path
 from threading import Thread
 
-import qdarktheme
 import requests
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
 from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl
 from PyQt5.QtGui import QColor, QDesktopServices, QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
+import qdarktheme
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 
