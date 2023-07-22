@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-'''
-negar-gui
+"""negar-gui.
 
 Usage:
     negar-gui -h
@@ -11,39 +10,35 @@ Usage:
 Options:
     -h, --help          Show this screen.
     -v, --version       Show version and exit
-'''
+"""
 
+import asyncio
 import re
 import sys
-import asyncio
+import tempfile
 from pathlib import Path
 from threading import Thread
-import tempfile
-from docopt import docopt
-import requests
-from pyuca import Collator
-from pyperclip import copy as pyclipcopy
-from qrcode import QRCode, ERROR_CORRECT_L
-from PyQt5.QtCore import QTranslator, QUrl, Qt, QAbstractTableModel, QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QHeaderView, QDialog
-from PyQt5.QtGui import QDesktopServices, QIcon, QColor, QPixmap
+
 import qdarktheme
+import requests
+from docopt import docopt
+from pyperclip import copy as pyclipcopy
+from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl
+from PyQt5.QtGui import QColor, QDesktopServices, QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
+from pyuca import Collator
+from qrcode import ERROR_CORRECT_L, QRCode
 
 # https://stackoverflow.com/questions/16981921
 sys.path.append(Path(__file__).parent.parent.as_posix())
+from negar.constants import INFO
+from negar.constants import __version__ as negar__version
 from negar.virastar import PersianEditor, UnTouchable
-from negar.constants import INFO, __version__ as negar__version
-from negar_gui.constants import __version__, LOGO
+
+from negar_gui.constants import LOGO, __version__
+from negar_gui.Ui_hwin import Ui_Dialog
 from negar_gui.Ui_mwin import Ui_MainWindow
 from negar_gui.Ui_uwin import Ui_uwWindow
-from negar_gui.Ui_hwin import Ui_Dialog
-
-# ########################################################################
-# # IMPORT Custom widgets
-# from Custom_Widgets.Widgets import *
-# # INITIALIZE APP SETTINGS
-# settings = QSettings()
-# ########################################################################
 
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
@@ -52,7 +47,7 @@ collator = Collator()
 def init_decorator(func):
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
-        self, parent = args[0], kwargs.pop('parent', None)
+        self, parent = args[0], kwargs.pop("parent", None)
         # Maximize Frame Size if either height or width exceeds real screen dimensionsq
         screen = QApplication.desktop().screenGeometry()
         h, w = screen.height(), screen.width()
@@ -70,7 +65,7 @@ def init_decorator(func):
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
-        super(TableModel, self).__init__()
+        super().__init__()
         self._data = data
 
     def data(self, index, role):
@@ -78,15 +73,15 @@ class TableModel(QAbstractTableModel):
             return Qt.AlignmentFlag.AlignVCenter
         if role == Qt.ItemDataRole.BackgroundRole:
             if index.row()%2:
-                return QColor('gray')
+                return QColor("gray")
         if role == Qt.ItemDataRole.ForegroundRole:
             if index.row()%2:
-                return QColor('white')
+                return QColor("white")
         if role == Qt.ItemDataRole.DisplayRole:
             try:
                 return self._data[index.row()][index.column()]
             except:
-                return ''
+                return ""
 
     def rowCount(self, index):
         """The length of the outer list."""
@@ -95,15 +90,16 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, index):
         """The following takes the first sub-list, and returns
-        the length (only works if all rows are an equal length)"""
+        the length (only works if all rows are an equal length).
+        """
         del index
         return len(self._data[0])
 
     def headerData(self, section, orientation, role):
-        """section is the index of the column/row."""
+        """Section is the index of the column/row."""
         if role == Qt.ItemDataRole.DisplayRole:
             if orientation == Qt.Orientation.Horizontal:
-                return ''
+                return ""
             if orientation == Qt.Orientation.Vertical:
                 return str(section+1)
         return None
@@ -134,7 +130,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
         self.untouch_button.setEnabled(len(word_list) == 1)
 
     def untouch_add(self):
-        """Adds a new word into untouchable words"""
+        """Adds a new word into untouchable words."""
         word = [self.untouch_word.text().strip()]
         UnTouchable.add(word)
         self.untouch_word.clear()
@@ -194,7 +190,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # destination language
         self.dest = "en"
         # ui language : 0->en, 1->fa
-        self.lang = 'English'
+        self.lang = "English"
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
@@ -204,30 +200,30 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
 
     async def updateCheck(self):
-        nurl  = 'https://raw.github.com/shahinism/python-negar/master/negar/constants.py'
-        ngurl = 'https://raw.github.com/javadr/negar-gui/master/negar_gui/constants.py'
+        nurl  = "https://raw.github.com/shahinism/python-negar/master/negar/constants.py"
+        ngurl = "https://raw.github.com/javadr/negar-gui/master/negar_gui/constants.py"
         async def get(link):
             with requests.get(link) as response:
                 VERSION_PATTERN = r'(__version__ = "(\d\.\d(\.\d+)?)")'
                 return re.search(VERSION_PATTERN, response.text, re.M).group(2)
         try:
-            requests.get('https://github.com') # check the internet connection
+            requests.get("https://github.com") # check the internet connection
             negar_t = asyncio.create_task(get(nurl))
             negargui_t = asyncio.create_task(get(ngurl))
             negar_v = await negar_t
             negargui_v = await negargui_t
         except:
-            negar_v, negargui_v = '0.0', '0.0'
-        version = lambda v: list(map(int,v.split('.')))
-        negar_nv, negargui_nv = [version(i) for i in (negar_v, negargui_v)]
-        negar_ov, negargui_ov = [version(i) for i in (negar__version, __version__)]
-        notification = ''
-        message = 'New version is available for {}. Use `pip install --upgrade {}` to update'
+            negar_v, negargui_v = "0.0", "0.0"
+        version = lambda v: list(map(int,v.split(".")))
+        negar_nv, negargui_nv = (version(i) for i in (negar_v, negargui_v))
+        negar_ov, negargui_ov = (version(i) for i in (negar__version, __version__))
+        notification = ""
+        message = "New version is available for {}. Use `pip install --upgrade {}` to update"
         if negar_nv>negar_ov:
-            notification = message.format('negar', 'python-negar')
+            notification = message.format("negar", "python-negar")
         if negargui_nv>negargui_ov:
-            notification = message.format('negar-gui', 'negar-gui')
-        self._statusBar(f"{notification}" if notification!=message else '')
+            notification = message.format("negar-gui", "negar-gui")
+        self._statusBar(f"{notification}" if notification!=message else "")
 
     def connectSlots(self):
         self.autoedit_handler()
@@ -240,27 +236,27 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionExit.triggered.connect(self.close)
         self.font_slider.valueChanged.connect(self._set_font_size)
         self.actionIncrease_Font_Size.triggered.connect(
-            lambda: (self.font_slider.setValue(self.font_slider.value()+1), self._set_font_size())
+            lambda: (self.font_slider.setValue(self.font_slider.value()+1), self._set_font_size()),
         )
         self.actionDecrease_Font_Size.triggered.connect(
-            lambda: (self.font_slider.setValue(self.font_slider.value()-1), self._set_font_size())
+            lambda: (self.font_slider.setValue(self.font_slider.value()-1), self._set_font_size()),
         )
-        self.actionPersian.triggered.connect(lambda: self.changeLanguage('Persian'))
-        self.actionEnglish.triggered.connect(lambda: self.changeLanguage('English'))
+        self.actionPersian.triggered.connect(lambda: self.changeLanguage("Persian"))
+        self.actionEnglish.triggered.connect(lambda: self.changeLanguage("English"))
 
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO) )
         self.actionAbout_Negar.setShortcut("CTRL+H")
         self.actionAbout_Negar.triggered.connect(lambda:
-            (HelpWindow(parent=self, title='About Negar', label=self.edit_text(INFO)).show())
+            (HelpWindow(parent=self, title="About Negar", label=self.edit_text(INFO)).show()),
         )
         self.actionAbout_Negar_GUI.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui"))
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
         )
         self.actionDonate.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation"))
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation")),
         )
         self.actionReport_Bugs.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues"))
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
         )
         self.actionFix_Dashes.triggered.connect(
             lambda: (self.option_control(), self.autoedit_handler()))
@@ -312,10 +308,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionQr_Code.triggered.connect(self.qrcode)
 
         # Change GridLayout Orientation
-        def grid_layout(layout='h'):
-            if layout=='v':
+        def grid_layout(layout="h"):
+            if layout=="v":
                 self.gridLayout.setHorizontalSpacing(5)
-            elif layout == 'h':
+            elif layout == "h":
                 self.gridLayout.setVerticalSpacing(0)
             widgets = (self.input_editor_label, self.input_editor,
                         self.output_editor_label, self.output_editor)
@@ -327,7 +323,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
                 (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
                 (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
-            ) if layout=='v' else (
+            ) if layout=="v" else (
                 (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
                 (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
                 (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
@@ -337,11 +333,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.gridLayout.addWidget(widget, *elements[i])
 
         self.vertical_btn.clicked.connect(
-            lambda: (self.actionSide_by_Side_View.setChecked(True), grid_layout('v')) )
+            lambda: (self.actionSide_by_Side_View.setChecked(True), grid_layout("v")) )
         self.horizontal_btn.clicked.connect(
-            lambda: (self.actionSide_by_Side_View.setChecked(False), grid_layout('h')) )
+            lambda: (self.actionSide_by_Side_View.setChecked(False), grid_layout("h")) )
         self.actionSide_by_Side_View.triggered.connect(lambda:
-            grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h'))
+            grid_layout("v") if self.actionSide_by_Side_View.isChecked() else grid_layout("h"))
 
         def grid_full_input():
             widgets = (self.output_editor_label, self.output_editor)
@@ -350,7 +346,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 widget.setParent(None)
         self.actionFull_Screen_Input.triggered.connect(lambda: (
             grid_full_input() if self.actionFull_Screen_Input.isChecked() else
-                grid_layout('v') if self.actionSide_by_Side_View.isChecked() else grid_layout('h') )
+                grid_layout("v") if self.actionSide_by_Side_View.isChecked() else grid_layout("h") ),
         )
 
         self.action_dark.triggered.connect(lambda:
@@ -359,39 +355,39 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 "[dark]": {
                     "primary": "#D0BCFF",
                     "primary>button.hoverBackground": "#ffffff",
-                }
-            },) )
+                },
+            }) )
         self.action_Light.triggered.connect(lambda: qdarktheme.setup_theme("light") )
         self.action_Auto.triggered.connect(lambda: qdarktheme.setup_theme("auto") )
 
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
-            if self.lang == 'Persian':
-                statusbar_timeout(self, 'هیچ متنی برای نمایش از طریق کد QR وجود ندارد!')
+            if self.lang == "Persian":
+                statusbar_timeout(self, "هیچ متنی برای نمایش از طریق کد QR وجود ندارد!")
             else: # English
-                statusbar_timeout(self, 'There is no text to be fed to the QR Code!')
+                statusbar_timeout(self, "There is no text to be fed to the QR Code!")
             return
         qr = QRCode(
             version = 1,
             error_correction = ERROR_CORRECT_L,
             box_size = 10,
-            border = 4
+            border = 4,
         )
         qr.add_data(self.output_editor.toPlainText())
         qr.make(fit = True)
         img = qr.make_image()
         temp_path = Path(tempfile.gettempdir())
-        img.save(temp_path/'negar-gui_qrcode.png')
+        img.save(temp_path/"negar-gui_qrcode.png")
         pixmap = QPixmap(f"{(temp_path/'negar-gui_qrcode.png').absolute()}")
         screen = QApplication.desktop().screenGeometry()
         w = min(screen.height(), screen.width())
         if w-90 < img.size[0]:
             pixmap = pixmap.scaled(w-90, w-90, Qt.KeepAspectRatio)
-        HelpWindow(parent=self, title='QR Code', label=pixmap).show()
-        (Path(temp_path)/'negar-gui_qrcode.png').unlink()
+        HelpWindow(parent=self, title="QR Code", label=pixmap).show()
+        (Path(temp_path)/"negar-gui_qrcode.png").unlink()
 
-    def _statusBar(self, notification='', timeout=0):
-        message = f'Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}'
+    def _statusBar(self, notification="", timeout=0):
+        message = f"Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}"
         self.statusBar.showMessage(message, timeout)
 
     def openFileSlot(self):
@@ -402,18 +398,18 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     self.input_editor.setPlainText(str(f.read()))
                     self.filename = Path(filename)
                     MAIN_WINDOW.setWindowTitle(f"Negar - {self.filename.name}")
-                    statusbar_timeout(self,'File Opened.')
+                    statusbar_timeout(self,"File Opened.")
                 except Exception as e:
                     self.input_editor.setPlainText(e.args[1])
 
     def saveFileSlot(self):
         if not self.output_editor.toPlainText():
             return
-        if hasattr(self, 'filename') and self.filename:
+        if hasattr(self, "filename") and self.filename:
             with open(self.filename, "w", encoding="utf-8") as f:
                 try:
                     f.write(self.output_editor.toPlainText())
-                    statusbar_timeout(self,'File Saved.')
+                    statusbar_timeout(self,"File Saved.")
                 except Exception as e:
                     self.output_editor.setPlainText(e.args[1])
         else:
@@ -429,23 +425,21 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                     f.write(self.output_editor.toPlainText())
                     self.filename = Path(filename)
                     MAIN_WINDOW.setWindowTitle(f"Negar - {self.filename.name}")
-                    statusbar_timeout(self,'File Saved.')
+                    statusbar_timeout(self,"File Saved.")
                 except Exception as exception:
                     self.output_editor.setPlainText(exception.args[1])
 
     def changeLanguage(self, lang):
-        """
-        change ui language
-        """
-        if lang=='Persian' and self.lang!='Persian':
-            self.lang = 'Persian'
+        """Change ui language."""
+        if lang=="Persian" and self.lang!="Persian":
+            self.lang = "Persian"
             self.trans.load("fa", directory=f"{NEGARGUIPATH}/ts")
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        elif lang=='English' and self.lang!='English':
-            self.lang = 'English'
+        elif lang=="English" and self.lang!="English":
+            self.lang = "English"
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
@@ -510,7 +504,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.input_editor.textChanged.disconnect(self.edit_text)
         self._set_font_size()
 
-    def _set_font_size(self,):
+    def _set_font_size(self):
         size = self.font_slider.value()
         self.input_editor.setFontPointSize(size)
         self.output_editor.setFontPointSize(size)
@@ -520,7 +514,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.edit_text()
 
     def option_control(self):
-        """Enable/Disable Editing features"""
+        """Enable/Disable Editing features."""
         self.editing_options = []
         if not self.actionFix_Dashes.isChecked():
             self.editing_options.append("fix-dashes")
@@ -578,8 +572,8 @@ def statusbar_timeout(self, notification, timeout=5000): # Timeout in millisecon
     timer.start(timeout)
 
 def main(args=docopt(__doc__)):
-    """Program entry point"""
-    if args['--version']:
+    """Program entry point."""
+    if args["--version"]:
         print (f"negar-gui, Version {__version__}")
         sys.exit()
 

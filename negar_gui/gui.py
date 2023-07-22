@@ -27,15 +27,15 @@ class TableModel(QAbstractTableModel):
             return Qt.AlignmentFlag.AlignVCenter
         if role == Qt.ItemDataRole.BackgroundRole:
             if index.row()%2:
-                return QColor('gray')
+                return QColor("gray")
         if role == Qt.ItemDataRole.ForegroundRole:
             if index.row()%2:
-                return QColor('white')
+                return QColor("white")
         if role == Qt.ItemDataRole.DisplayRole:
             try:
                 return self._data[index.row()][index.column()]
             except:
-                return ''
+                return ""
         return None
 
     def rowCount(self, index):
@@ -45,7 +45,8 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, index):
         """The following takes the first sub-list, and returns
-        the length (only works if all rows are an equal length)"""
+        the length (only works if all rows are an equal length).
+        """
         del index
         return len(self._data[0])
 
@@ -53,7 +54,7 @@ class TableModel(QAbstractTableModel):
         # section is the index of the column/row.
         if role == Qt.ItemDataRole.DisplayRole:
             if orientation == Qt.Orientation.Horizontal:
-                return ''
+                return ""
             if orientation == Qt.Orientation.Vertical:
                 return str(section+1)
         return None
@@ -63,7 +64,7 @@ class Form(QMainWindow):
         super().__init__(parent)
         self.editing_options = []
 
-        self.table = QTableView(layoutDirection=Qt.LayoutDirection.RightToLeft,)
+        self.table = QTableView(layoutDirection=Qt.LayoutDirection.RightToLeft)
         self.setup_table()
 
         self.setupUi()
@@ -80,8 +81,8 @@ class Form(QMainWindow):
         self.edit_btn.setEnabled(False)
         reset_btn = QPushButton(self.tr("&Reset"))
         quit_btn = QPushButton(self.tr("&Quit"))
-        import_btn = QPushButton(self.tr('Im&port'),)
-        copy_btn = QPushButton(QIcon(LOGO), '',)
+        import_btn = QPushButton(self.tr("Im&port"))
+        copy_btn = QPushButton(QIcon(LOGO), "")
         copy_btn.setIconSize(QSize(24,24))
         copy_btn.setToolTip(self.tr("Click to Copy Sanitized Output"))
         copy_btn.setStyleSheet("QPushButton {border-style: outset; border-width: 0px;}")
@@ -229,13 +230,13 @@ class Form(QMainWindow):
                     self.hamzeh_yeh, self.f_spacing_bq, self.f_arab_num, self.f_eng_num,
                     self.f_non_persian_ch, self.f_p_spacing, self.f_p_separate, self.f_s_spacing,
                     self.f_s_separate, self.aggressive, self.clnup_kashidas, self.clnup_ex_marks,
-                    self.clnup_spacing, self.trim_lt_whitespaces, self.exaggeragin_zwnj
+                    self.clnup_spacing, self.trim_lt_whitespaces, self.exaggeragin_zwnj,
                     ]
         for opt in _options:
             opt.stateChanged.connect(self.option_control)
 
     def keyPressEvent(self, event):
-        """KeyPress event handler"""
+        """KeyPress event handler."""
         if event.key() == Qt.Key.Key_Escape:
             self.save_to_clipboard()
             self.close()
@@ -245,7 +246,7 @@ class Form(QMainWindow):
         else:
             super().keyPressEvent(event)
 
-    def _set_font_size(self,):
+    def _set_font_size(self):
         size = self.font_slider.value()
         self.input_editor.setFontPointSize(size)
         self.output_editor.setFontPointSize(size)
@@ -263,7 +264,7 @@ class Form(QMainWindow):
             self.untouch_button.setEnabled(False)
 
     def untouch_add(self):
-        """Adds a new word into untouchable words"""
+        """Adds a new word into untouchable words."""
         word = [self.untouch_word.text()]
         UnTouchable.add(word)
         self.untouch_word.clear()
@@ -282,12 +283,12 @@ class Form(QMainWindow):
         self._set_font_size()
 
     def text_box_reset(self):
-        """Clears input/output editor boxes"""
+        """Clears input/output editor boxes."""
         self.input_editor.clear()
         self.output_editor.clear()
 
     def option_control(self):
-        """Enable/Disable Editing features"""
+        """Enable/Disable Editing features."""
         options = [(self.f_dashes, "fix-dashes"), (self.f_three_dots, "fix-three-dots"),
                     (self.f_english_quotes, "fix-english-quotes"), (self.f_hamzeh, "fix-hamzeh"),
                     (self.hamzeh_yeh, "hamzeh-with-yeh"), (self.f_spacing_bq, "fix-spacing-bq"),
@@ -303,27 +304,27 @@ class Form(QMainWindow):
 
     def file_dialog(self):
         """Open file for importing text."""
-        fname, _ = QFileDialog.getOpenFileName(self, 'Open File - A Plain Text')
+        fname, _ = QFileDialog.getOpenFileName(self, "Open File - A Plain Text")
         try:
-            with open(fname, 'r', encoding="utf8") as file_:
+            with open(fname, encoding="utf8") as file_:
                 self.input_editor.setText(file_.read())
         except:
             pass
 
     def edit_text(self):
-        """Edit input text"""
+        """Edit input text."""
         self.output_editor.clear()
         persian_editor = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
         self.output_editor.append(persian_editor.cleanup())
 
     def save_to_clipboard(self):
-        """Save edited text to clipboard"""
+        """Save edited text to clipboard."""
         sanitized_text = self.output_editor.toPlainText()
         if sanitized_text:
             copy(sanitized_text)
 
 def main():
-    """Program entry point"""
+    """Program entry point."""
     app = QApplication(sys.argv)
     run = Form()
     run.show()
