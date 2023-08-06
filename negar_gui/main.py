@@ -31,14 +31,14 @@ from qrcode import ERROR_CORRECT_L, QRCode
 
 # https://stackoverflow.com/questions/16981921
 sys.path.append(Path(__file__).parent.parent.as_posix())
-from negar.constants import INFO
-from negar.constants import __version__ as negar__version
-from negar.virastar import PersianEditor, UnTouchable
+from negar.constants import INFO # noqa: E402
+from negar.constants import __version__ as negar__version # noqa: E402
+from negar.virastar import PersianEditor, UnTouchable # noqa: E402
 
-from negar_gui.constants import LOGO, __version__
-from negar_gui.Ui_hwin import Ui_Dialog
-from negar_gui.Ui_mwin import Ui_MainWindow
-from negar_gui.Ui_uwin import Ui_uwWindow
+from negar_gui.constants import LOGO, __version__ # noqa: E402
+from negar_gui.Ui_hwin import Ui_Dialog # noqa: E402
+from negar_gui.Ui_mwin import Ui_MainWindow # noqa: E402
+from negar_gui.Ui_uwin import Ui_uwWindow # noqa: E402
 
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
@@ -130,7 +130,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
         self.untouch_button.setEnabled(len(word_list) == 1)
 
     def untouch_add(self):
-        """Adds a new word into untouchable words."""
+        """Add a new word into untouchable words."""
         word = [self.untouch_word.text().strip()]
         UnTouchable.add(word)
         self.untouch_word.clear()
