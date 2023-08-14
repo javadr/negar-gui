@@ -20,9 +20,10 @@ from pathlib import Path
 from threading import Thread
 
 import requests
+import toml
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
-from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl
+from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl, QSize, QPoint
 from PyQt5.QtGui import QColor, QDesktopServices, QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
 import qdarktheme
@@ -35,7 +36,7 @@ from negar.constants import INFO # noqa: E402
 from negar.constants import __version__ as negar__version # noqa: E402
 from negar.virastar import PersianEditor, UnTouchable # noqa: E402
 
-from negar_gui.constants import LOGO, __version__ # noqa: E402
+from negar_gui.constants import LOGO, __version__, SETTING_FILE # noqa: E402
 from negar_gui.Ui_hwin import Ui_Dialog # noqa: E402
 from negar_gui.Ui_mwin import Ui_MainWindow # noqa: E402
 from negar_gui.Ui_uwin import Ui_uwWindow # noqa: E402
@@ -63,7 +64,9 @@ def init_decorator(func):
         self.connectSlots()
     return wrapper
 
+
 class TableModel(QAbstractTableModel):
+
     def __init__(self, data):
         super().__init__()
         self._data = data
@@ -84,13 +87,14 @@ class TableModel(QAbstractTableModel):
                 return ""
 
     def rowCount(self, index):
-        """The length of the outer list."""
+        """Get length of the outer list."""
         del index
         return len(self._data)
 
     def columnCount(self, index):
-        """The following takes the first sub-list, and returns
-        the length (only works if all rows are an equal length).
+        """Take the first sub-list, and returns the length.
+
+        (only works if all rows are an equal length).
         """
         del index
         return len(self._data[0])
@@ -104,7 +108,63 @@ class TableModel(QAbstractTableModel):
                 return str(section+1)
         return None
 
+
+class WindowSettings(QMainWindow):
+
+    _settings = {}
+
+    @property
+    def settings(self):
+        return self._settings
+
+    @settings.setter
+    def settings(self, value):
+        self._settings = value
+
+
+    def __save_settings(self):
+        self.settings = {
+            "window_size": {"width": self.width(), "height": self.height()},
+            "window_position": {"x": self.x(), "y": self.y()},
+        }
+
+        with open(SETTING_FILE, "w") as toml_file:
+            toml.dump(self.settings, toml_file)
+
+        print("Settings Saved on Close!")
+
+    def __load_settings(self):
+        try:
+            with open(SETTING_FILE) as toml_file:
+                self.settings = toml.load(toml_file)
+            window_size = QSize(
+                self.settings["window_size"]["width"],
+                self.settings["window_size"]["height"],
+            )
+            window_position = QPoint(
+                self.settings["window_position"]["x"],
+                self.settings["window_position"]["y"],
+            )
+            self.resize(window_size)
+            self.move(window_position)
+        except FileNotFoundError:
+            print("Settings File Not Found!")
+        except KeyError:
+            print("Settings File Has Been Corrupted!")
+
+    def closeEvent(self, event):
+        del event
+        self.__save_settings()
+
+    def showEvent(self, event):
+        # This method is called when the window is being shown
+        # You can perform initialization tasks here
+        del event
+        self.__load_settings()
+
+
 class UntouchWindow(QMainWindow, Ui_uwWindow):
+
     @init_decorator
     def __init__(self, parent=None):
         self.parent = parent
@@ -154,6 +214,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
             self.parent.edit_text()
 
 class HelpWindow(QDialog, Ui_Dialog):
+
     @init_decorator
     def __init__(self, parent=None, title=None, label=None):
         self.parent = parent
@@ -176,7 +237,8 @@ class HelpWindow(QDialog, Ui_Dialog):
             super().keyPressEvent(event)
 
 
-class MyWindow(QMainWindow, Ui_MainWindow):
+class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
+
     @init_decorator
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -470,10 +532,84 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self._set_font_size()
 
     def closeEvent(self, event):
+        WindowSettings.closeEvent(self, event)
         del event
         # event = QEvent(QEvent.Clipboard)
         # QApplication.sendEvent(QApplication.clipboard(), event)
         pyclipcopy(self.copy_slot())
+        self.__save_settings()
+
+    def showEvent(self, event):
+        WindowSettings.showEvent(self, event)
+        del event
+        self.__load_settings()
+
+    def __load_settings(self):
+        try:
+            with open(SETTING_FILE) as toml_file:
+                self.settings.update(toml.load(toml_file))
+            self.actionSide_by_Side_View.setChecked(self.settings["view"]["side-by-side"])
+            self.actionFull_Screen_Input.setChecked(self.settings["view"]["full-screen-input"])
+            self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
+            sdict = self.settings["settings"]["editing-option"]
+            self.actionFix_Dashes.setChecked(sdict["fix-dashes"])
+            self.actionFix_three_dots.setChecked(sdict["fix-three-dots"])
+            self.actionFix_English_quotes.setChecked(sdict["fix-english-quotes"])
+            self.actionFix_hamzeh.setChecked(sdict["fix-hamzeh"])
+            self.actionUse_Persian_yeh_to_show_hamzeh.setChecked(sdict["hamzeh-with-yeh"])
+            self.actionFix_spacing_braces_and_quotes.setChecked(sdict["fix-spacing-bq"])
+            self.actionFix_Arabic_numbers.setChecked(sdict["fix-arabic-num"])
+            self.actionFix_English_numbers.setChecked(sdict["fix-english-num"])
+            self.actionFix_non_Persian_chars.setChecked(sdict["fix-non-persian-chars"])
+            self.actionFix_prefix_spacing.setChecked(sdict["fix-p-spacing"])
+            self.actionFix_prefix_separating.setChecked(sdict["fix-p-separate"])
+            self.actionFix_suffix_spacing.setChecked(sdict["fix-s-spacing"])
+            self.actionFix_suffix_separating.setChecked(sdict["fix-s-separate"])
+            self.actionFix_aggressive_punctuation.setChecked(sdict["aggressive"])
+            self.actionCleanup_kashidas.setChecked(sdict["cleanup-kashidas"])
+            self.actionCleanup_extra_marks.setChecked(sdict["cleanup-ex-marks"])
+            self.actionCleanup_spacing.setChecked(sdict["cleanup-spacing"])
+            self.actionTrim_Leading_Trailing_Whitespaces.setChecked(sdict["trim-lt-whitespaces"])
+            self.actionExaggerating_ZWNJ.setChecked(sdict["exaggerating-zwnj"])
+        except FileNotFoundError:
+            print("Settings File Not Found!")
+        except KeyError:
+            print("Settings File Has Been CCCCorrupted!")
+
+    def __save_settings(self):
+        settings = {
+            "view": {
+                "side-by-side": self.actionSide_by_Side_View.isChecked(),
+                "full-screen-input": self.actionFull_Screen_Input.isChecked(),
+            },
+            "settings": {
+                "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
+                "editing-option": {
+                    "fix-dashes": self.actionFix_Dashes.isChecked(),
+                    "fix-three-dots": self.actionFix_three_dots.isChecked(),
+                    "fix-english-quotes": self.actionFix_English_quotes.isChecked(),
+                    "fix-hamzeh": self.actionFix_hamzeh.isChecked(),
+                    "hamzeh-with-yeh": self.actionUse_Persian_yeh_to_show_hamzeh.isChecked(),
+                    "fix-spacing-bq": self.actionFix_spacing_braces_and_quotes.isChecked(),
+                    "fix-arabic-num": self.actionFix_Arabic_numbers.isChecked(),
+                    "fix-english-num": self.actionFix_English_numbers.isChecked(),
+                    "fix-non-persian-chars": self.actionFix_non_Persian_chars.isChecked(),
+                    "fix-p-spacing": self.actionFix_prefix_spacing.isChecked(),
+                    "fix-p-separate": self.actionFix_prefix_separating.isChecked(),
+                    "fix-s-spacing": self.actionFix_suffix_spacing.isChecked(),
+                    "fix-s-separate": self.actionFix_suffix_separating.isChecked(),
+                    "aggressive": self.actionFix_aggressive_punctuation.isChecked(),
+                    "cleanup-kashidas": self.actionCleanup_kashidas.isChecked(),
+                    "cleanup-ex-marks": self.actionCleanup_extra_marks.isChecked(),
+                    "cleanup-spacing": self.actionCleanup_spacing.isChecked(),
+                    "trim-lt-whitespaces": self.actionTrim_Leading_Trailing_Whitespaces.isChecked(),
+                    "exaggerating-zwnj": self.actionExaggerating_ZWNJ.isChecked(),
+                },
+            },
+        }
+        settings.update(self.settings)
+        with open(SETTING_FILE, "w") as toml_file:
+            toml.dump(settings, toml_file)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
