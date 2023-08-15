@@ -39,7 +39,7 @@ jobs:
     - name: 'Use PyInstaller tool to get executable output'
       shell: bash
       run: ./.github/build.sh
-    
+
     - name: 'Make script executable'
       run: chmod +x ./dist/negar-gui*
 
