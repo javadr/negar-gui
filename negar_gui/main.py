@@ -123,10 +123,10 @@ class WindowSettings(QMainWindow):
 
 
     def __save_settings(self):
-        self.settings = {
+        self.settings.update({
             "window_size": {"width": self.width(), "height": self.height()},
             "window_position": {"x": self.x(), "y": self.y()},
-        }
+        })
 
         with open(SETTING_FILE, "w") as toml_file:
             toml.dump(self.settings, toml_file)
@@ -358,16 +358,27 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         )
         self.actionFull_Screen_Input.triggered.connect(self.full_screen_input_slot)
 
-        self.action_dark.triggered.connect(lambda:
+        self.action_dark.triggered.connect(lambda: (
             qdarktheme.setup_theme("dark",
             custom_colors={
                 "[dark]": {
                     "primary": "#D0BCFF",
                     "primary>button.hoverBackground": "#ffffff",
                 },
-            }) )
-        self.action_Light.triggered.connect(lambda: qdarktheme.setup_theme("light") )
-        self.action_Auto.triggered.connect(lambda: qdarktheme.setup_theme("auto") )
+            }),
+            self.settings.update({"view": {"theme":"dark"}}),
+            )
+        )
+        self.action_Light.triggered.connect(lambda: (
+            qdarktheme.setup_theme("light"),
+            self.settings.update({"view": {"theme":"light"}}),
+            )
+        )
+        self.action_Auto.triggered.connect(lambda: (
+            qdarktheme.setup_theme("auto"),
+            self.settings.update({"view": {"theme":"auto"}}),
+            )
+        )
 
     ####################### SLOTs ###############################
     def full_screen_input_slot(self):
@@ -541,6 +552,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.full_screen_input_slot()
             self.font_slider.setValue(self.settings["view"]["font-size"])
             self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"])
+            qdarktheme.setup_theme(self.settings["view"]["theme"])
             ## settings menu
             self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
             ### connect interactive clipboard slot if it is checked
@@ -579,6 +591,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 "full-screen-input": self.actionFull_Screen_Input.isChecked(),
                 "font-size": self.font_slider.value(),
                 "real-time-edit": self.autoedit_chkbox.isChecked(),
+                "theme": self.settings.get("view",{"theme": "auto"})["theme"],
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
@@ -605,9 +618,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 },
             },
         }
-        settings.update(self.settings)
+        self.settings.update(settings)
         with open(SETTING_FILE, "w") as toml_file:
-            toml.dump(settings, toml_file)
+            toml.dump(self.settings, toml_file)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
