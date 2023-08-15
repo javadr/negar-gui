@@ -320,44 +320,21 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionReport_Bugs.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
         )
-        self.actionFix_Dashes.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_three_dots.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_English_quotes.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_hamzeh.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionUse_Persian_yeh_to_show_hamzeh.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_spacing_braces_and_quotes.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_Arabic_numbers.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_English_numbers.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_non_Persian_chars.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_prefix_spacing.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_prefix_separating.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_suffix_spacing.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_suffix_separating.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionFix_aggressive_punctuation.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionCleanup_kashidas.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionCleanup_extra_marks.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionCleanup_spacing.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionTrim_Leading_Trailing_Whitespaces.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
-        self.actionExaggerating_ZWNJ.triggered.connect(
-            lambda: (self.option_control(), self.autoedit_handler()))
+
+        for menu_item in (
+                self.actionFix_Dashes, self.actionFix_three_dots, self.actionFix_English_quotes,
+                self.actionFix_hamzeh, self.actionUse_Persian_yeh_to_show_hamzeh,
+                self.actionFix_spacing_braces_and_quotes, self.actionFix_Arabic_numbers,
+                self.actionFix_English_numbers, self.actionFix_non_Persian_chars,
+                self.actionFix_prefix_spacing, self.actionFix_prefix_separating,
+                self.actionFix_suffix_spacing, self.actionFix_suffix_separating,
+                self.actionFix_aggressive_punctuation, self.actionCleanup_kashidas,
+                self.actionCleanup_extra_marks, self.actionCleanup_spacing,
+                self.actionTrim_Leading_Trailing_Whitespaces, self.actionExaggerating_ZWNJ,
+            ):
+            menu_item.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
+
+
         self.actionUntouchable_Words.triggered.connect(
             lambda: (UntouchWindow(parent=self).show(), MAIN_WINDOW.hide()))
         self.actionCopy.triggered.connect(self.copy_slot)
@@ -373,17 +350,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             lambda: (self.actionSide_by_Side_View.setChecked(True), self._grid_layout("v")) )
         self.horizontal_btn.clicked.connect(
             lambda: (self.actionSide_by_Side_View.setChecked(False), self._grid_layout("h")) )
-        self.actionSide_by_Side_View.triggered.connect(lambda:
-            self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else self._grid_layout("h")
-        )
 
-        self.actionFull_Screen_Input.triggered.connect(lambda:
-            (
-                self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
-                self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
-                self._grid_layout("h")
-            ),
+        self.actionSide_by_Side_View.triggered.connect(lambda:
+            self._grid_layout("v")
+            if self.actionSide_by_Side_View.isChecked()
+            else self._grid_layout("h")
         )
+        self.actionFull_Screen_Input.triggered.connect(self.full_screen_input_slot)
 
         self.action_dark.triggered.connect(lambda:
             qdarktheme.setup_theme("dark",
@@ -395,6 +368,14 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             }) )
         self.action_Light.triggered.connect(lambda: qdarktheme.setup_theme("light") )
         self.action_Auto.triggered.connect(lambda: qdarktheme.setup_theme("auto") )
+
+    ####################### SLOTs ###############################
+    def full_screen_input_slot(self):
+        (
+        self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
+        self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
+        self._grid_layout("h")
+        )
 
     # Change GridLayout Orientation
     def _grid_layout(self, layout="h"):
@@ -530,6 +511,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             QApplication.clipboard().setText(output)
         return output
 
+    ####################### EVENTs ###############################
     def onClipboardChanged(self):
         text = self.clipboard.text()
         if text:
@@ -556,13 +538,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             ## view menu
             self.actionSide_by_Side_View.setChecked(self.settings["view"]["side-by-side"])
             self.actionFull_Screen_Input.setChecked(self.settings["view"]["full-screen-input"])
-            ( # check full screen or horizontal/vertical layout
-                self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
-                self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
-                self._grid_layout("h")
-            )
-            self.font_slider.setValue(self.settings["view"]["font-size"]),
-            self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"]),
+            self.full_screen_input_slot()
+            self.font_slider.setValue(self.settings["view"]["font-size"])
+            self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"])
             ## settings menu
             self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
             ### connect interactive clipboard slot if it is checked
