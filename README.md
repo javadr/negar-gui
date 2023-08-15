@@ -55,10 +55,10 @@ Decompress it, and run the following command in root directory of `negar-gui`
     $ python setup.py install
 
 #### Requirements
-The GUI is relied on `python-negar` as well as `PyQt5`, `pyperclip`, `pyuca`, `regex`.
+The GUI is relied on `python-negar` as well as `PyQt5`, `pyperclip`, `pyuca`, `regex`, `requests`, `qrcode`, `docopt`, `Image`, `pyqtdarktheme`, and `toml`.
 If you want to just run it by calling the script, you need to install its dependencies.
 
-    $ pip install python-negar PyQt5 pyuca pyperclip regex
+    $ pip install python-negar PyQt5 pyuca pyperclip regex requests qrcode docopt Image pyqtdarktheme toml
 
 ## Usage
 Just use one of the following in your terminal.
