@@ -303,8 +303,16 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionDecrease_Font_Size.triggered.connect(
             lambda: (self.font_slider.setValue(self.font_slider.value()-1), self._set_font_size()),
         )
-        self.actionPersian.triggered.connect(lambda: self.changeLanguage("Persian"))
-        self.actionEnglish.triggered.connect(lambda: self.changeLanguage("English"))
+        self.actionPersian.triggered.connect(lambda: (
+            self.changeLanguage("Persian"),
+            self.settings.update({"settings": {"language":"Persian"}}),
+            )
+        )
+        self.actionEnglish.triggered.connect(lambda: (
+            self.changeLanguage("English"),
+            self.settings.update({"settings": {"language":"English"}}),
+            )
+        )
 
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO) )
         self.actionAbout_Negar.setShortcut("CTRL+H")
@@ -555,6 +563,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             qdarktheme.setup_theme(self.settings["view"]["theme"])
             ## settings menu
             self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
+            self.changeLanguage(self.settings["settings"]["language"])
             ### connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():
                 self.clipboard.dataChanged.connect(self.onClipboardChanged)
@@ -595,6 +604,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
+                "language": self.settings.get("settings",{"language": "English"})["language"],
                 "editing-option": {
                     "fix-dashes": self.actionFix_Dashes.isChecked(),
                     "fix-three-dots": self.actionFix_three_dots.isChecked(),
