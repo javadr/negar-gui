@@ -27,6 +27,7 @@ setup(
         "docopt",
         "Image",
         "pyqtdarktheme",
+        "toml",
     ],
     python_requires=">=3.6",
     package_dir={"negar_gui": "negar_gui"},

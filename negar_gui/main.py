@@ -369,46 +369,20 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
         self.actionQr_Code.triggered.connect(self.qrcode)
 
-        # Change GridLayout Orientation
-        def grid_layout(layout="h"):
-            if layout=="v":
-                self.gridLayout.setHorizontalSpacing(5)
-            elif layout == "h":
-                self.gridLayout.setVerticalSpacing(0)
-            widgets = (self.input_editor_label, self.input_editor,
-                        self.output_editor_label, self.output_editor)
-            for widget in widgets:
-                self.gridLayout.removeWidget(widget)
-                widget.setParent(None)
-            elements = (
-                (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
-                (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
-                (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
-                (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
-            ) if layout=="v" else (
-                (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
-                (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
-                (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
-                (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
-            )
-            for i, widget in enumerate(widgets):
-                self.gridLayout.addWidget(widget, *elements[i])
-
         self.vertical_btn.clicked.connect(
-            lambda: (self.actionSide_by_Side_View.setChecked(True), grid_layout("v")) )
+            lambda: (self.actionSide_by_Side_View.setChecked(True), self._grid_layout("v")) )
         self.horizontal_btn.clicked.connect(
-            lambda: (self.actionSide_by_Side_View.setChecked(False), grid_layout("h")) )
+            lambda: (self.actionSide_by_Side_View.setChecked(False), self._grid_layout("h")) )
         self.actionSide_by_Side_View.triggered.connect(lambda:
-            grid_layout("v") if self.actionSide_by_Side_View.isChecked() else grid_layout("h"))
+            self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else self._grid_layout("h")
+        )
 
-        def grid_full_input():
-            widgets = (self.output_editor_label, self.output_editor)
-            for widget in widgets:
-                self.gridLayout.removeWidget(widget)
-                widget.setParent(None)
-        self.actionFull_Screen_Input.triggered.connect(lambda: (
-            grid_full_input() if self.actionFull_Screen_Input.isChecked() else
-                grid_layout("v") if self.actionSide_by_Side_View.isChecked() else grid_layout("h") ),
+        self.actionFull_Screen_Input.triggered.connect(lambda:
+            (
+                self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
+                self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
+                self._grid_layout("h")
+            ),
         )
 
         self.action_dark.triggered.connect(lambda:
@@ -421,6 +395,37 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             }) )
         self.action_Light.triggered.connect(lambda: qdarktheme.setup_theme("light") )
         self.action_Auto.triggered.connect(lambda: qdarktheme.setup_theme("auto") )
+
+    # Change GridLayout Orientation
+    def _grid_layout(self, layout="h"):
+        if layout=="v":
+            self.gridLayout.setHorizontalSpacing(5)
+        elif layout == "h":
+            self.gridLayout.setVerticalSpacing(0)
+        widgets = (self.input_editor_label, self.input_editor,
+                    self.output_editor_label, self.output_editor)
+        for widget in widgets:
+            self.gridLayout.removeWidget(widget)
+            widget.setParent(None)
+        elements = (
+            (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
+            (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
+            (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
+            (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
+        ) if layout=="v" else (
+            (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
+            (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
+            (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
+            (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
+        )
+        for i, widget in enumerate(widgets):
+            self.gridLayout.addWidget(widget, *elements[i])
+
+    def _grid_full_input(self):
+        widgets = (self.output_editor_label, self.output_editor)
+        for widget in widgets:
+            self.gridLayout.removeWidget(widget)
+            widget.setParent(None)
 
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip())==0:
@@ -548,9 +553,22 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         try:
             with open(SETTING_FILE) as toml_file:
                 self.settings.update(toml.load(toml_file))
+            ## view menu
             self.actionSide_by_Side_View.setChecked(self.settings["view"]["side-by-side"])
             self.actionFull_Screen_Input.setChecked(self.settings["view"]["full-screen-input"])
+            ( # check full screen or horizontal/vertical layout
+                self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
+                self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
+                self._grid_layout("h")
+            )
+            self.font_slider.setValue(self.settings["view"]["font-size"]),
+            self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"]),
+            ## settings menu
             self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
+            ### connect interactive clipboard slot if it is checked
+            if self.actionInteractive_Clipboard.isChecked():
+                self.clipboard.dataChanged.connect(self.onClipboardChanged)
+            ## settings.editing-options
             sdict = self.settings["settings"]["editing-option"]
             self.actionFix_Dashes.setChecked(sdict["fix-dashes"])
             self.actionFix_three_dots.setChecked(sdict["fix-three-dots"])
@@ -574,13 +592,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         except FileNotFoundError:
             print("Settings File Not Found!")
         except KeyError:
-            print("Settings File Has Been CCCCorrupted!")
+            print("Settings File Has Been Corrupted!")
 
     def __save_settings(self):
         settings = {
             "view": {
                 "side-by-side": self.actionSide_by_Side_View.isChecked(),
                 "full-screen-input": self.actionFull_Screen_Input.isChecked(),
+                "font-size": self.font_slider.value(),
+                "real-time-edit": self.autoedit_chkbox.isChecked(),
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
