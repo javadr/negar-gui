@@ -32,18 +32,19 @@ from qrcode import ERROR_CORRECT_L, QRCode
 
 # https://stackoverflow.com/questions/16981921
 sys.path.append(Path(__file__).parent.parent.as_posix())
-from negar.constants import INFO # noqa: E402
-from negar.constants import __version__ as negar__version # noqa: E402
-from negar.virastar import PersianEditor, UnTouchable # noqa: E402
+from negar.constants import INFO  # noqa: E402
+from negar.constants import __version__ as negar__version  # noqa: E402
+from negar.virastar import PersianEditor, UnTouchable  # noqa: E402
 
-from negar_gui.constants import LOGO, __version__, SETTING_FILE # noqa: E402
-from negar_gui.Ui_hwin import Ui_Dialog # noqa: E402
-from negar_gui.Ui_mwin import Ui_MainWindow # noqa: E402
-from negar_gui.Ui_uwin import Ui_uwWindow # noqa: E402
+from negar_gui.constants import LOGO, __version__, SETTING_FILE  # noqa: E402
+from negar_gui.Ui_hwin import Ui_Dialog  # noqa: E402
+from negar_gui.Ui_mwin import Ui_MainWindow  # noqa: E402
+from negar_gui.Ui_uwin import Ui_uwWindow  # noqa: E402
 
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
+
 
 def init_decorator(func):
     def wrapper(*args, **kwargs):
@@ -58,7 +59,7 @@ def init_decorator(func):
         if parent:
             try:
                 self.centralwidget.setLayoutDirection(parent.layoutDirection())
-            except: # QDialog  has no centralwidget
+            except:  # QDialog  has no centralwidget
                 pass
         # connect widgets to their proper slot
         self.connectSlots()
@@ -75,10 +76,10 @@ class TableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignVCenter
         if role == Qt.ItemDataRole.BackgroundRole:
-            if index.row()%2:
+            if index.row() % 2:
                 return QColor("gray")
         if role == Qt.ItemDataRole.ForegroundRole:
-            if index.row()%2:
+            if index.row() % 2:
                 return QColor("white")
         if role == Qt.ItemDataRole.DisplayRole:
             try:
@@ -121,7 +122,6 @@ class WindowSettings(QMainWindow):
     def settings(self, value):
         self._settings = value
 
-
     def __save_settings(self):
         self.settings.update({
             "window_size": {"width": self.width(), "height": self.height()},
@@ -136,7 +136,7 @@ class WindowSettings(QMainWindow):
     def __load_settings(self):
         try:
             with open(SETTING_FILE) as toml_file:
-                self.settings = toml.load(toml_file)
+                self.settings.update(toml.load(toml_file))
             window_size = QSize(
                 self.settings["window_size"]["width"],
                 self.settings["window_size"]["height"],
@@ -194,7 +194,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
         word = [self.untouch_word.text().strip()]
         UnTouchable.add(word)
         self.untouch_word.clear()
-        self.setup_table() # updates untouchable list
+        self.setup_table()  # updates untouchable list
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -212,6 +212,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
         if self.parent:
             self.parent.show()
             self.parent.edit_text()
+
 
 class HelpWindow(QDialog, Ui_Dialog):
 
@@ -247,101 +248,104 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
         self.input_editor.setFocus(True)
-        #  Translator
+        # Translator
+        # main language is defined via self.settings["settings"]["language"] by WindowsSettings
         self.trans = QTranslator()
-        # destination language
-        self.dest = "en"
-        # ui language : 0->en, 1->fa
-        self.lang = "English"
         self.editing_options = []
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
-        self.filename = None # will be defined later
+        self.filename = None  # will be defined later
         self._statusBar()
         # Checks for new release
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
 
     async def updateCheck(self):
-        nurl  = "https://raw.github.com/shahinism/python-negar/master/negar/constants.py"
+        nurl = "https://raw.github.com/shahinism/python-negar/master/negar/constants.py"
         ngurl = "https://raw.github.com/javadr/negar-gui/master/negar_gui/constants.py"
+
         async def get(link):
             with requests.get(link) as response:
                 VERSION_PATTERN = r'(__version__ = "(\d\.\d(\.\d+)?)")'
                 return re.search(VERSION_PATTERN, response.text, re.M).group(2)
         try:
-            requests.get("https://github.com") # check the internet connection
+            requests.get("https://github.com")  # check the internet connection
             negar_t = asyncio.create_task(get(nurl))
             negargui_t = asyncio.create_task(get(ngurl))
             negar_v = await negar_t
             negargui_v = await negargui_t
         except:
             negar_v, negargui_v = "0.0", "0.0"
-        version = lambda v: list(map(int,v.split(".")))
+
+        def version(v): return list(map(int, v.split(".")))
         negar_nv, negargui_nv = (version(i) for i in (negar_v, negargui_v))
         negar_ov, negargui_ov = (version(i) for i in (negar__version, __version__))
         notification = ""
         message = "New version is available for {}. Use `pip install --upgrade {}` to update"
-        if negar_nv>negar_ov:
+        if negar_nv > negar_ov:
             notification = message.format("negar", "python-negar")
-        if negargui_nv>negargui_ov:
+        if negargui_nv > negargui_ov:
             notification = message.format("negar-gui", "negar-gui")
-        self._statusBar(f"{notification}" if notification!=message else "")
+        self._statusBar(f"{notification}" if notification != message else "")
 
     def connectSlots(self):
         self.autoedit_handler()
         # connect to slots
         self.autoedit_chkbox.stateChanged.connect(self.autoedit_handler)
         self.edit_btn.clicked.connect(self.edit_text)
-        self.actionOpen.triggered.connect(self.openFileSlot)
-        self.actionSave.triggered.connect(self.saveFileSlot)
-        self.actionExport.triggered.connect(self.exportFileSlot)
+        self.actionOpen.triggered.connect(self.open_file_slot)
+        self.actionSave.triggered.connect(self.save_file_slot)
+        self.actionExport.triggered.connect(self.export_file_slot)
         self.actionExit.triggered.connect(self.close)
         self.font_slider.valueChanged.connect(self._set_font_size)
         self.actionIncrease_Font_Size.triggered.connect(
-            lambda: (self.font_slider.setValue(self.font_slider.value()+1), self._set_font_size()),
+            lambda: (self.font_slider.setValue(
+                self.font_slider.value()+1), self._set_font_size()),
         )
-        self.actionDecrease_Font_Size.triggered.connect(
-            lambda: (self.font_slider.setValue(self.font_slider.value()-1), self._set_font_size()),
+        self.actionDecrease_Font_Size.triggered.connect(lambda: (
+            self.font_slider.setValue(self.font_slider.value()-1),
+            self._set_font_size(),
+            )
         )
         self.actionPersian.triggered.connect(lambda: (
-            self.changeLanguage("Persian"),
-            self.settings.update({"settings": {"language":"Persian"}}),
+            self.settings.update({"settings": {"language": "Persian"}}),
+            self.set_ui_language(),
             )
         )
         self.actionEnglish.triggered.connect(lambda: (
-            self.changeLanguage("English"),
-            self.settings.update({"settings": {"language":"English"}}),
+            self.settings.update({"settings": {"language": "English"}}),
+            self.set_ui_language(),
             )
         )
 
-        self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO) )
+        self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO))
         self.actionAbout_Negar.setShortcut("CTRL+H")
-        self.actionAbout_Negar.triggered.connect(lambda:
-            (HelpWindow(parent=self, title="About Negar", label=self.edit_text(INFO)).show()),
+        self.actionAbout_Negar.triggered.connect(lambda: (
+            HelpWindow(parent=self, title="About Negar", label=self.edit_text(INFO)).show()
+            )
         )
-        self.actionAbout_Negar_GUI.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
+        self.actionAbout_Negar_GUI.triggered.connect(lambda:
+            QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
         )
-        self.actionDonate.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation")),
+        self.actionDonate.triggered.connect(lambda:
+            QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation")),
         )
-        self.actionReport_Bugs.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
+        self.actionReport_Bugs.triggered.connect(lambda:
+            QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
         )
 
         for menu_item in (
-                self.actionFix_Dashes, self.actionFix_three_dots, self.actionFix_English_quotes,
-                self.actionFix_hamzeh, self.actionUse_Persian_yeh_to_show_hamzeh,
-                self.actionFix_spacing_braces_and_quotes, self.actionFix_Arabic_numbers,
-                self.actionFix_English_numbers, self.actionFix_non_Persian_chars,
-                self.actionFix_prefix_spacing, self.actionFix_prefix_separating,
-                self.actionFix_suffix_spacing, self.actionFix_suffix_separating,
-                self.actionFix_aggressive_punctuation, self.actionCleanup_kashidas,
-                self.actionCleanup_extra_marks, self.actionCleanup_spacing,
-                self.actionTrim_Leading_Trailing_Whitespaces, self.actionExaggerating_ZWNJ,
-            ):
-            menu_item.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
-
+            self.actionFix_Dashes, self.actionFix_three_dots, self.actionFix_English_quotes,
+            self.actionFix_hamzeh, self.actionUse_Persian_yeh_to_show_hamzeh,
+            self.actionFix_spacing_braces_and_quotes, self.actionFix_Arabic_numbers,
+            self.actionFix_English_numbers, self.actionFix_non_Persian_chars,
+            self.actionFix_prefix_spacing, self.actionFix_prefix_separating,
+            self.actionFix_suffix_spacing, self.actionFix_suffix_separating,
+            self.actionFix_aggressive_punctuation, self.actionCleanup_kashidas,
+            self.actionCleanup_extra_marks, self.actionCleanup_spacing,
+            self.actionTrim_Leading_Trailing_Whitespaces, self.actionExaggerating_ZWNJ,
+        ):
+            menu_item.triggered.connect(
+                lambda: (self.option_control(), self.autoedit_handler()))
 
         self.actionUntouchable_Words.triggered.connect(
             lambda: (UntouchWindow(parent=self).show(), MAIN_WINDOW.hide()))
@@ -351,13 +355,20 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionInteractive_Clipboard.triggered.connect(lambda:
             self.clipboard.dataChanged.connect(self.onClipboardChanged)
             if self.actionInteractive_Clipboard.isChecked()
-            else self.clipboard.dataChanged.disconnect(self.onClipboardChanged))
+            else self.clipboard.dataChanged.disconnect(self.onClipboardChanged)
+        )
         self.actionQr_Code.triggered.connect(self.qrcode)
 
-        self.vertical_btn.clicked.connect(
-            lambda: (self.actionSide_by_Side_View.setChecked(True), self._grid_layout("v")) )
-        self.horizontal_btn.clicked.connect(
-            lambda: (self.actionSide_by_Side_View.setChecked(False), self._grid_layout("h")) )
+        self.vertical_btn.clicked.connect(lambda: (
+            self.actionSide_by_Side_View.setChecked(True),
+            self._grid_layout("v"),
+            )
+        )
+        self.horizontal_btn.clicked.connect(lambda: (
+            self.actionSide_by_Side_View.setChecked(False),
+            self._grid_layout("h"),
+            )
+        )
 
         self.actionSide_by_Side_View.triggered.connect(lambda:
             self._grid_layout("v")
@@ -368,42 +379,45 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
         self.action_dark.triggered.connect(lambda: (
             qdarktheme.setup_theme("dark",
-            custom_colors={
-                "[dark]": {
-                    "primary": "#D0BCFF",
-                    "primary>button.hoverBackground": "#ffffff",
-                },
-            }),
-            self.settings.update({"view": {"theme":"dark"}}),
+                custom_colors={
+                    "[dark]": {
+                        "primary": "#D0BCFF",
+                        "primary>button.hoverBackground": "#ffffff",
+                    },
+                }
+            ),
+            self.settings.update({"view": {"theme": "dark"}}),
             )
         )
         self.action_Light.triggered.connect(lambda: (
             qdarktheme.setup_theme("light"),
-            self.settings.update({"view": {"theme":"light"}}),
+            self.settings.update({"view": {"theme": "light"}}),
             )
         )
         self.action_Auto.triggered.connect(lambda: (
             qdarktheme.setup_theme("auto"),
-            self.settings.update({"view": {"theme":"auto"}}),
+            self.settings.update({"view": {"theme": "auto"}}),
             )
         )
 
     ####################### SLOTs ###############################
     def full_screen_input_slot(self):
         (
-        self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
-        self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
-        self._grid_layout("h")
+            self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
+            self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
+            self._grid_layout("h")
         )
 
     # Change GridLayout Orientation
     def _grid_layout(self, layout="h"):
-        if layout=="v":
+        if layout == "v":
             self.gridLayout.setHorizontalSpacing(5)
         elif layout == "h":
             self.gridLayout.setVerticalSpacing(0)
-        widgets = (self.input_editor_label, self.input_editor,
-                    self.output_editor_label, self.output_editor)
+        widgets = (
+            self.input_editor_label, self.input_editor,
+            self.output_editor_label, self.output_editor,
+            )
         for widget in widgets:
             self.gridLayout.removeWidget(widget)
             widget.setParent(None)
@@ -412,7 +426,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
             (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
             (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
-        ) if layout=="v" else (
+        ) if layout == "v" else (
             (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
             (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
             (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
@@ -428,20 +442,21 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             widget.setParent(None)
 
     def qrcode(self):
-        if len(self.output_editor.toPlainText().strip())==0:
-            if self.lang == "Persian":
+        if len(self.output_editor.toPlainText().strip()) == 0:
+            print(self.settings)
+            if self.settings["settings"]["language"] == "Persian":
                 statusbar_timeout(self, "هیچ متنی برای نمایش از طریق کد QR وجود ندارد!")
-            else: # English
+            else:  # English
                 statusbar_timeout(self, "There is no text to be fed to the QR Code!")
             return
         qr = QRCode(
-            version = 1,
-            error_correction = ERROR_CORRECT_L,
-            box_size = 10,
-            border = 4,
+            version=1,
+            error_correction=ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
         )
         qr.add_data(self.output_editor.toPlainText())
-        qr.make(fit = True)
+        qr.make(fit=True)
         img = qr.make_image()
         temp_path = Path(tempfile.gettempdir())
         img.save(temp_path/"negar-gui_qrcode.png")
@@ -457,7 +472,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         message = f"Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}"
         self.statusBar.showMessage(message, timeout)
 
-    def openFileSlot(self):
+    def open_file_slot(self):
         filename, _ = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
         if filename:
             with open(filename, encoding="utf-8") as f:
@@ -465,24 +480,24 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                     self.input_editor.setPlainText(str(f.read()))
                     self.filename = Path(filename)
                     MAIN_WINDOW.setWindowTitle(f"Negar - {self.filename.name}")
-                    statusbar_timeout(self,"File Opened.")
+                    statusbar_timeout(self, "File Opened.")
                 except Exception as e:
                     self.input_editor.setPlainText(e.args[1])
 
-    def saveFileSlot(self):
+    def save_file_slot(self):
         if not self.output_editor.toPlainText():
             return
         if hasattr(self, "filename") and self.filename:
             with open(self.filename, "w", encoding="utf-8") as f:
                 try:
                     f.write(self.output_editor.toPlainText())
-                    statusbar_timeout(self,"File Saved.")
+                    statusbar_timeout(self, "File Saved.")
                 except Exception as e:
                     self.output_editor.setPlainText(e.args[1])
         else:
-            self.exportFileSlot()
+            self.export_file_slot()
 
-    def exportFileSlot(self):
+    def export_file_slot(self):
         if not self.output_editor.toPlainText():
             return
         filename, _ = self.fileDialog.getSaveFileName(self, "Save File", ".")
@@ -492,21 +507,19 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                     f.write(self.output_editor.toPlainText())
                     self.filename = Path(filename)
                     MAIN_WINDOW.setWindowTitle(f"Negar - {self.filename.name}")
-                    statusbar_timeout(self,"File Saved.")
+                    statusbar_timeout(self, "File Saved.")
                 except Exception as exception:
                     self.output_editor.setPlainText(exception.args[1])
 
-    def changeLanguage(self, lang):
+    def set_ui_language(self):
         """Change ui language."""
-        if lang=="Persian" and self.lang!="Persian":
-            self.lang = "Persian"
+        if self.settings["settings"]["language"] == "Persian":
             self.trans.load("fa", directory=f"{NEGARGUIPATH}/ts")
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        elif lang=="English" and self.lang!="English":
-            self.lang = "English"
+        elif self.settings["settings"]["language"] == "English":
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
@@ -538,12 +551,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self._set_font_size()
 
     def closeEvent(self, event):
+        self.__save_settings()
         WindowSettings.closeEvent(self, event)
         del event
         # event = QEvent(QEvent.Clipboard)
         # QApplication.sendEvent(QApplication.clipboard(), event)
         pyclipcopy(self.copy_slot())
-        self.__save_settings()
 
     def showEvent(self, event):
         WindowSettings.showEvent(self, event)
@@ -552,22 +565,20 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def __load_settings(self):
         try:
-            with open(SETTING_FILE) as toml_file:
-                self.settings.update(toml.load(toml_file))
-            ## view menu
+            # view menu
             self.actionSide_by_Side_View.setChecked(self.settings["view"]["side-by-side"])
             self.actionFull_Screen_Input.setChecked(self.settings["view"]["full-screen-input"])
             self.full_screen_input_slot()
             self.font_slider.setValue(self.settings["view"]["font-size"])
             self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"])
             qdarktheme.setup_theme(self.settings["view"]["theme"])
-            ## settings menu
+            # settings menu
             self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
-            self.changeLanguage(self.settings["settings"]["language"])
-            ### connect interactive clipboard slot if it is checked
+            self.set_ui_language()
+            # connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():
                 self.clipboard.dataChanged.connect(self.onClipboardChanged)
-            ## settings.editing-options
+            # settings.editing-options
             sdict = self.settings["settings"]["editing-option"]
             self.actionFix_Dashes.setChecked(sdict["fix-dashes"])
             self.actionFix_three_dots.setChecked(sdict["fix-three-dots"])
@@ -588,10 +599,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.actionCleanup_spacing.setChecked(sdict["cleanup-spacing"])
             self.actionTrim_Leading_Trailing_Whitespaces.setChecked(sdict["trim-lt-whitespaces"])
             self.actionExaggerating_ZWNJ.setChecked(sdict["exaggerating-zwnj"])
-        except FileNotFoundError:
-            print("Settings File Not Found!")
         except KeyError:
-            print("Settings File Has Been Corrupted!")
+            self.settings.update({"settings" : {"language" : "English"}})
+            print("KeyError: Settings File Has Been Broken!")
 
     def __save_settings(self):
         settings = {
@@ -600,11 +610,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 "full-screen-input": self.actionFull_Screen_Input.isChecked(),
                 "font-size": self.font_slider.value(),
                 "real-time-edit": self.autoedit_chkbox.isChecked(),
-                "theme": self.settings.get("view",{"theme": "auto"})["theme"],
+                "theme": self.settings.get("view", {"theme": "dark"})["theme"],
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
-                "language": self.settings.get("settings",{"language": "English"})["language"],
+                "language": self.settings.get("settings", {"language": "English"})["language"],
                 "editing-option": {
                     "fix-dashes": self.actionFix_Dashes.isChecked(),
                     "fix-three-dots": self.actionFix_three_dots.isChecked(),
@@ -629,8 +639,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             },
         }
         self.settings.update(settings)
-        with open(SETTING_FILE, "w") as toml_file:
-            toml.dump(self.settings, toml_file)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -715,23 +723,27 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def edit_text(self, text=None):
         if not text:
             self.output_editor.clear()
-            persian_editor = PersianEditor(self.input_editor.toPlainText(), *self.editing_options)
+            persian_editor = PersianEditor(
+                self.input_editor.toPlainText(),
+                *self.editing_options,
+            )
             self.output_editor.append(persian_editor.cleanup())
         else:
             return PersianEditor(text, *self.editing_options).cleanup()
 
 
-def statusbar_timeout(self, notification, timeout=5000): # Timeout in milliseconds
+def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseconds
     self.statusBar.showMessage(notification, timeout)
     timer = QTimer()
-    timer.setSingleShot( True )
-    timer.timeout.connect( self.statusBar.clearMessage )
+    timer.setSingleShot(True)
+    timer.timeout.connect(self.statusBar.clearMessage)
     timer.start(timeout)
+
 
 def main(args=docopt(__doc__)):
     """Program entry point."""
     if args["--version"]:
-        print (f"negar-gui, Version {__version__}")
+        print(f"negar-gui, Version {__version__}")
         sys.exit()
 
     global MAIN_WINDOW
@@ -741,6 +753,7 @@ def main(args=docopt(__doc__)):
     MAIN_WINDOW = MyWindow()
     MAIN_WINDOW.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()
