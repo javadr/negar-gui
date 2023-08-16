@@ -134,14 +134,14 @@ class WindowSettings(QMainWindow):
             "window_position": {"x": self.x(), "y": self.y()},
         })
 
-        with open(SETTING_FILE, "w") as toml_file:
+        with SETTING_FILE.open("w") as toml_file:
             toml.dump(self.settings, toml_file)
 
         logging.info("Settings Saved on Close!")
 
     def __load_settings(self):
         try:
-            with open(SETTING_FILE) as toml_file:
+            with SETTING_FILE.open() as toml_file:
                 self.settings.update(toml.load(toml_file))
             window_size = QSize(
                 self.settings["window_size"]["width"],
