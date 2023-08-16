@@ -21,6 +21,7 @@ from threading import Thread
 
 import requests
 import toml
+import logging
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
 from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl, QSize, QPoint
@@ -45,6 +46,11 @@ NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
 
+# Configure the logging module
+logging.basicConfig(
+    level=logging.INFO,
+    format=r"[%(asctime)s-%(levelname)s] %(message)s", datefmt="%H:%M:%S",
+)
 
 def init_decorator(func):
     def wrapper(*args, **kwargs):
@@ -131,7 +137,7 @@ class WindowSettings(QMainWindow):
         with open(SETTING_FILE, "w") as toml_file:
             toml.dump(self.settings, toml_file)
 
-        print("Settings Saved on Close!")
+        logging.info("Settings Saved on Close!")
 
     def __load_settings(self):
         try:
@@ -148,9 +154,9 @@ class WindowSettings(QMainWindow):
             self.resize(window_size)
             self.move(window_position)
         except FileNotFoundError:
-            print("Settings File Not Found!")
-        except KeyError:
-            print("Settings File Has Been Corrupted!")
+            logging.error("Settings File Not Found!")
+        except KeyError as err:
+            logging.error("KeyError[%s]: Settings File Broken!" % err)
 
     def closeEvent(self, event):
         del event
@@ -443,7 +449,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def qrcode(self):
         if len(self.output_editor.toPlainText().strip()) == 0:
-            print(self.settings)
             if self.settings["settings"]["language"] == "Persian":
                 statusbar_timeout(self, "هیچ متنی برای نمایش از طریق کد QR وجود ندارد!")
             else:  # English
@@ -533,9 +538,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     # def retranslateUi(self, MyWindow):
         # super(MyWindow, self).retranslateUi()
         # _translate = QtCore.QCoreApplication.translate
-        # print(dir(self))
         # MyWindow.fileDialog.setText(_translate(self.fileDialog.name(), "Open File - A Plain Text"))
-        # pass
 
     def copy_slot(self):
         output = self.output_editor.toPlainText()
@@ -599,9 +602,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.actionCleanup_spacing.setChecked(sdict["cleanup-spacing"])
             self.actionTrim_Leading_Trailing_Whitespaces.setChecked(sdict["trim-lt-whitespaces"])
             self.actionExaggerating_ZWNJ.setChecked(sdict["exaggerating-zwnj"])
-        except KeyError:
+        except KeyError as err:
             self.settings.update({"settings" : {"language" : "English"}})
-            print("KeyError: Settings File Has Been Broken!")
+            logging.error("KeyError[%s]: Settings File Broken!" % err)
 
     def __save_settings(self):
         settings = {
