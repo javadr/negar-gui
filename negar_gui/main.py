@@ -478,9 +478,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.statusBar.showMessage(message, timeout)
 
     def open_file_slot(self):
-        filename, _ = self.fileDialog.getOpenFileName(self, "Open File - A Plain Text", ".")
+        filename, _ = self.fileDialog.getOpenFileName(
+            self, "Open File - A Plain Text", ".", "Text Files (*.txt);;All Files (*)",
+        )
         if filename:
-            with open(filename, encoding="utf-8") as f:
+            with Path(filename).open(encoding="utf-8") as f:
                 try:
                     self.input_editor.setPlainText(str(f.read()))
                     self.filename = Path(filename)
@@ -505,12 +507,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def export_file_slot(self):
         if not self.output_editor.toPlainText():
             return
-        filename, _ = self.fileDialog.getSaveFileName(self, "Save File", ".")
+        filename, ext_type = self.fileDialog.getSaveFileName(
+            self, "Save File", ".", "Text Files (*.txt);;All Files (*)",
+        )
+        ext = ".txt" if ext_type.find(".txt") and not filename.endswith(".txt") else ""
         if filename:
-            with open(filename, "w", encoding="utf-8") as f:
+            with Path(f"{filename}{ext}").open("w", encoding="utf-8") as f:
                 try:
                     f.write(self.output_editor.toPlainText())
-                    self.filename = Path(filename)
+                    self.filename = Path(f"{filename}{ext}")
                     MAIN_WINDOW.setWindowTitle(f"Negar - {self.filename.name}")
                     statusbar_timeout(self, "File Saved.")
                 except Exception as exception:
