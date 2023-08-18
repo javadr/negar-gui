@@ -406,7 +406,26 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
         )
 
+        self.input_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
+        self.output_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
+
     ####################### SLOTs ###############################
+    def _sync_inout_scroll(self, value):
+        max_in_scroll = self.input_editor.verticalScrollBar().maximum()
+        max_out_scroll = self.output_editor.verticalScrollBar().maximum()
+        sender = self.sender()
+        if sender == self.input_editor.verticalScrollBar() and max_in_scroll!=0:
+            new_value = int(value/max_in_scroll * max_out_scroll)
+            self.output_editor.verticalScrollBar().valueChanged.disconnect(self._sync_inout_scroll)
+            self.output_editor.verticalScrollBar().setValue(new_value)
+            self.output_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
+
+        elif sender == self.output_editor.verticalScrollBar() and max_out_scroll!=0:
+            new_value = int(value/max_out_scroll * max_in_scroll)
+            self.input_editor.verticalScrollBar().valueChanged.disconnect(self._sync_inout_scroll)
+            self.input_editor.verticalScrollBar().setValue(new_value)
+            self.input_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
+
     def full_screen_input_slot(self):
         (
             self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
