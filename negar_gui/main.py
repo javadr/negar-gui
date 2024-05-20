@@ -774,7 +774,10 @@ def main(args=docopt(__doc__)):
         sys.exit()
 
     global MAIN_WINDOW
-    qdarktheme.enable_hi_dpi()
+    try:
+        qdarktheme.enable_hi_dpi()
+    except AttributeError:
+        qdarktheme.setup_theme = lambda x, **kw: ()
     app = QApplication(sys.argv)
     qdarktheme.setup_theme("dark")
     MAIN_WINDOW = MyWindow()
