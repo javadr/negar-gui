@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="en_US">
+<context>
+    <name>Dialog</name>
+    <message>
+        <location filename="../main.py" line="330"/>
+        <source>About Negar</source>
+        <translation>درباره نگار</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="231"/>
+        <source>Close</source>
+        <translation>بستن</translation>
+    </message>
+</context>
 <context>
     <name>MainWindow</name>
     <message>

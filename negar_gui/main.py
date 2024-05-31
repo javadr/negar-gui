@@ -24,7 +24,7 @@ import toml
 import logging
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
-from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl, QSize, QPoint
+from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl, QSize, QPoint, QCoreApplication
 from PyQt5.QtGui import QColor, QDesktopServices, QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
 import qdarktheme
@@ -42,6 +42,7 @@ from negar_gui.Ui_hwin import Ui_Dialog  # noqa: E402
 from negar_gui.Ui_mwin import Ui_MainWindow  # noqa: E402
 from negar_gui.Ui_uwin import Ui_uwWindow  # noqa: E402
 
+_translate = QCoreApplication.translate
 NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
@@ -227,6 +228,7 @@ class HelpWindow(QDialog, Ui_Dialog):
         self.parent = parent
         super().__init__(parent)
         self.setupUi(self)
+        self.buttonBox.buttons()[0].setText(_translate("Dialog", "Close"))
         self.setWindowTitle(title)
         if isinstance(label, str):
             self.label.setText(label)
@@ -326,7 +328,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO))
         self.actionAbout_Negar.setShortcut("CTRL+H")
         self.actionAbout_Negar.triggered.connect(lambda: (
-            HelpWindow(parent=self, title="About Negar", label=self.edit_text(INFO)).show()
+            HelpWindow(parent=self, title=_translate("Dialog", "About Negar"), label=self.edit_text(INFO)).show()
             )
         )
         self.actionAbout_Negar_GUI.triggered.connect(lambda:
