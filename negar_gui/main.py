@@ -13,6 +13,7 @@ Options:
 """
 
 import asyncio
+import json
 import re
 import sys
 import tempfile
@@ -677,6 +678,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 self.showNormal()
             else:
                 self.showMaximized()
+        elif event.key() == Qt.Key.Key_S and event.modifiers() == (Qt.ControlModifier | Qt.AltModifier):
+            self.input_editor.setText(json.dumps(self.settings, indent=4))
         else:
             super().keyPressEvent(event)
 
