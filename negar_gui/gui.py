@@ -25,13 +25,13 @@ class TableModel(QAbstractTableModel):
     def data(self, index, role):
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignVCenter
-        if role == Qt.ItemDataRole.BackgroundRole:
+        elif role == Qt.ItemDataRole.BackgroundRole:
             if index.row()%2:
                 return QColor("gray")
-        if role == Qt.ItemDataRole.ForegroundRole:
+        elif role == Qt.ItemDataRole.ForegroundRole:
             if index.row()%2:
                 return QColor("white")
-        if role == Qt.ItemDataRole.DisplayRole:
+        elif role == Qt.ItemDataRole.DisplayRole:
             try:
                 return self._data[index.row()][index.column()]
             except:
@@ -39,13 +39,14 @@ class TableModel(QAbstractTableModel):
         return None
 
     def rowCount(self, index):
-        """The length of the outer list."""
+        """Return the length of the outer list."""
         del index
         return len(self._data)
 
     def columnCount(self, index):
-        """The following takes the first sub-list, and returns
-        the length (only works if all rows are an equal length).
+        """Return the length of the first sub-list.
+        
+        This method assumes that all sub-lists (rows) are of equal length.
         """
         del index
         return len(self._data[0])
@@ -256,7 +257,7 @@ class Form(QMainWindow):
         self.edit_text()
 
     def untouch_add_enabler(self):
-        """Checks untouchable word text input to enable the `Add` button if just one word is typed."""
+        """Enable the 'Add' button if a single word is entered in the text input."""
         word_list = self.untouch_word.text().split(" ")
         if len(word_list) == 1:
             self.untouch_button.setEnabled(True)
@@ -264,7 +265,7 @@ class Form(QMainWindow):
             self.untouch_button.setEnabled(False)
 
     def untouch_add(self):
-        """Adds a new word into untouchable words."""
+        """Add a new word into untouchable words."""
         word = [self.untouch_word.text()]
         UnTouchable.add(word)
         self.untouch_word.clear()
@@ -272,7 +273,7 @@ class Form(QMainWindow):
         self.setup_table() # updates untouchable list
 
     def autoedit_handler(self):
-        """Edits the input text automatically if `autoedit` is checked."""
+        """Edit the input text automatically if `autoedit` is checked."""
         if self.autoedit_chkbox.isChecked():
             self.edit_btn.setEnabled(False)
             self.input_editor.textChanged.connect(self.edit_text)
@@ -283,7 +284,7 @@ class Form(QMainWindow):
         self._set_font_size()
 
     def text_box_reset(self):
-        """Clears input/output editor boxes."""
+        """Clear input/output editor boxes."""
         self.input_editor.clear()
         self.output_editor.clear()
 

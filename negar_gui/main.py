@@ -83,20 +83,20 @@ class TableModel(QAbstractTableModel):
     def data(self, index, role):
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignVCenter
-        if role == Qt.ItemDataRole.BackgroundRole:
+        elif role == Qt.ItemDataRole.BackgroundRole:
             if index.row() % 2:
                 return QColor("gray")
-        if role == Qt.ItemDataRole.ForegroundRole:
+        elif role == Qt.ItemDataRole.ForegroundRole:
             if index.row() % 2:
                 return QColor("white")
-        if role == Qt.ItemDataRole.DisplayRole:
+        elif role == Qt.ItemDataRole.DisplayRole:
             try:
                 return self._data[index.row()][index.column()]
             except:
                 return ""
+        return None
 
     def rowCount(self, index):
-        """Get length of the outer list."""
         del index
         return len(self._data)
 
@@ -753,15 +753,16 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.editing_options.append("exaggerating-zwnj")
 
     def edit_text(self, text=None):
-        if not text:
-            self.output_editor.clear()
-            persian_editor = PersianEditor(
-                self.input_editor.toPlainText(),
-                *self.editing_options,
-            )
-            self.output_editor.append(persian_editor.cleanup())
-        else:
+        if text:
             return PersianEditor(text, *self.editing_options).cleanup()
+
+        self.output_editor.clear()
+        persian_editor = PersianEditor(
+            self.input_editor.toPlainText(),
+            *self.editing_options,
+        )
+        self.output_editor.append(persian_editor.cleanup())
+            
 
 
 def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseconds
