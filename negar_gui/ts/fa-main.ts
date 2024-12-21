@@ -4,12 +4,12 @@
 <context>
     <name>Dialog</name>
     <message>
-        <location filename="../main.py" line="330"/>
+        <location filename="../main.py" line="350"/>
         <source>About Negar</source>
         <translation>درباره نگار</translation>
     </message>
     <message>
-        <location filename="../main.py" line="231"/>
+        <location filename="../main.py" line="243"/>
         <source>Close</source>
         <translation>بستن</translation>
     </message>

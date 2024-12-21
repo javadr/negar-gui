@@ -1,3 +1,8 @@
+2024-12-21 -- v0.9
+-- Migrate 
+    -- Python3.6 to Python3.8, 
+    -- PyQt5 to PyQt6
+
 2024-12-21 -- v0.8.8
 -- Fixed minor translation issue
 

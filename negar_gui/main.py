@@ -25,9 +25,18 @@ import toml
 import logging
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
-from PyQt5.QtCore import QAbstractTableModel, Qt, QTimer, QTranslator, QUrl, QSize, QPoint, QCoreApplication
-from PyQt5.QtGui import QColor, QDesktopServices, QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
+from PyQt6.QtCore import (
+    QAbstractTableModel,
+    Qt,
+    QTimer,
+    QTranslator,
+    QUrl,
+    QSize,
+    QPoint,
+    QCoreApplication,
+)
+from PyQt6.QtGui import QColor, QDesktopServices, QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
 import qdarktheme
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
@@ -42,6 +51,7 @@ from negar_gui.constants import LOGO, __version__, SETTING_FILE  # noqa: E402
 from negar_gui.Ui_hwin import Ui_Dialog  # noqa: E402
 from negar_gui.Ui_mwin import Ui_MainWindow  # noqa: E402
 from negar_gui.Ui_uwin import Ui_uwWindow  # noqa: E402
+import negar_gui.resource_rc  # Make sure this is imported
 
 _translate = QCoreApplication.translate
 NEGARGUIPATH = Path(__file__).parent.as_posix()
@@ -51,15 +61,18 @@ collator = Collator()
 # Configure the logging module
 logging.basicConfig(
     level=logging.INFO,
-    format=r"[%(asctime)s-%(levelname)s] %(message)s", datefmt="%H:%M:%S",
+    format=r"[%(asctime)s-%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
 )
+
 
 def init_decorator(func):
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
         self, parent = args[0], kwargs.pop("parent", None)
         # Maximize Frame Size if either height or width exceeds real screen dimensionsq
-        screen = QApplication.desktop().screenGeometry()
+        # screen = QApplication.desktop().screenGeometry()
+        screen = QApplication.primaryScreen().geometry()
         h, w = screen.height(), screen.width()
         if self.width() > w or self.height() > h:
             self.showMaximized()
@@ -71,11 +84,11 @@ def init_decorator(func):
                 pass
         # connect widgets to their proper slot
         self.connectSlots()
+
     return wrapper
 
 
 class TableModel(QAbstractTableModel):
-
     def __init__(self, data):
         super().__init__()
         self._data = data
@@ -114,12 +127,11 @@ class TableModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Horizontal:
                 return ""
             if orientation == Qt.Orientation.Vertical:
-                return str(section+1)
+                return str(section + 1)
         return None
 
 
 class WindowSettings(QMainWindow):
-
     _settings = {}
 
     @property
@@ -131,10 +143,12 @@ class WindowSettings(QMainWindow):
         self._settings = value
 
     def __save_settings(self):
-        self.settings.update({
-            "window_size": {"width": self.width(), "height": self.height()},
-            "window_position": {"x": self.x(), "y": self.y()},
-        })
+        self.settings.update(
+            {
+                "window_size": {"width": self.width(), "height": self.height()},
+                "window_position": {"x": self.x(), "y": self.y()},
+            }
+        )
 
         with SETTING_FILE.open("w") as toml_file:
             toml.dump(self.settings, toml_file)
@@ -172,7 +186,6 @@ class WindowSettings(QMainWindow):
 
 
 class UntouchWindow(QMainWindow, Ui_uwWindow):
-
     @init_decorator
     def __init__(self, parent=None):
         self.parent = parent
@@ -184,7 +197,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
     def setup_table(self, col=8):
         self.untouch_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         data = sorted(list(UnTouchable().get()), key=collator.sort_key)
-        data = [data[i*col:(i+1)*col] for i in range(int(len(data)//col)+1)]
+        data = [data[i * col : (i + 1) * col] for i in range(int(len(data) // col) + 1)]
         model = TableModel(data)
         self.untouch_table.setModel(model)
 
@@ -223,7 +236,6 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
 
 
 class HelpWindow(QDialog, Ui_Dialog):
-
     @init_decorator
     def __init__(self, parent=None, title=None, label=None):
         self.parent = parent
@@ -248,7 +260,6 @@ class HelpWindow(QDialog, Ui_Dialog):
 
 
 class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
-
     @init_decorator
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -256,7 +267,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
-        self.input_editor.setFocus(True)
+        # self.input_editor.setFocus(True)
+        self.input_editor.setFocus(Qt.FocusReason.OtherFocusReason)
         # Translator
         # main language is defined via self.settings["settings"]["language"] by WindowsSettings
         self.trans = QTranslator()
@@ -276,6 +288,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             with requests.get(link) as response:
                 VERSION_PATTERN = r'(__version__ = "(\d\.\d(\.\d+)?)")'
                 return re.search(VERSION_PATTERN, response.text, re.M).group(2)
+
         try:
             requests.get("https://github.com")  # check the internet connection
             negar_t = asyncio.create_task(get(nurl))
@@ -285,7 +298,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         except:
             negar_v, negargui_v = "0.0", "0.0"
 
-        def version(v): return list(map(int, v.split(".")))
+        def version(v):
+            return list(map(int, v.split(".")))
+
         negar_nv, negargui_nv = (version(i) for i in (negar_v, negargui_v))
         negar_ov, negargui_ov = (version(i) for i in (negar__version, __version__))
         notification = ""
@@ -307,105 +322,131 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionExit.triggered.connect(self.close)
         self.font_slider.valueChanged.connect(self._set_font_size)
         self.actionIncrease_Font_Size.triggered.connect(
-            lambda: (self.font_slider.setValue(
-                self.font_slider.value()+1), self._set_font_size()),
+            lambda: (
+                self.font_slider.setValue(self.font_slider.value() + 1),
+                self._set_font_size(),
+            ),
         )
-        self.actionDecrease_Font_Size.triggered.connect(lambda: (
-            self.font_slider.setValue(self.font_slider.value()-1),
-            self._set_font_size(),
+        self.actionDecrease_Font_Size.triggered.connect(
+            lambda: (
+                self.font_slider.setValue(self.font_slider.value() - 1),
+                self._set_font_size(),
             )
         )
-        self.actionPersian.triggered.connect(lambda: (
-            self.settings.update({"settings": {"language": "Persian"}}),
-            self.set_ui_language(),
+        self.actionPersian.triggered.connect(
+            lambda: (
+                self.settings.update({"settings": {"language": "Persian"}}),
+                self.set_ui_language(),
             )
         )
-        self.actionEnglish.triggered.connect(lambda: (
-            self.settings.update({"settings": {"language": "English"}}),
-            self.set_ui_language(),
+        self.actionEnglish.triggered.connect(
+            lambda: (
+                self.settings.update({"settings": {"language": "English"}}),
+                self.set_ui_language(),
             )
         )
 
         self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO))
         self.actionAbout_Negar.setShortcut("CTRL+H")
-        self.actionAbout_Negar.triggered.connect(lambda: (
-            HelpWindow(parent=self, title=_translate("Dialog", "About Negar"), label=self.edit_text(INFO)).show()
+        self.actionAbout_Negar.triggered.connect(
+            lambda: (
+                HelpWindow(
+                    parent=self,
+                    title=_translate("Dialog", "About Negar"),
+                    label=self.edit_text(INFO),
+                ).show()
             )
         )
-        self.actionAbout_Negar_GUI.triggered.connect(lambda:
-            QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
+        self.actionAbout_Negar_GUI.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
         )
-        self.actionDonate.triggered.connect(lambda:
-            QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation")),
+        self.actionDonate.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation")),
         )
-        self.actionReport_Bugs.triggered.connect(lambda:
-            QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
+        self.actionReport_Bugs.triggered.connect(
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
         )
 
         for menu_item in (
-            self.actionFix_Dashes, self.actionFix_three_dots, self.actionFix_English_quotes,
-            self.actionFix_hamzeh, self.actionUse_Persian_yeh_to_show_hamzeh,
-            self.actionFix_spacing_braces_and_quotes, self.actionFix_Arabic_numbers,
-            self.actionFix_English_numbers, self.actionFix_non_Persian_chars,
-            self.actionFix_prefix_spacing, self.actionFix_prefix_separating,
-            self.actionFix_suffix_spacing, self.actionFix_suffix_separating,
-            self.actionFix_aggressive_punctuation, self.actionCleanup_kashidas,
-            self.actionCleanup_extra_marks, self.actionCleanup_spacing,
-            self.actionTrim_Leading_Trailing_Whitespaces, self.actionExaggerating_ZWNJ,
+            self.actionFix_Dashes,
+            self.actionFix_three_dots,
+            self.actionFix_English_quotes,
+            self.actionFix_hamzeh,
+            self.actionUse_Persian_yeh_to_show_hamzeh,
+            self.actionFix_spacing_braces_and_quotes,
+            self.actionFix_Arabic_numbers,
+            self.actionFix_English_numbers,
+            self.actionFix_non_Persian_chars,
+            self.actionFix_prefix_spacing,
+            self.actionFix_prefix_separating,
+            self.actionFix_suffix_spacing,
+            self.actionFix_suffix_separating,
+            self.actionFix_aggressive_punctuation,
+            self.actionCleanup_kashidas,
+            self.actionCleanup_extra_marks,
+            self.actionCleanup_spacing,
+            self.actionTrim_Leading_Trailing_Whitespaces,
+            self.actionExaggerating_ZWNJ,
         ):
-            menu_item.triggered.connect(
-                lambda: (self.option_control(), self.autoedit_handler()))
+            menu_item.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
 
         self.actionUntouchable_Words.triggered.connect(
-            lambda: (UntouchWindow(parent=self).show(), MAIN_WINDOW.hide()))
+            lambda: (UntouchWindow(parent=self).show(), MAIN_WINDOW.hide())
+        )
         self.actionCopy.triggered.connect(self.copy_slot)
         self.copy_btn.clicked.connect(self.copy_slot)
 
-        self.actionInteractive_Clipboard.triggered.connect(lambda:
-            self.clipboard.dataChanged.connect(self.onClipboardChanged)
+        self.actionInteractive_Clipboard.triggered.connect(
+            lambda: self.clipboard.dataChanged.connect(self.onClipboardChanged)
             if self.actionInteractive_Clipboard.isChecked()
             else self.clipboard.dataChanged.disconnect(self.onClipboardChanged)
         )
         self.actionQr_Code.triggered.connect(self.qrcode)
 
-        self.vertical_btn.clicked.connect(lambda: (
-            self.actionSide_by_Side_View.setChecked(True),
-            self._grid_layout("v"),
+        self.vertical_btn.clicked.connect(
+            lambda: (
+                self.actionSide_by_Side_View.setChecked(True),
+                self._grid_layout("v"),
             )
         )
-        self.horizontal_btn.clicked.connect(lambda: (
-            self.actionSide_by_Side_View.setChecked(False),
-            self._grid_layout("h"),
+        self.horizontal_btn.clicked.connect(
+            lambda: (
+                self.actionSide_by_Side_View.setChecked(False),
+                self._grid_layout("h"),
             )
         )
 
-        self.actionSide_by_Side_View.triggered.connect(lambda:
-            self._grid_layout("v")
+        self.actionSide_by_Side_View.triggered.connect(
+            lambda: self._grid_layout("v")
             if self.actionSide_by_Side_View.isChecked()
             else self._grid_layout("h")
         )
         self.actionFull_Screen_Input.triggered.connect(self.full_screen_input_slot)
 
-        self.action_dark.triggered.connect(lambda: (
-            qdarktheme.setup_theme("dark",
-                custom_colors={
-                    "[dark]": {
-                        "primary": "#D0BCFF",
-                        "primary>button.hoverBackground": "#ffffff",
+        self.action_dark.triggered.connect(
+            lambda: (
+                qdarktheme.setup_theme(
+                    "dark",
+                    custom_colors={
+                        "[dark]": {
+                            "primary": "#D0BCFF",
+                            "primary>button.hoverBackground": "#ffffff",
+                        },
                     },
-                }
-            ),
-            self.settings.update({"view": {"theme": "dark"}}),
+                ),
+                self.settings.update({"view": {"theme": "dark"}}),
             )
         )
-        self.action_Light.triggered.connect(lambda: (
-            qdarktheme.setup_theme("light"),
-            self.settings.update({"view": {"theme": "light"}}),
+        self.action_Light.triggered.connect(
+            lambda: (
+                qdarktheme.setup_theme("light"),
+                self.settings.update({"view": {"theme": "light"}}),
             )
         )
-        self.action_Auto.triggered.connect(lambda: (
-            qdarktheme.setup_theme("auto"),
-            self.settings.update({"view": {"theme": "auto"}}),
+        self.action_Auto.triggered.connect(
+            lambda: (
+                qdarktheme.setup_theme("auto"),
+                self.settings.update({"view": {"theme": "auto"}}),
             )
         )
 
@@ -417,23 +458,25 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         max_in_scroll = self.input_editor.verticalScrollBar().maximum()
         max_out_scroll = self.output_editor.verticalScrollBar().maximum()
         sender = self.sender()
-        if sender == self.input_editor.verticalScrollBar() and max_in_scroll!=0:
-            new_value = int(value/max_in_scroll * max_out_scroll)
+        if sender == self.input_editor.verticalScrollBar() and max_in_scroll != 0:
+            new_value = int(value / max_in_scroll * max_out_scroll)
             self.output_editor.verticalScrollBar().valueChanged.disconnect(self._sync_inout_scroll)
             self.output_editor.verticalScrollBar().setValue(new_value)
             self.output_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
 
-        elif sender == self.output_editor.verticalScrollBar() and max_out_scroll!=0:
-            new_value = int(value/max_out_scroll * max_in_scroll)
+        elif sender == self.output_editor.verticalScrollBar() and max_out_scroll != 0:
+            new_value = int(value / max_out_scroll * max_in_scroll)
             self.input_editor.verticalScrollBar().valueChanged.disconnect(self._sync_inout_scroll)
             self.input_editor.verticalScrollBar().setValue(new_value)
             self.input_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
 
     def full_screen_input_slot(self):
         (
-            self._grid_full_input() if self.actionFull_Screen_Input.isChecked() else
-            self._grid_layout("v") if self.actionSide_by_Side_View.isChecked() else
-            self._grid_layout("h")
+            self._grid_full_input()
+            if self.actionFull_Screen_Input.isChecked()
+            else self._grid_layout("v")
+            if self.actionSide_by_Side_View.isChecked()
+            else self._grid_layout("h")
         )
 
     # Change GridLayout Orientation
@@ -443,22 +486,28 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         elif layout == "h":
             self.gridLayout.setVerticalSpacing(0)
         widgets = (
-            self.input_editor_label, self.input_editor,
-            self.output_editor_label, self.output_editor,
-            )
+            self.input_editor_label,
+            self.input_editor,
+            self.output_editor_label,
+            self.output_editor,
+        )
         for widget in widgets:
             self.gridLayout.removeWidget(widget)
             widget.setParent(None)
         elements = (
-            (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
-            (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
-            (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
-            (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
-        ) if layout == "v" else (
-            (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
-            (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
-            (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
-            (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
+            (
+                (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
+                (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
+                (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
+                (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
+            )
+            if layout == "v"
+            else (
+                (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
+                (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
+                (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
+                (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
+            )
         )
         for i, widget in enumerate(widgets):
             self.gridLayout.addWidget(widget, *elements[i])
@@ -486,14 +535,16 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         qr.make(fit=True)
         img = qr.make_image()
         temp_path = Path(tempfile.gettempdir())
-        img.save(temp_path/"negar-gui_qrcode.png")
+        img.save(temp_path / "negar-gui_qrcode.png")
         pixmap = QPixmap(f"{(temp_path/'negar-gui_qrcode.png').absolute()}")
-        screen = QApplication.desktop().screenGeometry()
+        # screen = QApplication.desktop().screenGeometry()
+        screen = QApplication.primaryScreen().geometry()
         w = min(screen.height(), screen.width())
-        if w-90 < img.size[0]:
-            pixmap = pixmap.scaled(w-90, w-90, Qt.KeepAspectRatio)
+        if w - 90 < img.size[0]:
+            # pixmap = pixmap.scaled(w - 90, w - 90, Qt.KeepAspectRatio)
+            pixmap = pixmap.scaled(w - 90, w - 90, Qt.AspectRatioMode.KeepAspectRatio)
         HelpWindow(parent=self, title="QR Code", label=pixmap).show()
-        (Path(temp_path)/"negar-gui_qrcode.png").unlink()
+        (Path(temp_path) / "negar-gui_qrcode.png").unlink()
 
     def _statusBar(self, notification="", timeout=0):
         message = f"Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}"
@@ -501,7 +552,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def open_file_slot(self):
         filename, _ = self.fileDialog.getOpenFileName(
-            self, "Open File - A Plain Text", ".", "Text Files (*.txt);;All Files (*)",
+            self,
+            "Open File - A Plain Text",
+            ".",
+            "Text Files (*.txt);;All Files (*)",
         )
         if filename:
             with Path(filename).open(encoding="utf-8") as f:
@@ -530,7 +584,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if not self.output_editor.toPlainText():
             return
         filename, ext_type = self.fileDialog.getSaveFileName(
-            self, "Save File", ".", "Text Files (*.txt);;All Files (*)",
+            self,
+            "Save File",
+            ".",
+            "Text Files (*.txt);;All Files (*)",
         )
         ext = ".txt" if ext_type.find(".txt") and not filename.endswith(".txt") else ""
         if filename:
@@ -563,9 +620,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.retranslateUi(self)
 
     # def retranslateUi(self, MyWindow):
-        # super(MyWindow, self).retranslateUi()
-        # _translate = QtCore.QCoreApplication.translate
-        # MyWindow.fileDialog.setText(_translate(self.fileDialog.name(), "Open File - A Plain Text"))
+    # super(MyWindow, self).retranslateUi()
+    # _translate = QtCore.QCoreApplication.translate
+    # MyWindow.fileDialog.setText(_translate(self.fileDialog.name(), "Open File - A Plain Text"))
 
     def copy_slot(self):
         output = self.output_editor.toPlainText()
@@ -603,7 +660,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"])
             qdarktheme.setup_theme(self.settings["view"]["theme"])
             # settings menu
-            self.actionInteractive_Clipboard.setChecked(self.settings["settings"]["interactive-clipboard"])
+            self.actionInteractive_Clipboard.setChecked(
+                self.settings["settings"]["interactive-clipboard"]
+            )
             self.set_ui_language()
             # connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():
@@ -630,7 +689,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.actionTrim_Leading_Trailing_Whitespaces.setChecked(sdict["trim-lt-whitespaces"])
             self.actionExaggerating_ZWNJ.setChecked(sdict["exaggerating-zwnj"])
         except KeyError as err:
-            self.settings.update({"settings" : {"language" : "English"}})
+            self.settings.update({"settings": {"language": "English"}})
             logging.error("KeyError[%s]: Settings File Broken!" % err)
 
     def __save_settings(self):
@@ -678,16 +737,19 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 self.showNormal()
             else:
                 self.showMaximized()
-        elif event.key() == Qt.Key.Key_S and event.modifiers() == (Qt.ControlModifier | Qt.AltModifier):
+        elif event.key() == Qt.Key.Key_S and event.modifiers() == (
+            Qt.ControlModifier | Qt.AltModifier
+        ):
             self.input_editor.setText(json.dumps(self.settings, indent=4))
         else:
             super().keyPressEvent(event)
 
     def wheelEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
-        if modifiers == Qt.ControlModifier:
+        # if modifiers == Qt.ControlModifier:
+        if modifiers == Qt.KeyboardModifier.ControlModifier:
             delta_notches = int(event.angleDelta().y() / 120)
-            self.font_slider.setValue(self.font_slider.value()+delta_notches)
+            self.font_slider.setValue(self.font_slider.value() + delta_notches)
             self._set_font_size()
 
     def autoedit_handler(self):
@@ -762,7 +824,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             *self.editing_options,
         )
         self.output_editor.append(persian_editor.cleanup())
-            
 
 
 def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseconds
@@ -776,7 +837,7 @@ def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseco
 def main(args=docopt(__doc__)):
     """Program entry point."""
     if args["--version"]:
-        print(f"negar-gui, Version {__version__}")
+        print(f"negar-gui, Version {__version__}")  # noqa
         sys.exit()
 
     global MAIN_WINDOW
@@ -788,7 +849,8 @@ def main(args=docopt(__doc__)):
     qdarktheme.setup_theme("dark")
     MAIN_WINDOW = MyWindow()
     MAIN_WINDOW.show()
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

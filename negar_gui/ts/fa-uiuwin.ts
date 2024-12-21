@@ -4,22 +4,22 @@
 <context>
     <name>uwWindow</name>
     <message>
-        <location filename="../Ui_uwin.py" line="53"/>
+        <location filename="../Ui_uwin.py" line="51"/>
         <source>Untouchable Words</source>
         <translation>کلمات بدون تغییر</translation>
     </message>
     <message>
-        <location filename="../Ui_uwin.py" line="54"/>
+        <location filename="../Ui_uwin.py" line="52"/>
         <source>Add a &amp;word to untouchable list:</source>
         <translation>افزودن یک &amp;کلمه به لیست کلمات بدون تغییر:</translation>
     </message>
     <message>
-        <location filename="../Ui_uwin.py" line="55"/>
+        <location filename="../Ui_uwin.py" line="53"/>
         <source>&amp;Add</source>
         <translation>&amp;افزودن</translation>
     </message>
     <message>
-        <location filename="../Ui_uwin.py" line="56"/>
+        <location filename="../Ui_uwin.py" line="54"/>
         <source>Return</source>
         <translation type="unfinished"></translation>
     </message>

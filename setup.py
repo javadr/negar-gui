@@ -19,6 +19,7 @@ setup(
     install_requires=[
         "python-negar>=1.2.7",
         "PyQt5",
+        "PyQt6",
         "pyperclip",
         "pyuca",
         "regex",
@@ -29,7 +30,7 @@ setup(
         "pyqtdarktheme",
         "toml",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     package_dir={"negar_gui": "negar_gui"},
     description="Graphical User Interface for Negar -- Persian Text Editor",
     license="GPLv3",
