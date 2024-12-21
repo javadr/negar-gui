@@ -1,3 +1,6 @@
+2024-12-21 -- v0.8.8
+-- Fixed minor translation issue
+
 2024-09-03 -- v0.8.7
 -- Clean Code
 
@@ -76,13 +79,13 @@
     -- side-by-side view      --> Ctrl+I
 
 2023-03-21 -- v0.6.3
--- Fixed issue with translataion
+-- Fixed issue with translation
 
 2023-03-18 -- v0.6.2
 -- Improved logo shape
 
 2023-03-18 -- v0.6.1
--- Incread font-size to 84 point.
+-- Increased font-size to 84 point.
     -- In digital typefaces, one point is equal to 1/72 of an inch.
 -- Colored border of QTextEdit
 
@@ -112,7 +115,7 @@
 -- Added Vertical/Horizontal layout for input/output textbox
 
 2023-03-15 -- v0.2.18
--- Fixed toolip fix for QR code
+-- Fixed tooltip fix for QR code
 
 2023-03-04 -- v0.2.17
 -- Added support for logo in Windows app.
