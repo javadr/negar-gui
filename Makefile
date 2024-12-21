@@ -60,9 +60,9 @@ nuCompile: setup ver
 	--enable-plugin=pyqt5 --nofollow-import-to=tkinter --lto=no \
 	-o dist/negar-gui-v$(VER).bin \
 	--output-dir=dist --remove-output \
-	--include-data-file=.negar/lib/python3.10/site-packages/pyuca/allkeys-9.0.0.txt=pyuca/allkeys-9.0.0.txt \
-	--include-data-file=.negar/lib/python3.10/site-packages/negar/data/untouchable.dat=negar/data/untouchable.dat
-	# --include-data-dir=.negar/lib/python3.10/site-packages/negar=negar/data \
+	--include-data-file=.negar/lib/python3.12/site-packages/pyuca/allkeys-9.0.0.txt=pyuca/allkeys-9.0.0.txt \
+	--include-data-file=.negar/lib/python3.12/site-packages/negar/data/untouchable.dat=negar/data/untouchable.dat
+	# --include-data-dir=.negar/lib/python3.12/site-packages/negar=negar/data \
 	# --module python-negar --include-package=python-negar
 	# --include-package-data=python-negar=*.dat \
 
@@ -85,10 +85,13 @@ trans: ver
 
 res: ver
 	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
+	sed "s/PyQt5/PyQt6/g" -i negar_gui/resource_rc.py
 
 ui: ver
-	pyuic5 --from-imports negar_gui/mwin.ui -xo negar_gui/Ui_mwin.py
-	pyuic5 --from-imports negar_gui/uwin.ui -xo negar_gui/Ui_uwin.py
+	pyuic6 negar_gui/mwin.ui -xo negar_gui/Ui_mwin.py
+	pyuic6 negar_gui/uwin.ui -xo negar_gui/Ui_uwin.py
+	pyuic6 negar_gui/hwin.ui -xo negar_gui/Ui_hwin.py
+
 
 sres: ver
 	pyside2-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
