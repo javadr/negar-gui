@@ -35,11 +35,12 @@ from PyQt6.QtCore import (
     QPoint,
     QCoreApplication,
 )
-from PyQt6.QtGui import QColor, QDesktopServices, QIcon, QPixmap
+from PyQt6.QtGui import QColor, QDesktopServices, QIcon, QPixmap, QGuiApplication
 from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
 import qdarktheme
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
+from redlines import Redlines
 
 # https://stackoverflow.com/questions/16981921
 sys.path.append(Path(__file__).parent.parent.as_posix())
@@ -276,6 +277,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
         self.filename = None  # will be defined later
+        self.cleaned_text = (
+            ""  # Stores the cleaned text, as output_editor may also contain comparative text
+        )
         self._statusBar()
         # Checks for new release
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
@@ -315,6 +319,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.autoedit_handler()
         # connect to slots
         self.autoedit_chkbox.stateChanged.connect(self.autoedit_handler)
+        self.comparative_output_chkbox.stateChanged.connect(self.autoedit_handler)
         self.edit_btn.clicked.connect(self.edit_text)
         self.actionOpen.triggered.connect(self.open_file_slot)
         self.actionSave.triggered.connect(self.save_file_slot)
@@ -346,7 +351,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
         )
 
-        self.actionNegar_Help.triggered.connect(lambda: self.input_editor.setText(INFO))
+        self.actionNegar_Help.triggered.connect(
+            lambda: (
+                self.input_editor.setText(INFO),  # puth the info in the input editor
+                self.autoedit_handler(),  # auto adjust the font size
+            )
+        )
         self.actionAbout_Negar.setShortcut("CTRL+H")
         self.actionAbout_Negar.triggered.connect(
             lambda: (
@@ -489,15 +499,19 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.input_editor_label,
             self.input_editor,
             self.output_editor_label,
+            self.comparative_output_chkbox,
+            # self.output_lbl_comp_chk_layout,
             self.output_editor,
         )
         for widget in widgets:
             self.gridLayout.removeWidget(widget)
             widget.setParent(None)
+        # (row, col, rowspan, colspan)
         elements = (
             (
                 (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
                 (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
+                (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
                 (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
                 (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
             )
@@ -506,11 +520,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
                 (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
                 (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
+                (2, 1, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
                 (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
             )
         )
         for i, widget in enumerate(widgets):
             self.gridLayout.addWidget(widget, *elements[i])
+        self.output_lbl_comp_chk_layout.addWidget(self.output_editor_label)
+        self.output_lbl_comp_chk_layout.addWidget(self.comparative_output_chkbox)
+        # self.output_lbl_comp_chk_layout.addItem(self.output_spacer)
 
     def _grid_full_input(self):
         widgets = (self.output_editor_label, self.output_editor)
@@ -531,7 +549,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             box_size=10,
             border=4,
         )
-        qr.add_data(self.output_editor.toPlainText())
+        # qr.add_data(self.output_editor.toPlainText())
+        qr.add_data(self.cleaned_text)
         qr.make(fit=True)
         img = qr.make_image()
         temp_path = Path(tempfile.gettempdir())
@@ -625,9 +644,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     # MyWindow.fileDialog.setText(_translate(self.fileDialog.name(), "Open File - A Plain Text"))
 
     def copy_slot(self):
-        output = self.output_editor.toPlainText()
+        # output = self.output_editor.toPlainText()
+        output = self.cleaned_text
         if output:
-            QApplication.clipboard().setText(output)
+            # QApplication.clipboard().setText(output)
+            QGuiApplication.clipboard().setText(output)
         return output
 
     ####################### EVENTs ###############################
@@ -658,6 +679,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.full_screen_input_slot()
             self.font_slider.setValue(self.settings["view"]["font-size"])
             self.autoedit_chkbox.setChecked(self.settings["view"]["real-time-edit"])
+            self.comparative_output_chkbox.setChecked(self.settings["view"]["comparative-mode"])
             qdarktheme.setup_theme(self.settings["view"]["theme"])
             # settings menu
             self.actionInteractive_Clipboard.setChecked(
@@ -699,6 +721,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 "full-screen-input": self.actionFull_Screen_Input.isChecked(),
                 "font-size": self.font_slider.value(),
                 "real-time-edit": self.autoedit_chkbox.isChecked(),
+                "comparative-mode": self.comparative_output_chkbox.isChecked(),
                 "theme": self.settings.get("view", {"theme": "dark"})["theme"],
             },
             "settings": {
@@ -738,7 +761,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             else:
                 self.showMaximized()
         elif event.key() == Qt.Key.Key_S and event.modifiers() == (
-            Qt.ControlModifier | Qt.AltModifier
+            Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.AltModifier
         ):
             self.input_editor.setText(json.dumps(self.settings, indent=4))
         else:
@@ -746,8 +769,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def wheelEvent(self, event):
         modifiers = QApplication.keyboardModifiers()
+        # modifiers = event.modifiers()
         # if modifiers == Qt.ControlModifier:
-        if modifiers == Qt.KeyboardModifier.ControlModifier:
+        if modifiers & Qt.KeyboardModifier.ControlModifier:
             delta_notches = int(event.angleDelta().y() / 120)
             self.font_slider.setValue(self.font_slider.value() + delta_notches)
             self._set_font_size()
@@ -771,6 +795,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.input_editor.clear()
         self.input_editor.append(lines)
         self.edit_text()
+
+        html_content = self.output_editor.toHtml()  # Get current content
+        # Replace font-size values with new size
+        new_html = re.sub(r"font-size:(\d+)pt", f"font-size:{size}pt", html_content)
+        self.output_editor.setHtml(new_html)  # Update content
 
     def option_control(self):
         """Enable/Disable Editing features."""
@@ -823,7 +852,19 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.input_editor.toPlainText(),
             *self.editing_options,
         )
-        self.output_editor.append(persian_editor.cleanup())
+        # self.output_editor.append(persian_editor.cleanup())
+        self.cleaned_text = persian_editor.cleanup()
+        if self.comparative_output_chkbox.isChecked():
+            colorized_text = Redlines(
+                self.input_editor.toPlainText(),#.replace("\n", "<br>"),
+                self.cleaned_text.replace("\n", "<br>"),
+            )
+            try:
+                self.output_editor.append(colorized_text.output_markdown)
+            except:
+                pass
+        else:
+            self.output_editor.append(persian_editor.cleanup())
 
 
 def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseconds

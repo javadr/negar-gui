@@ -1,3 +1,7 @@
+2024-12-21 -- v0.9.2
+-- Added comparative mode to illustrate how Negar processes its input.
+-- Resolved issue with Ctrl+Alt+S following the upgrade to PyQt6.
+
 2024-12-21 -- v0.9
 -- Migrate 
     -- Python3.6 to Python3.8, 

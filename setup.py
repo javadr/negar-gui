@@ -22,6 +22,7 @@ setup(
         "PyQt6",
         "pyperclip",
         "pyuca",
+        "redlines",
         "regex",
         "requests",
         "qrcode",
