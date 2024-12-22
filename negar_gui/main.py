@@ -856,8 +856,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.cleaned_text = persian_editor.cleanup()
         if self.comparative_output_chkbox.isChecked():
             colorized_text = Redlines(
-                self.input_editor.toPlainText(),#.replace("\n", "<br>"),
-                self.cleaned_text.replace("\n", "<br>"),
+                self.input_editor.toPlainText().strip().replace("\n", "<br>"),
+                self.cleaned_text.strip().replace("\n", "<br>"),
             )
             try:
                 self.output_editor.append(colorized_text.output_markdown)
