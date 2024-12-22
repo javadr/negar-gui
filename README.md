@@ -26,7 +26,7 @@ Installation
 
 ## Git
 
-You can get latest stable changes from github server:
+You can retrieve the latest stable changes from the GitHub server:
 
     $ git clone https://github.com/javadr/negar-gui.git
     $ cd negar-gui
@@ -46,19 +46,19 @@ Get the latest tarball & install:
 
 ### Windows
 
-Download latest zip archive.
+Download the latest zip archive.
 
 https://github.com/javadr/negar-gui/archive/master.zip
 
-Decompress it, and run the following command in root directory of `negar-gui`
+Decompress it, and run the following command in the root directory of `negar-gui`
 
     $ python setup.py install
 
 #### Requirements
-The GUI is relied on `python-negar` as well as `PyQt5`, `pyperclip`, `pyuca`, `regex`, `requests`, `qrcode`, `docopt`, `Image`, `pyqtdarktheme`, and `toml`.
+The GUI is relied on `python-negar` as well as `PyQt5/6`, `pyperclip`, `pyuca`, `redlines`, `regex`, `requests`, `qrcode`, `docopt`, `Image`, `pyqtdarktheme`, and `toml`.
 If you want to just run it by calling the script, you need to install its dependencies.
 
-    $ pip install python-negar PyQt5 pyuca pyperclip regex requests qrcode docopt Image pyqtdarktheme toml
+    $ pip install python-negar PyQt5 PyQt6 pyuca pyperclip redlines regex requests qrcode docopt Image pyqtdarktheme toml
 
 ## Usage
 Just use one of the following in your terminal.
