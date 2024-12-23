@@ -4,13 +4,13 @@ import sys
 from pathlib import Path
 from pyuca import Collator
 from pyperclip import copy
-from PyQt5.QtGui import QIcon, QColor
-from PyQt5.QtCore import Qt, QAbstractTableModel, QSize
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QTableView, QHeaderView, QCheckBox,
+from PyQt6.QtGui import QIcon, QColor
+from PyQt6.QtCore import Qt, QAbstractTableModel, QSize
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QPushButton, QTableView, QHeaderView, QCheckBox,
                             QSlider, QLabel, QTextEdit, QLineEdit, QGroupBox, QGridLayout, QTabWidget,
                             QWidget, QHBoxLayout, QVBoxLayout, QFileDialog)
 sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
-from negar.virastar import PersianEditor, UnTouchable
+from negar.virastar import PersianEditor, ImmutableWords
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 
@@ -72,7 +72,7 @@ class Form(QMainWindow):
 
     def setup_table(self, col=8):
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        data = sorted(list(UnTouchable().get()), key=collator.sort_key)
+        data = sorted(list(ImmutableWords().get()), key=collator.sort_key)
         data = [data[i*col:(i+1)*col] for i in range(int(len(data)//col)+1)]
         model = TableModel(data)
         self.table.setModel(model)
@@ -132,7 +132,7 @@ class Form(QMainWindow):
         self.trim_lt_whitespaces = QCheckBox(self.tr("Tr&im Leading/Trailing Whitespaces"), checked=True)
         self.exaggeragin_zwnj = QCheckBox(self.tr("Exaggerating &ZWNJ"), checked=True)
 
-        # Add to untouchable list:
+        # Add to immutable list:
         self.untouch_word = QLineEdit()
         untouch_label = QLabel(self.tr("Add a &word to untouchable list"))
         untouch_label.setBuddy(self.untouch_word)
@@ -267,10 +267,10 @@ class Form(QMainWindow):
     def untouch_add(self):
         """Add a new word into untouchable words."""
         word = [self.untouch_word.text()]
-        UnTouchable.add(word)
+        ImmutableWords.add(word)
         self.untouch_word.clear()
         self.edit_text()  # retouches the input text
-        self.setup_table() # updates untouchable list
+        self.setup_table() # updates immutable words list
 
     def autoedit_handler(self):
         """Edit the input text automatically if `autoedit` is checked."""
