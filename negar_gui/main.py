@@ -46,13 +46,13 @@ from redlines import Redlines
 sys.path.append(Path(__file__).parent.parent.as_posix())
 from negar.constants import INFO  # noqa: E402
 from negar.constants import __version__ as negar__version  # noqa: E402
-from negar.virastar import PersianEditor, UnTouchable  # noqa: E402
+from negar.virastar import PersianEditor, ImmutableWords  # noqa: E402
 
 from negar_gui.constants import LOGO, __version__, SETTING_FILE  # noqa: E402
 from negar_gui.Ui_hwin import Ui_Dialog  # noqa: E402
 from negar_gui.Ui_mwin import Ui_MainWindow  # noqa: E402
 from negar_gui.Ui_uwin import Ui_uwWindow  # noqa: E402
-import negar_gui.resource_rc  # Make sure this is imported
+import negar_gui.resource_rc  # noqa: F401  Make sure this is imported
 
 _translate = QCoreApplication.translate
 NEGARGUIPATH = Path(__file__).parent.as_posix()
@@ -71,7 +71,7 @@ def init_decorator(func):
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
         self, parent = args[0], kwargs.pop("parent", None)
-        # Maximize Frame Size if either height or width exceeds real screen dimensionsq
+        # Maximize Frame Size if either height or width exceeds real screen dimensions
         # screen = QApplication.desktop().screenGeometry()
         screen = QApplication.primaryScreen().geometry()
         h, w = screen.height(), screen.width()
@@ -186,7 +186,7 @@ class WindowSettings(QMainWindow):
         self.__load_settings()
 
 
-class UntouchWindow(QMainWindow, Ui_uwWindow):
+class ImmutableWordsWindow(QMainWindow, Ui_uwWindow):
     @init_decorator
     def __init__(self, parent=None):
         self.parent = parent
@@ -197,7 +197,7 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
 
     def setup_table(self, col=8):
         self.untouch_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        data = sorted(list(UnTouchable().get()), key=collator.sort_key)
+        data = sorted(list(ImmutableWords().get()), key=collator.sort_key)
         data = [data[i * col : (i + 1) * col] for i in range(int(len(data) // col) + 1)]
         model = TableModel(data)
         self.untouch_table.setModel(model)
@@ -207,16 +207,16 @@ class UntouchWindow(QMainWindow, Ui_uwWindow):
         self.untouch_button.clicked.connect(self.untouch_add)
 
     def untouch_add_enabler(self):
-        """Enable `Add` button when a single word is entered in the untouchable text input."""
+        """Enable `Add` button when a single word is entered in the immutable text input."""
         word_list = self.untouch_word.text().split()
         self.untouch_button.setEnabled(len(word_list) == 1)
 
     def untouch_add(self):
-        """Add a new word into untouchable words."""
+        """Add a new word into immutable words."""
         word = [self.untouch_word.text().strip()]
-        UnTouchable.add(word)
+        ImmutableWords.add(word)
         self.untouch_word.clear()
-        self.setup_table()  # updates untouchable list
+        self.setup_table()  # updates immutable words list
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -401,7 +401,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             menu_item.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
 
         self.actionUntouchable_Words.triggered.connect(
-            lambda: (UntouchWindow(parent=self).show(), MAIN_WINDOW.hide())
+            lambda: (ImmutableWordsWindow(parent=self).show(), MAIN_WINDOW.hide())
         )
         self.actionCopy.triggered.connect(self.copy_slot)
         self.copy_btn.clicked.connect(self.copy_slot)
@@ -768,10 +768,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             super().keyPressEvent(event)
 
     def wheelEvent(self, event):
-        modifiers = QApplication.keyboardModifiers()
-        # modifiers = event.modifiers()
+        # modifiers = QApplication.keyboardModifiers()
+        modifiers = event.modifiers()
         # if modifiers == Qt.ControlModifier:
-        if modifiers & Qt.KeyboardModifier.ControlModifier:
+        if modifiers == Qt.KeyboardModifier.ControlModifier:
             delta_notches = int(event.angleDelta().y() / 120)
             self.font_slider.setValue(self.font_slider.value() + delta_notches)
             self._set_font_size()
@@ -861,7 +861,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
             try:
                 self.output_editor.append(colorized_text.output_markdown)
-            except:
+            except:  # noqa: E722
                 pass
         else:
             self.output_editor.append(persian_editor.cleanup())
