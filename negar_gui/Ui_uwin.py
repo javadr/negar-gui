@@ -48,8 +48,8 @@ class Ui_uwWindow(object):
 
     def retranslateUi(self, uwWindow):
         _translate = QtCore.QCoreApplication.translate
-        uwWindow.setWindowTitle(_translate("uwWindow", "Untouchable Words"))
-        self.untouch_label.setText(_translate("uwWindow", "Add a &word to untouchable list:"))
+        uwWindow.setWindowTitle(_translate("uwWindow", "Immutable Words"))
+        self.untouch_label.setText(_translate("uwWindow", "Add a &word to immutable words\' list:"))
         self.untouch_button.setText(_translate("uwWindow", "&Add"))
         self.untouch_button.setShortcut(_translate("uwWindow", "Return"))
 

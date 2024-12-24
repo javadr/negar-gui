@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Untouchable Words</string>
+   <string>Immutable Words</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_4">
@@ -22,7 +22,7 @@
         <item row="0" column="0">
          <widget class="QLabel" name="untouch_label">
           <property name="text">
-           <string>Add a &amp;word to untouchable list:</string>
+           <string>Add a &amp;word to immutable words' list:</string>
           </property>
           <property name="buddy">
            <cstring>untouch_word</cstring>
@@ -54,7 +54,7 @@
       <item row="1" column="0">
        <widget class="QTableView" name="untouch_table">
         <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
+         <enum>Qt::LayoutDirection::RightToLeft</enum>
         </property>
        </widget>
       </item>
