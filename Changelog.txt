@@ -1,3 +1,6 @@
+2024-12-25 -- v0.9.5
+-- Fixed issue with comparative mode
+
 2024-12-23 -- v0.9.4
 -- Updated for compliance with python-negar 1.2.12
 -- Fixed wheel event
