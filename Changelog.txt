@@ -1,3 +1,7 @@
+
+2024-12-27 -- v0.9.6
+-- Fixed issue with closing the main window after opening and closing the immutable words list.
+
 2024-12-25 -- v0.9.5
 -- Fixed issue with comparative mode
 

@@ -665,6 +665,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         # event = QEvent(QEvent.Clipboard)
         # QApplication.sendEvent(QApplication.clipboard(), event)
         pyclipcopy(self.copy_slot())
+        # Exit the application when the main window is closed
+        QApplication.instance().quit()
 
     def showEvent(self, event):
         WindowSettings.showEvent(self, event)
