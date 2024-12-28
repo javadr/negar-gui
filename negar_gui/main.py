@@ -25,6 +25,7 @@ import toml
 import logging
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
+from PyQt6.QtWidgets import QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt6.QtCore import (
     QAbstractTableModel,
     Qt,
@@ -498,37 +499,38 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         widgets = (
             self.input_editor_label,
             self.input_editor,
-            self.output_editor_label,
-            self.comparative_output_chkbox,
-            # self.output_lbl_comp_chk_layout,
             self.output_editor,
         )
         for widget in widgets:
             self.gridLayout.removeWidget(widget)
             widget.setParent(None)
+        self.horizontalLayout.setParent(None)
+        self.output_lbl_comp_chk_layout.setParent(None)
         # (row, col, rowspan, colspan)
-        elements = (
-            (
-                (0, 0, 1, 1),  # Position: 0x0 1 rowspan 1 colspan
-                (1, 0, 1, 1),  # Position: 1x0 1 rowspan 1 colspan
-                (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
-                (0, 1, 1, 1),  # Position: 0x1 1 rowspan 1 colspan
-                (1, 1, 1, 1),  # Position: 1x1 1 rowspan 1 colspan
-            )
-            if layout == "v"
-            else (
-                (0, 0, 1, 2),  # Position: 0x0 1 rowspan 2 colspan
-                (1, 0, 1, 2),  # Position: 1x0 1 rowspan 2 colspan
-                (2, 0, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
-                (2, 1, 1, 2),  # Position: 2x0 1 rowspan 2 colspan
-                (3, 0, 1, 2),  # Position: 3x0 1 rowspan 2 colspan
-            )
-        )
+        elements = {
+            "v": (  # VERTICAL
+                (0, 0, 1, 1),
+                (1, 0, 1, 1),
+                (1, 1, 1, 1),
+            ),
+            "h": (  # HORIZONTAL
+                (0, 0, 1, 2),
+                (1, 0, 1, 2),
+                (3, 0, 1, 2),
+            ),
+        }
         for i, widget in enumerate(widgets):
-            self.gridLayout.addWidget(widget, *elements[i])
-        self.output_lbl_comp_chk_layout.addWidget(self.output_editor_label)
-        self.output_lbl_comp_chk_layout.addWidget(self.comparative_output_chkbox)
-        # self.output_lbl_comp_chk_layout.addItem(self.output_spacer)
+            self.gridLayout.addWidget(widget, *elements[layout][i])
+
+        self.horizontalLayout = QHBoxLayout()
+        spacerMin = QSpacerItem(7, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        spacerMax = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        self.horizontalLayout.addWidget(self.output_editor_label)
+        self.horizontalLayout.addItem(spacerMin)
+        self.horizontalLayout.addWidget(self.comparative_output_chkbox)
+        self.horizontalLayout.addItem(spacerMax)
+        span = {"v": (0, 1, 1, 2), "h": (2, 1, 1, 1)}
+        self.gridLayout.addLayout(self.horizontalLayout, *span[layout])
 
     def _grid_full_input(self):
         widgets = (self.output_editor_label, self.output_editor)
