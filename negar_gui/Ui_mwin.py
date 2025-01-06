@@ -429,6 +429,12 @@ class Ui_MainWindow(object):
         icon25.addPixmap(QtGui.QPixmap(":/images/icons/save.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.actionSave.setIcon(icon25)
         self.actionSave.setObjectName("actionSave")
+        self.actionSelect_All = QtGui.QAction(parent=MainWindow)
+        self.actionSelect_All.setObjectName("actionSelect_All")
+        self.actionUnselect_All = QtGui.QAction(parent=MainWindow)
+        self.actionUnselect_All.setObjectName("actionUnselect_All")
+        self.actionInvert_Selection = QtGui.QAction(parent=MainWindow)
+        self.actionInvert_Selection.setObjectName("actionInvert_Selection")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionExport)
@@ -456,6 +462,10 @@ class Ui_MainWindow(object):
         self.menuOptions.addSeparator()
         self.menuOptions.addAction(self.actionExaggerating_ZWNJ)
         self.menuOptions.addAction(self.actionTrim_Leading_Trailing_Whitespaces)
+        self.menuOptions.addSeparator()
+        self.menuOptions.addAction(self.actionSelect_All)
+        self.menuOptions.addAction(self.actionUnselect_All)
+        self.menuOptions.addAction(self.actionInvert_Selection)
         self.menuLanguage.addAction(self.actionPersian)
         self.menuLanguage.addAction(self.actionEnglish)
         self.menuSetting.addAction(self.menuOptions.menuAction())
@@ -581,6 +591,9 @@ class Ui_MainWindow(object):
         self.action_Auto.setText(_translate("MainWindow", "&Auto"))
         self.actionSave.setText(_translate("MainWindow", "&Save"))
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
+        self.actionSelect_All.setText(_translate("MainWindow", "Select All"))
+        self.actionUnselect_All.setText(_translate("MainWindow", "Unselect All"))
+        self.actionInvert_Selection.setText(_translate("MainWindow", "Invert Selection"))
 
 
 if __name__ == "__main__":

@@ -285,6 +285,28 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         # Checks for new release
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
 
+        self.options_action_menu = (
+            self.actionFix_Dashes,
+            self.actionFix_three_dots,
+            self.actionFix_English_quotes,
+            self.actionFix_hamzeh,
+            self.actionUse_Persian_yeh_to_show_hamzeh,
+            self.actionFix_spacing_braces_and_quotes,
+            self.actionFix_Arabic_numbers,
+            self.actionFix_English_numbers,
+            self.actionFix_non_Persian_chars,
+            self.actionFix_prefix_spacing,
+            self.actionFix_prefix_separating,
+            self.actionFix_suffix_spacing,
+            self.actionFix_suffix_separating,
+            self.actionFix_aggressive_punctuation,
+            self.actionCleanup_kashidas,
+            self.actionCleanup_extra_marks,
+            self.actionCleanup_spacing,
+            self.actionTrim_Leading_Trailing_Whitespaces,
+            self.actionExaggerating_ZWNJ,
+        )
+
     async def updateCheck(self):
         nurl = "https://raw.github.com/shahinism/python-negar/master/negar/constants.py"
         ngurl = "https://raw.github.com/javadr/negar-gui/master/negar_gui/constants.py"
@@ -377,28 +399,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionReport_Bugs.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui/issues")),
         )
-
-        for menu_item in (
-            self.actionFix_Dashes,
-            self.actionFix_three_dots,
-            self.actionFix_English_quotes,
-            self.actionFix_hamzeh,
-            self.actionUse_Persian_yeh_to_show_hamzeh,
-            self.actionFix_spacing_braces_and_quotes,
-            self.actionFix_Arabic_numbers,
-            self.actionFix_English_numbers,
-            self.actionFix_non_Persian_chars,
-            self.actionFix_prefix_spacing,
-            self.actionFix_prefix_separating,
-            self.actionFix_suffix_spacing,
-            self.actionFix_suffix_separating,
-            self.actionFix_aggressive_punctuation,
-            self.actionCleanup_kashidas,
-            self.actionCleanup_extra_marks,
-            self.actionCleanup_spacing,
-            self.actionTrim_Leading_Trailing_Whitespaces,
-            self.actionExaggerating_ZWNJ,
-        ):
+        # connecting the option menu items to their handlers
+        for menu_item in self.options_action_menu:
             menu_item.triggered.connect(lambda: (self.option_control(), self.autoedit_handler()))
 
         self.actionUntouchable_Words.triggered.connect(
@@ -464,6 +466,26 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.input_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
         self.output_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
 
+        def check(value: bool):
+            return lambda: (
+                [checkbox.setChecked(value) for checkbox in self.options_action_menu],
+                self.option_control(),
+                self.autoedit_handler(),
+            )
+
+        self.actionSelect_All.triggered.connect(check(True))
+        self.actionUnselect_All.triggered.connect(check(False))
+        self.actionInvert_Selection.triggered.connect(
+            lambda: (
+                [
+                    checkbox.setChecked(not checkbox.isChecked())
+                    for checkbox in self.options_action_menu
+                ],
+                self.option_control(),
+                self.autoedit_handler(),
+            )
+        )
+
     ####################### SLOTs ###############################
     def _sync_inout_scroll(self, value):
         max_in_scroll = self.input_editor.verticalScrollBar().maximum()
@@ -492,6 +514,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     # Change GridLayout Orientation
     def _grid_layout(self, layout="h"):
+        assert layout in ("v", "h"), "Layout must be 'v' or 'h'"
         if layout == "v":
             self.gridLayout.setHorizontalSpacing(5)
         elif layout == "h":
@@ -788,7 +811,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         else:
             self.edit_btn.setEnabled(True)
             # This line will disconnect autoedit signal and will disable autoamtic edit option
-            self.input_editor.textChanged.disconnect(self.edit_text)
+            try:
+                self.input_editor.textChanged.disconnect(self.edit_text)
+            except:
+                pass
         self._set_font_size()
 
     def _set_font_size(self):

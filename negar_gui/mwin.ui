@@ -502,6 +502,10 @@
      <addaction name="separator"/>
      <addaction name="actionExaggerating_ZWNJ"/>
      <addaction name="actionTrim_Leading_Trailing_Whitespaces"/>
+     <addaction name="separator"/>
+     <addaction name="actionSelect_All"/>
+     <addaction name="actionUnselect_All"/>
+     <addaction name="actionInvert_Selection"/>
     </widget>
     <widget class="QMenu" name="menuLanguage">
      <property name="title">
@@ -1062,6 +1066,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSelect_All">
+   <property name="text">
+    <string>Select All</string>
+   </property>
+  </action>
+  <action name="actionUnselect_All">
+   <property name="text">
+    <string>Unselect All</string>
+   </property>
+  </action>
+  <action name="actionInvert_Selection">
+   <property name="text">
+    <string>Invert Selection</string>
    </property>
   </action>
  </widget>
