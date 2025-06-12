@@ -2,12 +2,15 @@
 ==============
 [![PyPI](https://img.shields.io/pypi/v/negar-gui?style=social)](https://pypi.org/project/negar-gui/)
 [![code size](https://img.shields.io/github/languages/code-size/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/archive/master.zip)
+![GitHub language count](https://img.shields.io/github/languages/count/javadr/negar-gui?style=social)
+![GitHub top language](https://img.shields.io/github/languages/top/javadr/negar-gui?style=social)
 [![GitHub forks](https://img.shields.io/github/forks/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/network/members)
 [![GitHub license](https://img.shields.io/github/license/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/javadr/negar-gui?style=social)](https://github.com/javadr/negar-gui/issues)
 [![Downloads](https://pepy.tech/badge/negar-gui)](https://pepy.tech/project/negar-gui)
 [![Downloads](https://pepy.tech/badge/negar-gui/month)](https://pepy.tech/project/negar-gui)
+![GitHub last commit](https://img.shields.io/github/last-commit/javadr/negar-gui)
 
 Graphical User interface for `negar`
 
