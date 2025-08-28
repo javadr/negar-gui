@@ -12,17 +12,20 @@ Options:
     -v, --version       Show version and exit
 """
 
+# Standard library imports
 import asyncio
 import json
 import re
 import sys
 import tempfile
-from pathlib import Path
-from threading import Thread
-
 import requests
 import toml
 import logging
+from pathlib import Path
+from threading import Thread
+
+# Third-party imports
+import qdarktheme
 from docopt import docopt
 from pyperclip import copy as pyclipcopy
 from PyQt6.QtWidgets import QHBoxLayout, QSpacerItem, QSizePolicy
@@ -38,11 +41,11 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import QColor, QDesktopServices, QIcon, QPixmap, QGuiApplication
 from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
-import qdarktheme
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
+# Local application imports
 # https://stackoverflow.com/questions/16981921
 sys.path.append(Path(__file__).parent.parent.as_posix())
 from negar.constants import INFO  # noqa: E402
@@ -562,7 +565,16 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             widget.setParent(None)
 
     def qrcode(self):
-        if len(self.output_editor.toPlainText().strip()) == 0:
+        # Check if Shift is held when button clicked
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == Qt.KeyboardModifier.ShiftModifier:
+            text = self.input_editor.toPlainText().strip()
+            qr_text = text
+        else:
+            text = self.output_editor.toPlainText().strip()
+            qr_text = self.cleaned_text
+
+        if len(text) == 0:
             if self.settings["settings"]["language"] == "Persian":
                 statusbar_timeout(self, "هیچ متنی برای نمایش از طریق کد QR وجود ندارد!")
             else:  # English
@@ -575,7 +587,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             border=4,
         )
         # qr.add_data(self.output_editor.toPlainText())
-        qr.add_data(self.cleaned_text)
+        qr.add_data(qr_text)
         qr.make(fit=True)
         img = qr.make_image()
         temp_path = Path(tempfile.gettempdir())

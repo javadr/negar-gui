@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1128</width>
-    <height>790</height>
+    <height>787</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -181,7 +181,7 @@
              <item row="0" column="3">
               <widget class="QPushButton" name="qrcode_btn">
                <property name="toolTip">
-                <string>QR Code</string>
+                <string>QR Code (hold Shift for input text)</string>
                </property>
                <property name="text">
                 <string/>

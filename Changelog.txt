@@ -1,3 +1,6 @@
+2025-08-28 -- v0.9.10
+-- Holding the Shift key now generates a QR code from the input text instead of the output text.
+
 2025-01-28 -- v0.9.9
 -- Save settings under .config/negar-gui
 

@@ -1,5 +1,6 @@
 include README.md
 include AUTHORS
 include negar_gui/icons/logo.png
+include negar_gui/icons/logo.ico
 include negar_gui/ts/fa.qm
 include negar_gui/style.qss
