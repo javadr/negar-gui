@@ -248,6 +248,7 @@ class HelpWindow(QDialog, Ui_Dialog):
         self.setupUi(self)
         self.buttonBox.buttons()[0].setText(_translate("Dialog", "Close"))
         self.setWindowTitle(title)
+
         if isinstance(label, str):
             self.label.setText(label)
         if isinstance(label, QPixmap):
@@ -599,7 +600,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if w - 90 < img.size[0]:
             # pixmap = pixmap.scaled(w - 90, w - 90, Qt.KeepAspectRatio)
             pixmap = pixmap.scaled(w - 90, w - 90, Qt.AspectRatioMode.KeepAspectRatio)
-        HelpWindow(parent=self, title="QR Code", label=pixmap).show()
+
+        qr_window = HelpWindow(parent=self, title="QR Code", label=pixmap)
+        qr_window.buttonBox.setLayoutDirection(
+            Qt.LayoutDirection.RightToLeft
+            if self.layoutDirection() == Qt.LayoutDirection.LeftToRight
+            else Qt.LayoutDirection.LeftToRight
+        )
+        qr_window.show()
+
         (Path(temp_path) / "negar-gui_qrcode.png").unlink()
 
     def _statusBar(self, notification="", timeout=0):
