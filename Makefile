@@ -1,5 +1,8 @@
 VER=$(shell grep __version__ negar_gui/constants.py|cut -d= -f2|tr -d '\" ')
 
+# Detect whether 'uv' is available, otherwise fallback to 'pip'
+PKG_TOOL := $(shell command -v uv >/dev/null 2>&1 && echo uv pip || echo pip)
+
 # Check if running inside a virtual environment
 VENV:=$(shell echo "$${VIRTUAL_ENV-}")
 NEGAR:=$(if $(VENV),$(VIRTUAL_ENV)/bin/negar-gui,$(HOME)/.local/bin/negar-gui)
@@ -32,7 +35,7 @@ generate_desktop_file:
 .PHONY: uninstall
 uninstall:
 	@echo "Uninstalling negar-gui ..."
-	pip uninstall negar-gui
+	@$(PKG_TOOL) uninstall negar-gui
 	@echo "Removing the desktop file and its icon ..."
 	rm -fv $(APP_DESKTOP) $(HOME)/.local/share/icons/negar.png
 	@echo "Desktop file removed successfully."
@@ -42,10 +45,10 @@ setup: ver
 	python setup.py bdist_wheel
 
 lins: ver setup generate_desktop_file
-	pip install "dist/negar_gui-$(VER)-py3-none-any.whl"
+	@$(PKG_TOOL) install "dist/negar_gui-$(VER)-py3-none-any.whl"
 
 pins: ver generate_desktop_file
-	pip install negar-gui==$(VER)
+	@$(PKG_TOOL) install negar-gui==$(VER)
 
 upypi: setup
 	twine upload "dist/negar_gui-$(VER).tar.gz"
