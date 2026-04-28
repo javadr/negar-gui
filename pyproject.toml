@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "negar-gui"
+dynamic = ["version", "readme"]
+description = "Graphical User Interface for Negar -- Persian Text Editor"
+requires-python = ">=3.8"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Javad Razavian", email = "javadr@gmail.com" }
+]
+keywords = ["Spellcheck", "Persian", "Text-Editor"]
+dependencies = [
+  "python-negar>=1.4.3",
+  "PyQt6",
+  "pyperclip",
+  "pyuca",
+  "redlines",
+  "regex",
+  "requests",
+  "qrcode",
+  "docopt",
+  "Image",
+  "pyqtdarktheme",
+  "toml"
+]
+
+[project.urls]
+Homepage = "http://github.com/javadr/negar-gui"
+
+[project.scripts]
+negar-gui-od = "negar_gui.gui:main"
+negar-gui = "negar_gui.main:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["negar_gui*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "negar_gui.constants.__version__" }
+readme = { file = ["README.md"], content-type = "text/markdown" }
+
+

@@ -41,11 +41,10 @@ uninstall:
 	@echo "Desktop file removed successfully."
 
 setup: ver
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m build
 
-lins: ver setup generate_desktop_file
-	@$(PKG_TOOL) install "dist/negar_gui-$(VER)-py3-none-any.whl"
+lins: generate_desktop_file
+	@$(PKG_TOOL) install -e .
 
 pins: ver generate_desktop_file
 	@$(PKG_TOOL) install negar-gui==$(VER)

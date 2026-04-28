@@ -1,243 +1,319 @@
-2025-11-08 -- v0.9.11
--- Overlay the close button in the bottom left corner of the label.
+## [Unreleased] - 2026-04-29
+- Migrate packaging from setup.py to pyproject.toml (PEP 621)
+- Update the Makefile to use the modern build workflow (`python -m build`, `twine`)
+- Remove the legacy setuptools-based setup.py workflow
 
-2025-08-28 -- v0.9.10
--- Holding the Shift key now generates a QR code from the input text instead of the output text.
 
-2025-01-28 -- v0.9.9
--- Save settings under .config/negar-gui
+## [0.9.11] - 2025-11-08
+- Overlay the close button in the bottom-left corner of the label
 
-2025-01-06 -- v0.9.8
--- Added "Select All," "Unselect All," and "Invert Selection" options to the Options menu.
 
-2024-12-28 -- v0.9.7
--- Fixed layout issue
+## [0.9.10] - 2025-08-28
+- Generate the QR code from input text (instead of output text) when holding Shift
 
-2024-12-27 -- v0.9.6
--- Fixed issue with closing the main window after opening and closing the immutable words list.
 
-2024-12-25 -- v0.9.5
--- Fixed issue with comparative mode
+## [0.9.9] - 2025-01-28
+- Save settings under `.config/negar-gui`
 
-2024-12-23 -- v0.9.4
--- Updated for compliance with python-negar 1.2.12
--- Fixed wheel event
 
-2024-12-21 -- v0.9.2
--- Added comparative mode to illustrate how Negar processes its input.
--- Resolved issue with Ctrl+Alt+S following the upgrade to PyQt6.
+## [0.9.8] - 2025-01-06
+- Add "Select All", "Unselect All", and "Invert Selection" options to the Options menu
 
-2024-12-21 -- v0.9
--- Migrate 
-    -- Python3.6 to Python3.8, 
-    -- PyQt5 to PyQt6
 
-2024-12-21 -- v0.8.8
--- Fixed minor translation issue
+## [0.9.7] - 2024-12-28
+- Fix layout issue
 
-2024-09-03 -- v0.8.7
--- Clean Code
 
-2024-06-01 -- v0.8.6
--- Ctrl+Alt+S shows saved setting as a dictionary
+## [0.9.6] - 2024-12-27
+- Fix issue with closing the main window after opening and closing the immutable words list
 
-2024-06-01 -- v0.8.5
--- Fixed issue with some translation in "About Negar" dialog window
 
-2024-05-20 -- v0.8.4
--- Fixed issue with the latest update of gnome 46
+## [0.9.5] - 2024-12-25
+- Fix issue with comparative mode
 
-2023-08-18 -- v0.8.3
--- Synchronize the scrolls of input/output boxes.
 
-2023-08-17 -- v0.8.2
--- `txt` as a default extension for saving/opening file.
+## [0.9.4] - 2024-12-23
+- Update for compatibility with python-negar 1.2.12
+- Fix wheel event handling
 
-2023-08-16 -- v0.8.1
--- Fixed issue with saving configurations in Windows
-    
-2023-08-16 -- v0.8
--- All configurations will be saved in a TOML file to be loaded in the next run.
 
-2023-06-15 -- v0.7.8
--- In compliance with python-negar Ver. 1.2.4; critical fix
+## [0.9.2] - 2024-12-21
+- Add comparative mode to illustrate how Negar processes input
+- Fix Ctrl+Alt+S issue after migrating to PyQt6
 
-2023-06-13 -- v0.7.7
--- In compliance with python-negar Ver. 1.2.2
 
-2023-05-15 -- v0.7.6
--- Show version via `-v` option.
+## [0.9.0] - 2024-12-21
+- Migrate from Python 3.6 to Python 3.8
+- Migrate from PyQt5 to PyQt6
 
-2023-04-20 -- v0.7.5
--- Added feature to automatically check for internet connection before proceeding
 
-2023-04-08 -- v0.7.4
--- Deleted the generated QR code file.
--- Used lego.png from resource.
+## [0.8.8] - 2024-12-21
+- Fix minor translation issue
 
-2023-04-08 -- v0.7.3
--- Used the same file for QR Code in each run to save disk space
 
-2023-04-07 -- v0.7.2
--- Fixed issue #10, QR crash in Windows
+## [0.8.7] - 2024-09-03
+- Improve code quality and structure
 
-2023-04-07 -- v0.7.1
--- Added Negar icon for Windows OS, fixed issue #11
 
-2023-04-07 -- v0.7
--- Save menu with Ctrl+S hotkey, fixed issue #8
+## [0.8.6] - 2024-06-01
+- Display saved settings as a dictionary via Ctrl+Alt+S
 
-2023-04-05 -- v0.6.9
--- Fixed issue with fa translation of Windows standalone
 
-2023-03-31 -- v0.6.8
--- improved status bar
--- Showing opened filename in the title bar
+## [0.8.5] - 2024-06-01
+- Fix translation issues in the "About Negar" dialog
 
-2023-03-30 -- v0.6.7
--- Changed the default theme to dark
 
-2023-03-30 -- v0.6.6
--- Improved icons
+## [0.8.4] - 2024-05-20
+- Fix compatibility issue with GNOME 46
 
-2023-03-29 -- v0.6.5
--- Added Theme/Dark/Light/Auto icon
 
-2023-03-22 -- v0.6.4
--- Added themes: auto, dark, light
--- Changed Several shortcuts.
-    -- Save As                --> Ctrl + Shift + S
-    -- Dark Theme             --> Ctrl+T, Ctrl+D
-    -- Light Theme            --> Ctrl+T, Ctrl+L
-    -- Interactive Clipboard  --> Ctrl+B
-    -- side-by-side view      --> Ctrl+I
+## [0.8.3] - 2023-08-18
+- Synchronize scrolling between input and output boxes
 
-2023-03-21 -- v0.6.3
--- Fixed issue with translation
 
-2023-03-18 -- v0.6.2
--- Improved logo shape
+## [0.8.2] - 2023-08-17
+- Use `.txt` as the default file extension
 
-2023-03-18 -- v0.6.1
--- Increased font-size to 84 point.
-    -- In digital typefaces, one point is equal to 1/72 of an inch.
--- Colored border of QTextEdit
 
-2023-03-17 -- v0.6
--- Enabled dark mode
+## [0.8.1] - 2023-08-16
+- Fix configuration saving issue on Windows
 
-2023-03-16 -- v0.5
--- Moved several menu items under View menu.
 
-2023-03-16 -- v0.4.2
--- Increased font-size to 72 point.
-
-2023-03-16 -- v0.4.1
--- Fixed issue #5
+## [0.8.0] - 2023-08-16
+- Store all configurations in a TOML file for persistence across sessions
 
-2023-03-16 -- v0.4
--- Added full-Screen input box
--- Fixed QR error empty string in Persian mode
 
-2023-03-16 -- v0.3.2
--- Fixed issue in connecting side-by-side view menu item and H/V buttons
+## [0.7.8] - 2023-06-15
+- Apply critical fix for compatibility with python-negar 1.2.4
 
-2023-03-16 -- v0.3.1
--- Added side-by-side view via menu item
 
-2023-03-15 -- v0.3
--- Added Vertical/Horizontal layout for input/output textbox
+## [0.7.7] - 2023-06-13
+- Update for compatibility with python-negar 1.2.2
 
-2023-03-15 -- v0.2.18
--- Fixed tooltip fix for QR code
 
-2023-03-04 -- v0.2.17
--- Added support for logo in Windows app.
+## [0.7.6] - 2023-05-15
+- Add `-v` option to display version
 
-2022-06-13 -- v0.2.16
--- Resolved dependencies for setup
 
-2022-06-05 -- v0.2.15
--- Added daemon thread to check the new version.
+## [0.7.5] - 2023-04-20
+- Add automatic internet connection check before execution
 
-2022-06-05 -- v0.2.14
--- Added QR button in toolbar
 
-2022-05-31 -- v0.2.13
--- Showed the edited text in a QR code accessible via Menu.
--- Resized the window to fill all of its space with QR code.
+## [0.7.4] - 2023-04-08
+- Remove generated QR code file
+- Use `lego.png` from resources
 
-2022-05-27 -- v0.2.12
--- Added feature to automatically check for new updates and display result in status bar.
 
-2022-05-27 -- v0.2.11
--- Added status bar to display current version of Negar and Negar-GUI.
+## [0.7.3] - 2023-04-08
+- Reuse the QR code file across runs to save disk space
 
-2022-05-23 -- v0.2.10
--- Added interactive clipboard feature that automatically pastes clipboard content into input box.
 
-2022-05-11 -- v0.2.9
--- Added feature to copy output text to system clipboard using pyperclip.
+## [0.7.2] - 2023-04-07
+- Fix QR crash on Windows (issue #10)
 
-2022-05-10 -- v0.2.8
--- Fixed minor issue with text edition.
--- Retouched face design.
 
-2022-05-09 -- v0.2.7
--- Added About_Negar menu item
+## [0.7.1] - 2023-04-07
+- Add Negar icon for Windows
+- Fix issue #11
 
-2022-05-08 -- v0.2.6
--- Added Paste button to toolbar.
--- Added tooltip for toolbar buttons.
 
-2022-05-08 -- v0.2.5
--- Updated face design; moved buttons under menu bar.
+## [0.7.0] - 2023-04-07
+- Add Save menu with Ctrl+S shortcut
+- Fix issue #8
 
-2022-05-05 -- v0.2.4
--- Added init decorator for QMainWindow.
--- Fixed issue with addition of untouchable word.
--- Edited output text when a new word is added to the untouchable words list.
 
-2022-05-04 -- v0.2.3
--- Added feature to check screen size and set maximum size if height/width is bigger than counterparts.
+## [0.6.9] - 2023-04-05
+- Fix Persian translation issue in the Windows standalone version
 
-2022-05-04 -- v0.2.2
--- Fixed encoding issue on Windows
 
-2022-05-04 -- v0.2.1
--- Fixed minor issue with logo and URL
+## [0.6.8] - 2023-03-31
+- Improve the status bar
+- Display the opened filename in the title bar
 
-2022-05-04 -- v0.2
--- Implemented new GUI design.
--- Added right-to-left GUI support.
--- Added Persian UI support.
 
-New Design Branch - 2022-04-29 -- 2022-05-03
-[2022-05-03]
--- First stable release of new design
--- Ctrl+MouseWheel zoon in/out the text
--- F11 toggle maximized screen
-[2022-05-02]
--- pyuic5 with `--from-imports` option
--- Fully iconized menu items
-[2022-05-01]
--- issue with centralwidget layoutDirection
--- icons added via resource file
--- stylesheet
--- qm file for translation
--- Persian translation support
-[2022-04-30]
--- menu retouch + application icon
--- font resize via menu
--- addition of edit menu
-[2022-04-29]
--- first try
+## [0.6.7] - 2023-03-30
+- Set the default theme to dark
 
-2022-04-15 -- v0.1.2
--- Updated to comply with new option of `python-negar` -- `exaggerating_zwnj`.
 
-2022-04-10 -- v0.1.1
--- Added check to ensure at least the `python-negar` ver 1.1.4 is installed.
+## [0.6.6] - 2023-03-30
+- Improve icons
 
-2022-04-10 -- v0.1
--- Initial release.
+
+## [0.6.5] - 2023-03-29
+- Add Theme/Dark/Light/Auto icon
+
+
+## [0.6.4] - 2023-03-22
+- Add themes: auto, dark, light
+- Update shortcuts:
+  - Save As → Ctrl+Shift+S
+  - Dark Theme → Ctrl+T, Ctrl+D
+  - Light Theme → Ctrl+T, Ctrl+L
+  - Interactive Clipboard → Ctrl+B
+  - Side-by-side view → Ctrl+I
+
+
+## [0.6.3] - 2023-03-21
+- Fix translation issue
+
+
+## [0.6.2] - 2023-03-18
+- Improve logo shape
+
+
+## [0.6.1] - 2023-03-18
+- Increase font size to 84 pt
+- Add colored border to QTextEdit
+
+
+## [0.6.0] - 2023-03-17
+- Enable dark mode
+
+
+## [0.5.0] - 2023-03-16
+- Move several menu items under the View menu
+
+
+## [0.4.2] - 2023-03-16
+- Increase font size to 72 pt
+
+
+## [0.4.1] - 2023-03-16
+- Fix issue #5
+
+
+## [0.4.0] - 2023-03-16
+- Add full-screen input box
+- Fix QR error for empty string in Persian mode
+
+
+## [0.3.2] - 2023-03-16
+- Fix connection issue between side-by-side view menu and H/V buttons
+
+
+## [0.3.1] - 2023-03-16
+- Add side-by-side view via menu
+
+
+## [0.3.0] - 2023-03-15
+- Add vertical/horizontal layout for input/output textbox
+
+
+## [0.2.18] - 2023-03-15
+- Fix QR code tooltip issue
+
+
+## [0.2.17] - 2023-03-04
+- Add support for logo in the Windows app
+
+
+## [0.2.16] - 2022-06-13
+- Resolve dependency issues for setup
+
+
+## [0.2.15] - 2022-06-05
+- Add a daemon thread to check for new versions
+
+
+## [0.2.14] - 2022-06-05
+- Add QR button to the toolbar
+
+
+## [0.2.13] - 2022-05-31
+- Display edited text as a QR code via the menu
+- Resize the window to fit the QR code
+
+
+## [0.2.12] - 2022-05-27
+- Add automatic update check with status bar notification
+
+
+## [0.2.11] - 2022-05-27
+- Add a status bar displaying Negar and Negar-GUI versions
+
+
+## [0.2.10] - 2022-05-23
+- Add interactive clipboard feature
+
+
+## [0.2.9] - 2022-05-11
+- Copy output text to the clipboard using pyperclip
+
+
+## [0.2.8] - 2022-05-10
+- Fix minor text editing issue
+- Refine UI design
+
+
+## [0.2.7] - 2022-05-09
+- Add About Negar menu item
+
+
+## [0.2.6] - 2022-05-08
+- Add Paste button to the toolbar
+- Add tooltips for toolbar buttons
+
+
+## [0.2.5] - 2022-05-08
+- Update UI design and move buttons under the menu bar
+
+
+## [0.2.4] - 2022-05-05
+- Add init decorator for QMainWindow
+- Fix issue with untouchable word addition
+- Update output when new words are added to the untouchable list
+
+
+## [0.2.3] - 2022-05-04
+- Adjust window size based on screen dimensions
+
+
+## [0.2.2] - 2022-05-04
+- Fix encoding issue on Windows
+
+
+## [0.2.1] - 2022-05-04
+- Fix minor issue with logo and URL
+
+
+## [0.2.0] - 2022-05-04
+- Introduce new GUI design
+- Add right-to-left GUI support
+- Add Persian UI support
+
+
+### Development notes (New Design Branch: 2022-04-29 → 2022-05-03)
+2022-05-03
+- First stable release of the new design
+- Ctrl+MouseWheel zoom in/out the text
+- F11 toggles maximized screen
+
+2022-05-02
+- Use `pyuic5 --from-imports`
+- Fully iconized menu items
+
+2022-05-01
+- Fix centralwidget layoutDirection issue
+- Add icons via resource file
+- Add stylesheet
+- Add `.qm` file for translation
+- Add Persian translation support
+
+2022-04-30
+- Refine menu and application icon
+- Add font resizing via menu
+- Add Edit menu
+
+2022-04-29
+- Initial step
+
+## [0.1.2] - 2022-04-15
+- Update for compatibility with python-negar (`exaggerating_zwnj` option)
+
+
+## [0.1.1] - 2022-04-10
+- Require python-negar ≥ 1.1.4
+
+
+## [0.1.0] - 2022-04-10
+- Initial release
