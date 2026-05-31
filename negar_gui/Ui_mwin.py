@@ -16,14 +16,12 @@ class Ui_MainWindow(object):
         MainWindow.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         MainWindow.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
         MainWindow.setAutoFillBackground(False)
-        MainWindow.setStyleSheet("QFrame {\n"
-"    border: none;\n"
-"    margin: 0px;\n"
-"    padding: 0px;\n"
-"}")
+        MainWindow.setStyleSheet("QFrame {\n    border: none;\n    margin: 0px;\n    padding: 0px;\n}")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
@@ -112,9 +110,13 @@ class Ui_MainWindow(object):
         self.horizontal_btn.setObjectName("horizontal_btn")
         self.gridLayout_4.addWidget(self.horizontal_btn, 0, 5, 1, 1)
         self.gridLayout_5.addWidget(self.frame_2, 0, 0, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(210, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            210, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.gridLayout_5.addItem(spacerItem, 0, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(210, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            210, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.gridLayout_5.addItem(spacerItem1, 0, 2, 1, 1)
         self.frame_4 = QtWidgets.QFrame(parent=self.frame)
         self.frame_4.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
@@ -183,7 +185,9 @@ class Ui_MainWindow(object):
         self.comparative_output_chkbox.setObjectName("comparative_output_chkbox")
         self.horizontalLayout.addWidget(self.comparative_output_chkbox)
         self.output_lbl_comp_chk_layout.addLayout(self.horizontalLayout)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         self.output_lbl_comp_chk_layout.addItem(spacerItem2)
         self.gridLayout.addLayout(self.output_lbl_comp_chk_layout, 2, 0, 1, 1)
         self.output_editor = QtWidgets.QTextEdit(parent=self.frame_5)
@@ -212,7 +216,9 @@ class Ui_MainWindow(object):
         self.menuLanguage.setIcon(icon8)
         self.menuLanguage.setObjectName("menuLanguage")
         self.menuHelp = QtWidgets.QMenu(parent=self.menubar)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.menuHelp.sizePolicy().hasHeightForWidth())
@@ -421,7 +427,9 @@ class Ui_MainWindow(object):
         self.action_Light.setObjectName("action_Light")
         self.action_Auto = QtGui.QAction(parent=MainWindow)
         icon24 = QtGui.QIcon()
-        icon24.addPixmap(QtGui.QPixmap(":/images/icons/autobrightness.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon24.addPixmap(
+            QtGui.QPixmap(":/images/icons/autobrightness.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off
+        )
         self.action_Auto.setIcon(icon24)
         self.action_Auto.setObjectName("action_Auto")
         self.actionSave = QtGui.QAction(parent=MainWindow)
@@ -504,19 +512,19 @@ class Ui_MainWindow(object):
         self.output_editor_label.setBuddy(self.output_editor)
 
         self.retranslateUi(MainWindow)
-        self.actionExit.triggered.connect(MainWindow.close) # type: ignore
-        self.autoedit_chkbox.toggled['bool'].connect(self.edit_btn.setDisabled) # type: ignore
-        self.reset_btn.clicked.connect(self.input_editor.clear) # type: ignore
-        self.reset_btn.clicked.connect(self.output_editor.clear) # type: ignore
-        self.actionPaste.triggered.connect(self.input_editor.paste) # type: ignore
-        self.actionCopy.triggered.connect(self.output_editor.copy) # type: ignore
-        self.actionIncrease_Font_Size.triggered.connect(self.input_editor.zoomIn) # type: ignore
-        self.actionIncrease_Font_Size.triggered.connect(self.output_editor.zoomIn) # type: ignore
-        self.actionDecrease_Font_Size.triggered.connect(self.output_editor.zoomOut) # type: ignore
-        self.actionDecrease_Font_Size.triggered.connect(self.input_editor.zoomOut) # type: ignore
-        self.actionReset.triggered.connect(self.reset_btn.click) # type: ignore
-        self.paste_btn.clicked.connect(self.input_editor.paste) # type: ignore
-        self.qrcode_btn.clicked['bool'].connect(self.actionQr_Code.trigger) # type: ignore
+        self.actionExit.triggered.connect(MainWindow.close)  # type: ignore
+        self.autoedit_chkbox.toggled["bool"].connect(self.edit_btn.setDisabled)  # type: ignore
+        self.reset_btn.clicked.connect(self.input_editor.clear)  # type: ignore
+        self.reset_btn.clicked.connect(self.output_editor.clear)  # type: ignore
+        self.actionPaste.triggered.connect(self.input_editor.paste)  # type: ignore
+        self.actionCopy.triggered.connect(self.output_editor.copy)  # type: ignore
+        self.actionIncrease_Font_Size.triggered.connect(self.input_editor.zoomIn)  # type: ignore
+        self.actionIncrease_Font_Size.triggered.connect(self.output_editor.zoomIn)  # type: ignore
+        self.actionDecrease_Font_Size.triggered.connect(self.output_editor.zoomOut)  # type: ignore
+        self.actionDecrease_Font_Size.triggered.connect(self.input_editor.zoomOut)  # type: ignore
+        self.actionReset.triggered.connect(self.reset_btn.click)  # type: ignore
+        self.paste_btn.clicked.connect(self.input_editor.paste)  # type: ignore
+        self.qrcode_btn.clicked["bool"].connect(self.actionQr_Code.trigger)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         MainWindow.setTabOrder(self.output_editor, self.reset_btn)
 
@@ -554,7 +562,7 @@ class Ui_MainWindow(object):
         self.actionFix_three_dots.setText(_translate("MainWindow", "Fix &three dots"))
         self.actionFix_English_quotes.setText(_translate("MainWindow", "Fix English &quotes"))
         self.actionFix_hamzeh.setText(_translate("MainWindow", "Fix &hamzeh"))
-        self.actionUse_Persian_yeh_to_show_hamzeh.setText(_translate("MainWindow", "Use \'Persian &yeh\' to show hamzeh"))
+        self.actionUse_Persian_yeh_to_show_hamzeh.setText(_translate("MainWindow", "Use 'Persian &yeh' to show hamzeh"))
         self.actionFix_spacing_braces_and_quotes.setText(_translate("MainWindow", "Fix &spacing braces and quotes"))
         self.actionFix_Arabic_numbers.setText(_translate("MainWindow", "Fix Arabic &numbers"))
         self.actionFix_English_numbers.setText(_translate("MainWindow", "Fix &English numbers"))
@@ -567,7 +575,9 @@ class Ui_MainWindow(object):
         self.actionCleanup_kashidas.setText(_translate("MainWindow", "Cleanup &kashidas"))
         self.actionCleanup_extra_marks.setText(_translate("MainWindow", "Cleanup e&xtra marks"))
         self.actionCleanup_spacing.setText(_translate("MainWindow", "C&leanup spacing"))
-        self.actionTrim_Leading_Trailing_Whitespaces.setText(_translate("MainWindow", "Tr&im Leading/Trailing Whitespaces"))
+        self.actionTrim_Leading_Trailing_Whitespaces.setText(
+            _translate("MainWindow", "Tr&im Leading/Trailing Whitespaces")
+        )
         self.actionExaggerating_ZWNJ.setText(_translate("MainWindow", "Exaggerating &ZWNJ"))
         self.actionUntouchable_Words.setText(_translate("MainWindow", "&Untouchable Words"))
         self.actionPersian.setText(_translate("MainWindow", "&Persian"))
@@ -598,6 +608,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

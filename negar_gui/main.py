@@ -55,7 +55,8 @@ from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
 # Local application imports
-import negar_gui.resource_rc
+# The following is neccessary for ICONs
+import negar_gui.resource_rc  # noqa: F401
 from negar.constants import INFO, __version__ as negar__version
 from negar.virastar import ImmutableWords, PersianEditor
 from negar_gui.constants import LOGO, SETTING_FILE, __version__

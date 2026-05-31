@@ -1,3 +1,7 @@
+## [Unreleased] - 2026-05-31
+- .pre-commit-conifig.yaml
+- Reformat with ruff
+
 ## [Unreleased] - 2026-04-29
 - Migrate packaging from setup.py to pyproject.toml (PEP 621)
 - Update the Makefile to use the modern build workflow (`python -m build`, `twine`)
