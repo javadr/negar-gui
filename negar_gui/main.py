@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """negar-gui.
 
@@ -15,48 +15,54 @@ Options:
 # Standard library imports
 import asyncio
 import json
+import logging
 import re
 import sys
 import tempfile
-import requests
-import toml
-import logging
 from pathlib import Path
 from threading import Thread
 
-# Third-party imports
+# Third-party library import
 import qdarktheme
+import requests
+import toml
 from docopt import docopt
+
 from pyperclip import copy as pyclipcopy
-from PyQt6.QtWidgets import QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt6.QtCore import (
     QAbstractTableModel,
+    QCoreApplication,
+    QPoint,
+    QSize,
     Qt,
     QTimer,
     QTranslator,
     QUrl,
-    QSize,
-    QPoint,
-    QCoreApplication,
 )
-from PyQt6.QtGui import QColor, QDesktopServices, QIcon, QPixmap, QGuiApplication
-from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QHeaderView, QMainWindow
+from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPixmap
+from PyQt6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QFileDialog,
+    QHBoxLayout,
+    QHeaderView,
+    QMainWindow,
+    QSizePolicy,
+    QSpacerItem,
+)
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
 # Local application imports
-# https://stackoverflow.com/questions/16981921
-sys.path.append(Path(__file__).parent.parent.as_posix())
-from negar.constants import INFO  # noqa: E402
-from negar.constants import __version__ as negar__version  # noqa: E402
-from negar.virastar import PersianEditor, ImmutableWords  # noqa: E402
+import negar_gui.resource_rc
+from negar.constants import INFO, __version__ as negar__version
+from negar.virastar import ImmutableWords, PersianEditor
+from negar_gui.constants import LOGO, SETTING_FILE, __version__
+from negar_gui.Ui_hwin import Ui_Dialog
+from negar_gui.Ui_mwin import Ui_MainWindow
+from negar_gui.Ui_uwin import Ui_uwWindow
 
-from negar_gui.constants import LOGO, __version__, SETTING_FILE  # noqa: E402
-from negar_gui.Ui_hwin import Ui_Dialog  # noqa: E402
-from negar_gui.Ui_mwin import Ui_MainWindow  # noqa: E402
-from negar_gui.Ui_uwin import Ui_uwWindow  # noqa: E402
-import negar_gui.resource_rc  # noqa: F401  Make sure this is imported
 
 _translate = QCoreApplication.translate
 NEGARGUIPATH = Path(__file__).parent.as_posix()
@@ -282,9 +288,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
         self.filename = None  # will be defined later
-        self.cleaned_text = (
-            ""  # Stores the cleaned text, as output_editor may also contain comparative text
-        )
+        self.cleaned_text = ""  # Stores the cleaned text, as output_editor may also contain comparative text
         self._statusBar()
         # Checks for new release
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
@@ -386,13 +390,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         )
         self.actionAbout_Negar.setShortcut("CTRL+H")
         self.actionAbout_Negar.triggered.connect(
-            lambda: (
-                HelpWindow(
-                    parent=self,
-                    title=_translate("Dialog", "About Negar"),
-                    label=self.edit_text(INFO),
-                ).show()
-            )
+            lambda: HelpWindow(
+                parent=self,
+                title=_translate("Dialog", "About Negar"),
+                label=self.edit_text(INFO),
+            ).show()
         )
         self.actionAbout_Negar_GUI.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
@@ -414,9 +416,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.copy_btn.clicked.connect(self.copy_slot)
 
         self.actionInteractive_Clipboard.triggered.connect(
-            lambda: self.clipboard.dataChanged.connect(self.onClipboardChanged)
-            if self.actionInteractive_Clipboard.isChecked()
-            else self.clipboard.dataChanged.disconnect(self.onClipboardChanged)
+            lambda: (
+                self.clipboard.dataChanged.connect(self.onClipboardChanged)
+                if self.actionInteractive_Clipboard.isChecked()
+                else self.clipboard.dataChanged.disconnect(self.onClipboardChanged)
+            )
         )
         self.actionQr_Code.triggered.connect(self.qrcode)
 
@@ -432,12 +436,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 self._grid_layout("h"),
             )
         )
-
+        # fmt: off
         self.actionSide_by_Side_View.triggered.connect(
             lambda: self._grid_layout("v")
             if self.actionSide_by_Side_View.isChecked()
             else self._grid_layout("h")
         )
+        # fmt: on
         self.actionFull_Screen_Input.triggered.connect(self.full_screen_input_slot)
 
         self.action_dark.triggered.connect(
@@ -479,6 +484,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
         self.actionSelect_All.triggered.connect(check(True))
         self.actionUnselect_All.triggered.connect(check(False))
+        # fmt: off
         self.actionInvert_Selection.triggered.connect(
             lambda: (
                 [
@@ -489,6 +495,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 self.autoedit_handler(),
             )
         )
+        # fmt: on
 
     ####################### SLOTs ###############################
     def _sync_inout_scroll(self, value):
@@ -593,7 +600,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         img = qr.make_image()
         temp_path = Path(tempfile.gettempdir())
         img.save(temp_path / "negar-gui_qrcode.png")
-        pixmap = QPixmap(f"{(temp_path/'negar-gui_qrcode.png').absolute()}")
+        pixmap = QPixmap(f"{(temp_path / 'negar-gui_qrcode.png').absolute()}")
         # screen = QApplication.desktop().screenGeometry()
         screen = QApplication.primaryScreen().geometry()
         w = min(screen.height(), screen.width())
@@ -730,9 +737,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.comparative_output_chkbox.setChecked(self.settings["view"]["comparative-mode"])
             qdarktheme.setup_theme(self.settings["view"]["theme"])
             # settings menu
+            # fmt: off
             self.actionInteractive_Clipboard.setChecked(
                 self.settings["settings"]["interactive-clipboard"]
             )
+            # fmt: on
             self.set_ui_language()
             # connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():

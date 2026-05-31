@@ -6,16 +6,34 @@ from pyuca import Collator
 from pyperclip import copy
 from PyQt6.QtGui import QIcon, QColor
 from PyQt6.QtCore import Qt, QAbstractTableModel, QSize
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QPushButton, QTableView, QHeaderView, QCheckBox,
-                            QSlider, QLabel, QTextEdit, QLineEdit, QGroupBox, QGridLayout, QTabWidget,
-                            QWidget, QHBoxLayout, QVBoxLayout, QFileDialog)
-sys.path.append(Path(__file__).parent.parent.as_posix()) # https://stackoverflow.com/questions/16981921
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QPushButton,
+    QTableView,
+    QHeaderView,
+    QCheckBox,
+    QSlider,
+    QLabel,
+    QTextEdit,
+    QLineEdit,
+    QGroupBox,
+    QGridLayout,
+    QTabWidget,
+    QWidget,
+    QHBoxLayout,
+    QVBoxLayout,
+    QFileDialog,
+)
+
+sys.path.append(Path(__file__).parent.parent.as_posix())  # https://stackoverflow.com/questions/16981921
 from negar.virastar import PersianEditor, ImmutableWords
 from negar.constants import INFO
 from negar_gui.constants import __version__, LOGO
 
 
 collator = Collator()
+
 
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
@@ -26,10 +44,10 @@ class TableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignVCenter
         elif role == Qt.ItemDataRole.BackgroundRole:
-            if index.row()%2:
+            if index.row() % 2:
                 return QColor("gray")
         elif role == Qt.ItemDataRole.ForegroundRole:
-            if index.row()%2:
+            if index.row() % 2:
                 return QColor("white")
         elif role == Qt.ItemDataRole.DisplayRole:
             try:
@@ -45,7 +63,7 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, index):
         """Return the length of the first sub-list.
-        
+
         This method assumes that all sub-lists (rows) are of equal length.
         """
         del index
@@ -57,11 +75,12 @@ class TableModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Horizontal:
                 return ""
             if orientation == Qt.Orientation.Vertical:
-                return str(section+1)
+                return str(section + 1)
         return None
 
+
 class Form(QMainWindow):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.editing_options = []
 
@@ -73,7 +92,7 @@ class Form(QMainWindow):
     def setup_table(self, col=8):
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         data = sorted(list(ImmutableWords().get()), key=collator.sort_key)
-        data = [data[i*col:(i+1)*col] for i in range(int(len(data)//col)+1)]
+        data = [data[i * col : (i + 1) * col] for i in range(int(len(data) // col) + 1)]
         model = TableModel(data)
         self.table.setModel(model)
 
@@ -84,13 +103,12 @@ class Form(QMainWindow):
         quit_btn = QPushButton(self.tr("&Quit"))
         import_btn = QPushButton(self.tr("Im&port"))
         copy_btn = QPushButton(QIcon(LOGO), "")
-        copy_btn.setIconSize(QSize(24,24))
+        copy_btn.setIconSize(QSize(24, 24))
         copy_btn.setToolTip(self.tr("Click to Copy Sanitized Output"))
         copy_btn.setStyleSheet("QPushButton {border-style: outset; border-width: 0px;}")
         self.autoedit_chkbox = QCheckBox(self.tr("&Automatic edit"))
         self.autoedit_chkbox.setChecked(True)
-        self.font_slider = QSlider(orientation=Qt.Orientation.Horizontal,
-            minimum=10, maximum=40, value=18)
+        self.font_slider = QSlider(orientation=Qt.Orientation.Horizontal, minimum=10, maximum=40, value=18)
         font_slider_label = QLabel(self.tr("&Font Size"))
         font_slider_label.setBuddy(self.font_slider)
 
@@ -142,7 +160,7 @@ class Form(QMainWindow):
         untouch_layout.addWidget(untouch_label, 0, 0)
         untouch_layout.addWidget(self.untouch_word, 1, 0)
         untouch_layout.addWidget(self.untouch_button, 1, 1)
-        untouch_layout.addWidget(self.table, 2,0,1,2)
+        untouch_layout.addWidget(self.table, 2, 0, 1, 2)
         untouch_box.setLayout(untouch_layout)
 
         # Options Box:
@@ -196,7 +214,7 @@ class Form(QMainWindow):
         mt_layout = QGridLayout(main_tab)
         mt_layout.addLayout(input_layout, 0, 0)
         mt_layout.addWidget(self.input_editor, 1, 0)
-        mt_layout.addLayout(output_layout, 2,0)
+        mt_layout.addLayout(output_layout, 2, 0)
         mt_layout.addWidget(self.output_editor, 3, 0)
         mt_layout.addLayout(btn_layout, 4, 0)
 
@@ -227,12 +245,27 @@ class Form(QMainWindow):
         self.untouch_button.clicked.connect(self.untouch_add)
 
         # Option checkbox lists signal control
-        _options = [self.f_dashes, self.f_three_dots, self.f_english_quotes, self.f_hamzeh,
-                    self.hamzeh_yeh, self.f_spacing_bq, self.f_arab_num, self.f_eng_num,
-                    self.f_non_persian_ch, self.f_p_spacing, self.f_p_separate, self.f_s_spacing,
-                    self.f_s_separate, self.aggressive, self.clnup_kashidas, self.clnup_ex_marks,
-                    self.clnup_spacing, self.trim_lt_whitespaces, self.exaggeragin_zwnj,
-                    ]
+        _options = [
+            self.f_dashes,
+            self.f_three_dots,
+            self.f_english_quotes,
+            self.f_hamzeh,
+            self.hamzeh_yeh,
+            self.f_spacing_bq,
+            self.f_arab_num,
+            self.f_eng_num,
+            self.f_non_persian_ch,
+            self.f_p_spacing,
+            self.f_p_separate,
+            self.f_s_spacing,
+            self.f_s_separate,
+            self.aggressive,
+            self.clnup_kashidas,
+            self.clnup_ex_marks,
+            self.clnup_spacing,
+            self.trim_lt_whitespaces,
+            self.exaggeragin_zwnj,
+        ]
         for opt in _options:
             opt.stateChanged.connect(self.option_control)
 
@@ -270,7 +303,7 @@ class Form(QMainWindow):
         ImmutableWords.add(word)
         self.untouch_word.clear()
         self.edit_text()  # retouches the input text
-        self.setup_table() # updates immutable words list
+        self.setup_table()  # updates immutable words list
 
     def autoedit_handler(self):
         """Edit the input text automatically if `autoedit` is checked."""
@@ -290,18 +323,30 @@ class Form(QMainWindow):
 
     def option_control(self):
         """Enable/Disable Editing features."""
-        options = [(self.f_dashes, "fix-dashes"), (self.f_three_dots, "fix-three-dots"),
-                    (self.f_english_quotes, "fix-english-quotes"), (self.f_hamzeh, "fix-hamzeh"),
-                    (self.hamzeh_yeh, "hamzeh-with-yeh"), (self.f_spacing_bq, "fix-spacing-bq"),
-                    (self.f_arab_num, "fix-arabic-num"), (self.f_eng_num, "fix-english-num"),
-                    (self.f_non_persian_ch, "fix-non-persian-chars"), (self.f_p_spacing, "fix-p-spacing"),
-                    (self.f_p_separate, "fix-p-separate"), (self.f_s_spacing, "fix-s-spacing"),
-                    (self.f_s_separate, "fix-s-separate"), (self.aggressive, "aggressive"),
-                    (self.clnup_kashidas, "cleanup-kashidas"), (self.clnup_ex_marks, "cleanup-ex-marks"),
-                    (self.clnup_spacing, "cleanup-spacing"), (self.trim_lt_whitespaces, "trim-lt-whitespaces"),
-                    (self.exaggeragin_zwnj, "exaggerating-zwnj")]
+        options = [
+            (self.f_dashes, "fix-dashes"),
+            (self.f_three_dots, "fix-three-dots"),
+            (self.f_english_quotes, "fix-english-quotes"),
+            (self.f_hamzeh, "fix-hamzeh"),
+            (self.hamzeh_yeh, "hamzeh-with-yeh"),
+            (self.f_spacing_bq, "fix-spacing-bq"),
+            (self.f_arab_num, "fix-arabic-num"),
+            (self.f_eng_num, "fix-english-num"),
+            (self.f_non_persian_ch, "fix-non-persian-chars"),
+            (self.f_p_spacing, "fix-p-spacing"),
+            (self.f_p_separate, "fix-p-separate"),
+            (self.f_s_spacing, "fix-s-spacing"),
+            (self.f_s_separate, "fix-s-separate"),
+            (self.aggressive, "aggressive"),
+            (self.clnup_kashidas, "cleanup-kashidas"),
+            (self.clnup_ex_marks, "cleanup-ex-marks"),
+            (self.clnup_spacing, "cleanup-spacing"),
+            (self.trim_lt_whitespaces, "trim-lt-whitespaces"),
+            (self.exaggeragin_zwnj, "exaggerating-zwnj"),
+        ]
         for obj, opt in options:
-            if not obj.isChecked(): self.editing_options.append(opt)
+            if not obj.isChecked():
+                self.editing_options.append(opt)
 
     def file_dialog(self):
         """Open file for importing text."""
@@ -324,13 +369,15 @@ class Form(QMainWindow):
         if sanitized_text:
             copy(sanitized_text)
 
+
 def main():
     """Program entry point."""
     app = QApplication(sys.argv)
     run = Form()
     run.show()
-    run.input_editor.setFocus() # set focus on input box
+    run.input_editor.setFocus()  # set focus on input box
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
