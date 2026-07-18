@@ -1,6 +1,12 @@
 name: Deploy Python Executable file for Linux
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build"
+        required: true
+        default: "1.0.0"
   release:
     types: [released]
 
