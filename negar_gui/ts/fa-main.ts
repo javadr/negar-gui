@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1" language="fa_IR" sourcelanguage="en_US">
 <context>
     <name>Dialog</name>
     <message>
@@ -20,6 +20,31 @@
         <location filename="main.py" line="141"/>
         <source>Open File - A Plain Text</source>
         <translation type="obsolete">باز کردن فایل - فایل متنی ساده</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="955"/>
+        <source>Fix Grammar</source>
+        <translation>اصلاح گرامر</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="988"/>
+        <source>Running {}...</source>
+        <translation>در حال اجرای {}...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="1041"/>
+        <source>Grammar fix complete.</source>
+        <translation>اصلاح گرامر کامل شد.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="1047"/>
+        <source>Retrying...</source>
+        <translation>تلاش مجدد...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="1054"/>
+        <source>AI Error: {}</source>
+        <translation>خطای هوش مصنوعی: {}</translation>
     </message>
 </context>
 </TS>

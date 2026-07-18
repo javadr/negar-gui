@@ -430,6 +430,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         )
         self._build_llm_menu()
         self.llm_btn.clicked.connect(self.llm_fix_text_slot)
+        self.llm_btn.setShortcut("Ctrl+Shift+A")
         self.actionCopy.triggered.connect(self.copy_slot)
         self.copy_btn.clicked.connect(self.copy_slot)
 
@@ -708,6 +709,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         _app = QApplication.instance()
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
+        self._build_llm_menu()
 
     # def retranslateUi(self, MyWindow):
     # super(MyWindow, self).retranslateUi()
@@ -952,7 +954,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_prompt_actions = {}
         first = True
         for key, prompt in llm_providers.PROMPTS.items():
-            action = QtGui.QAction(prompt["name"], self)
+            action = QtGui.QAction(_translate("MainWindow", prompt["name"]), self)
             action.setCheckable(True)
             action.setChecked(first and key == self.current_llm_prompt_key)
             action.triggered.connect(lambda checked, k=key: self._set_llm_prompt(k))
@@ -985,7 +987,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_pending_text = text
         prompt_key = self.current_llm_prompt_key
         self._llm_pending_prompt = llm_providers.PROMPTS[prompt_key]
-        self._statusBar(f"Running {self._llm_pending_prompt['name']}...")
+        self._statusBar(
+            _translate("MainWindow", "Running {}...").format(_translate("MainWindow", self._llm_pending_prompt["name"]))
+        )
         self.statusBar.repaint()
         self._llm_send()
 
@@ -1038,21 +1042,21 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.output_editor.setPlainText(result)
             self.cleaned_text = result
             self.llm_btn.setEnabled(True)
-            self._statusBar("Grammar fix complete.")
+            self._statusBar(_translate("MainWindow", "Grammar fix complete."))
             self._llm_reply.deleteLater()
             return
 
         if self._llm_retries > 0:
             self._llm_retries -= 1
-            self._statusBar("Retrying...")
+            self._statusBar(_translate("MainWindow", "Retrying..."))
             self._llm_reply.deleteLater()
             QTimer.singleShot(1000, self._llm_send)
             return
 
         self._llm_spin_stop()
         self.llm_btn.setEnabled(True)
-        self.output_editor.setPlainText(f"LLM Error: {err}")
-        self._statusBar(f"LLM Error: {err}", timeout=10000)
+        self.output_editor.setPlainText(_translate("MainWindow", "AI Error: {}").format(err))
+        self._statusBar(_translate("MainWindow", "AI Error: {}").format(err), timeout=10000)
         self._llm_reply.deleteLater()
 
 

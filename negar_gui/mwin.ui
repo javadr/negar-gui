@@ -539,7 +539,7 @@
    </widget>
     <widget class="QMenu" name="menuLLM">
      <property name="title">
-      <string>&amp;LLM</string>
+       <string>&amp;AI</string>
      </property>
     </widget>
     <widget class="QMenu" name="menuHelp">

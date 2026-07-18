@@ -556,7 +556,7 @@ class Ui_MainWindow(object):
         self.menuSetting.setTitle(_translate("MainWindow", "&Settings"))
         self.menuOptions.setTitle(_translate("MainWindow", "Editing &Options"))
         self.menuLanguage.setTitle(_translate("MainWindow", "&Language"))
-        self.menuLLM.setTitle(_translate("MainWindow", "&LLM"))
+        self.menuLLM.setTitle(_translate("MainWindow", "&AI"))
         self.menuHelp.setTitle(_translate("MainWindow", "&Help"))
         self.menuEdit.setTitle(_translate("MainWindow", "&Edit"))
         self.menu_View.setTitle(_translate("MainWindow", "&View"))

@@ -393,5 +393,15 @@
         <source>Invert Selection</source>
         <translation>معکوس نمودن انتخاب‌ها</translation>
     </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="548"/>
+        <source>Fix grammar with AI</source>
+        <translation>اصلاح گرامر با هوش مصنوعی</translation>
+    </message>
+    <message>
+        <location filename="../Ui_mwin.py" line="559"/>
+        <source>&amp;AI</source>
+        <translation>&amp;هوش مصنوعی</translation>
+    </message>
 </context>
 </TS>
