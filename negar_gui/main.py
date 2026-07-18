@@ -52,6 +52,7 @@ from PyQt6.QtWidgets import (
     QHeaderView,
     QLabel,
     QMainWindow,
+    QMenu,
     QSizePolicy,
     QSpacerItem,
 )
@@ -709,6 +710,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def set_ui_language(self):
         """Change ui language."""
+        _app = QApplication.instance()
         if self.settings["settings"]["language"] == "Persian":
             self.trans.load("fa", directory=f"{NEGARGUIPATH}/ts")
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
@@ -716,6 +718,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.statusBar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+            self.menubar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+            for menu in self.menubar.findChildren(QMenu):
+                menu.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+            _app.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
         elif self.settings["settings"]["language"] == "English":
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
@@ -723,9 +729,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self._status_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            self.menubar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+            for menu in self.menubar.findChildren(QMenu):
+                menu.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+            _app.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         else:
             return
-        _app = QApplication.instance()
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
         self._build_llm_menu()
