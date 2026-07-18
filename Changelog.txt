@@ -1,3 +1,24 @@
+# Changelog
+
+## [1.0.0] - 2026-07-18
+
+### Added
+- AI grammar-fix button with Pollinations.ai integration (no API key required)
+- `llm_providers.py` module with `PROMPTS` dict and `fix_text()` function
+- Custom toolbar button + AI menu with spinning icon animation during requests
+- `Ctrl+Shift+A` hotkey for the AI grammar-fix button
+- Persian translations for the AI menu and all status bar messages
+- Auto-retry (2 attempts) on API failure with 1s delay
+
+### Changed
+- Status bar now uses `\u202B`/`\u202C` Unicode directional formatting for correct Persian rendering
+- Status bar re-translates on language switch (including mid-job "Running..." message)
+- Menubar and application layout direction now properly follow the selected language
+
+### Fixed
+- Status bar alignment respects Persian (RTL) and English (LTR) modes
+- Menus and submenus open on the correct side in Persian mode
+
 ## [Unreleased] - 2026-05-31
 - .pre-commit-conifig.yaml
 - Reformat with ruff
