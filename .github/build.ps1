@@ -12,7 +12,7 @@ $Env:CURRENT_VERSION = $versionStr
     --noupx negar_gui/main.py -n "negar-gui-v$versionStr" `
     --add-data "./python-negar/negar/data/immutable.words;negar\data" `
     --add-data "negar_gui/ts/fa.qm;ts" `
-    --add-data "negar_gui/icons;negar_gui/icons" `
+    --add-data "negar_gui/icons;icons" `
     --icon ".\negar_gui\icons\logo.png"
 
 # Cleanup after build

@@ -74,7 +74,10 @@ from negar_gui.Ui_uwin import Ui_uwWindow
 
 
 _translate = QCoreApplication.translate
-NEGARGUIPATH = Path(__file__).parent.as_posix()
+if getattr(sys, "frozen", False):
+    NEGARGUIPATH = Path(sys._MEIPASS).as_posix()
+else:
+    NEGARGUIPATH = Path(__file__).parent.as_posix()
 
 collator = Collator()
 
