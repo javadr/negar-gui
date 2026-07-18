@@ -57,6 +57,7 @@ jobs:
 
     - name: 'Extract tag message'
       id: tag
+      shell: bash
       run: |
         if git tag -l "${{ github.ref_name }}" | grep -q .; then
           git tag -l --format='%(contents)' "${{ github.ref_name }}" > /tmp/release_body.md
