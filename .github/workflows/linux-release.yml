@@ -1,7 +1,6 @@
 name: Deploy Python Executable file for Linux
 
 on:
-  workflow_dispatch:
   release:
     types: [released]
 
