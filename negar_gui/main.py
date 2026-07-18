@@ -22,6 +22,7 @@ import tempfile
 from pathlib import Path
 from threading import Thread
 
+
 # Third-party library import
 import qdarktheme
 import requests
@@ -31,6 +32,7 @@ from docopt import docopt
 from pyperclip import copy as pyclipcopy
 from PyQt6.QtCore import (
     QAbstractTableModel,
+    QByteArray,
     QCoreApplication,
     QPoint,
     QSize,
@@ -39,7 +41,9 @@ from PyQt6.QtCore import (
     QTranslator,
     QUrl,
 )
+from PyQt6 import QtGui
 from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPixmap
+from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
@@ -53,6 +57,8 @@ from PyQt6.QtWidgets import (
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
+
+from negar_gui import llm_providers
 
 # Local application imports
 # The following is neccessary for ICONs
@@ -280,16 +286,25 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
+        _ai_icon = QIcon(str(Path(NEGARGUIPATH) / "icons/ai.svg"))
+        self.llm_btn.setIcon(_ai_icon)
         # self.input_editor.setFocus(True)
         self.input_editor.setFocus(Qt.FocusReason.OtherFocusReason)
         # Translator
         # main language is defined via self.settings["settings"]["language"] by WindowsSettings
         self.trans = QTranslator()
         self.editing_options = []
+        self.current_llm_prompt_key = "fix_grammar"
         self.clipboard = QApplication.clipboard()
         self.fileDialog = QFileDialog()
         self.filename = None  # will be defined later
         self.cleaned_text = ""  # Stores the cleaned text, as output_editor may also contain comparative text
+        self._llm_nam = QNetworkAccessManager()
+        self._llm_icon_base = self.llm_btn.icon().pixmap(32, 32)
+        self._llm_spin_angle = 0
+        self._llm_spin_timer = QTimer()
+        self._llm_spin_timer.setInterval(100)
+        self._llm_spin_timer.timeout.connect(self._llm_spin_tick)
         self._statusBar()
         # Checks for new release
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
@@ -413,6 +428,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionUntouchable_Words.triggered.connect(
             lambda: (ImmutableWordsWindow(parent=self).show(), MAIN_WINDOW.hide())
         )
+        self._build_llm_menu()
+        self.llm_btn.clicked.connect(self.llm_fix_text_slot)
         self.actionCopy.triggered.connect(self.copy_slot)
         self.copy_btn.clicked.connect(self.copy_slot)
 
@@ -928,6 +945,118 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 pass
         else:
             self.output_editor.append(persian_editor.cleanup())
+
+    ####################### LLM ###############################
+    def _build_llm_menu(self):
+        self.menuLLM.clear()
+        self._llm_prompt_actions = {}
+        first = True
+        for key, prompt in llm_providers.PROMPTS.items():
+            action = QtGui.QAction(prompt["name"], self)
+            action.setCheckable(True)
+            action.setChecked(first and key == self.current_llm_prompt_key)
+            action.triggered.connect(lambda checked, k=key: self._set_llm_prompt(k))
+            self.menuLLM.addAction(action)
+            self._llm_prompt_actions[key] = action
+            first = False
+
+    def _set_llm_prompt(self, key):
+        self.current_llm_prompt_key = key
+        for k, action in self._llm_prompt_actions.items():
+            action.setChecked(k == key)
+
+    def _llm_spin_tick(self):
+        self._llm_spin_angle = (self._llm_spin_angle + 45) % 360
+        t = QtGui.QTransform().rotate(self._llm_spin_angle)
+        pix = self._llm_icon_base.transformed(t, Qt.TransformationMode.SmoothTransformation)
+        self.llm_btn.setIcon(QIcon(pix))
+
+    def _llm_spin_stop(self):
+        self._llm_spin_timer.stop()
+        self.llm_btn.setIcon(QIcon(self._llm_icon_base))
+
+    def llm_fix_text_slot(self):
+        text = self.input_editor.toPlainText()
+        if not text.strip():
+            return
+        self.llm_btn.setEnabled(False)
+        self._llm_spin_timer.start()
+        self._llm_retries = 2
+        self._llm_pending_text = text
+        prompt_key = self.current_llm_prompt_key
+        self._llm_pending_prompt = llm_providers.PROMPTS[prompt_key]
+        self._statusBar(f"Running {self._llm_pending_prompt['name']}...")
+        self.statusBar.repaint()
+        self._llm_send()
+
+    def _llm_send(self):
+        max_tokens = max(256, len(f"{self._llm_pending_prompt['prefix']}{self._llm_pending_text}") * 2)
+
+        payload = json.dumps(
+            {
+                "model": "openai",
+                "messages": [
+                    {"role": "system", "content": self._llm_pending_prompt["system_prompt"]},
+                    {"role": "user", "content": f"{self._llm_pending_prompt['prefix']}{self._llm_pending_text}"},
+                ],
+                "temperature": 0.0,
+                "max_tokens": max_tokens,
+            }
+        )
+
+        url = QUrl(llm_providers.POLLINATIONS_URL)
+        req = QNetworkRequest(url)
+        req.setHeader(QNetworkRequest.KnownHeaders.ContentTypeHeader, "application/json")
+
+        self._llm_reply = self._llm_nam.post(req, QByteArray(payload.encode()))
+        self._llm_reply.finished.connect(self._on_llm_reply)
+
+    def _on_llm_reply(self):
+        self._llm_reply.finished.disconnect()
+        data = self._llm_reply.readAll().data().decode()
+        status = self._llm_reply.attribute(QNetworkRequest.Attribute.HttpStatusCodeAttribute)
+
+        ok = False
+        if status and status != 200:
+            err = f"HTTP {status}: {data[:200]}"
+        else:
+            try:
+                msg = json.loads(data)["choices"][0]["message"]
+                import re as _re
+
+                result = (msg.get("content") or "").strip()
+                if not result:
+                    result = (msg.get("reasoning") or "").strip()
+                m = _re.search(r"<corrected\s*text>(.*?)</corrected\s*text>", result, _re.DOTALL)
+                if m:
+                    result = m.group(1).strip()
+                if not result:
+                    raise KeyError("content")
+                ok = True
+            except (KeyError, IndexError, json.JSONDecodeError) as e:
+                err = f"LLM response parse failed: {e}"
+
+        if ok:
+            self._llm_spin_stop()
+            self.output_editor.setPlainText(result)
+            self.cleaned_text = result
+            self.llm_btn.setEnabled(True)
+            self._statusBar("Grammar fix complete.")
+            self._llm_reply.deleteLater()
+            return
+
+        if self._llm_retries > 0:
+            self._llm_retries -= 1
+            self._statusBar("Retrying...")
+            self._llm_reply.deleteLater()
+            QTimer.singleShot(1000, self._llm_send)
+            return
+
+        self._llm_spin_stop()
+        self.llm_btn.setEnabled(True)
+        self.output_editor.setPlainText(f"LLM Error: {err}")
+        self._statusBar(f"LLM Error: {err}", timeout=10000)
+        self._llm_reply.deleteLater()
 
 
 def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseconds

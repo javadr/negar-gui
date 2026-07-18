@@ -212,24 +212,37 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="5">
-              <widget class="QPushButton" name="horizontal_btn">
-               <property name="toolTip">
-                <string>horizontal view</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="resource.qrc">
-                 <normaloff>:/images/icons/horizontal.svg</normaloff>:/images/icons/horizontal.svg</iconset>
-               </property>
-               <property name="shortcut">
-                <string notr="true"/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+              <item row="0" column="5">
+               <widget class="QPushButton" name="horizontal_btn">
+                <property name="toolTip">
+                 <string>horizontal view</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resource.qrc">
+                  <normaloff>:/images/icons/horizontal.svg</normaloff>:/images/icons/horizontal.svg</iconset>
+                </property>
+                <property name="shortcut">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="6">
+               <widget class="QPushButton" name="llm_btn">
+                <property name="toolTip">
+                 <string>Fix grammar with AI</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="shortcut">
+                 <string notr="true"/>
+                </property>
+               </widget>
+              </item>
+             </layout>
            </widget>
           </item>
           <item row="0" column="1">
@@ -524,8 +537,13 @@
     <addaction name="separator"/>
     <addaction name="actionUntouchable_Words"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="sizePolicy">
+    <widget class="QMenu" name="menuLLM">
+     <property name="title">
+      <string>&amp;LLM</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuHelp">
+     <property name="sizePolicy">
      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
       <horstretch>0</horstretch>
       <verstretch>0</verstretch>
@@ -578,8 +596,9 @@
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menu_View"/>
-   <addaction name="menuSetting"/>
-   <addaction name="menuHelp"/>
+    <addaction name="menuSetting"/>
+    <addaction name="menuLLM"/>
+    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
