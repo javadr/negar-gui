@@ -54,3 +54,21 @@ target-version = "py38"
 ignore = [
   "E722", # Do not use bare `except`,
 ]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportAttributeAccessIssue = false
+reportCallIssue = false
+reportArgumentType = false
+reportAssignmentType = false
+reportMissingTypeArgument = false
+reportOptionalMemberAccess = false
+reportOptionalCall = false
+reportOptionalIterable = false
+reportOptionalOperand = false
+reportPrivateImportUsage = false
+exclude = ["res.tmp/"]
