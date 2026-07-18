@@ -641,12 +641,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         (Path(temp_path) / "negar-gui_qrcode.png").unlink()
 
     def _statusBar(self, notification="", timeout=0):
+        prefix = f"Negar v{negar__version} [[Negar-GUI v{__version__}]]"
         is_persian = self.settings.get("settings", {}).get("language") == "Persian"
-        prefix = (
-            f"نگار v{negar__version} [[نگار-گویی v{__version__}]]"
-            if is_persian
-            else f"Negar v{negar__version} [[Negar-GUI v{__version__}]]"
-        )
         message = f"\u202b{prefix} {notification}\u202c" if is_persian else f"{prefix} {notification}"
         self._status_label.setText(message)
         if timeout:
