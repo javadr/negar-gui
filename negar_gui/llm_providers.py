@@ -24,8 +24,6 @@ def fix_text(text: str, prompt_key: str = "fix_grammar") -> str:
     if not prompt:
         return text
 
-    max_tokens = max(256, len(f"{prompt['prefix']}{text}") * 2)
-
     payload = {
         "model": "openai",
         "messages": [
@@ -33,7 +31,6 @@ def fix_text(text: str, prompt_key: str = "fix_grammar") -> str:
             {"role": "user", "content": f"{prompt['prefix']}{text}"},
         ],
         "temperature": 0.0,
-        "max_tokens": max_tokens,
     }
 
     try:

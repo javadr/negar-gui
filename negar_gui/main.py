@@ -990,8 +990,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_send()
 
     def _llm_send(self):
-        max_tokens = max(256, len(f"{self._llm_pending_prompt['prefix']}{self._llm_pending_text}") * 2)
-
         payload = json.dumps(
             {
                 "model": "openai",
@@ -1000,7 +998,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                     {"role": "user", "content": f"{self._llm_pending_prompt['prefix']}{self._llm_pending_text}"},
                 ],
                 "temperature": 0.0,
-                "max_tokens": max_tokens,
             }
         )
 
