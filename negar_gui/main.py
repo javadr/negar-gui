@@ -50,6 +50,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QHeaderView,
+    QLabel,
     QMainWindow,
     QSizePolicy,
     QSpacerItem,
@@ -305,6 +306,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_spin_timer = QTimer()
         self._llm_spin_timer.setInterval(100)
         self._llm_spin_timer.timeout.connect(self._llm_spin_tick)
+        self._status_label = QLabel()
+        self.statusBar.addWidget(self._status_label, 1)
         self._statusBar()
         # Checks for new release
         Thread(target=lambda: asyncio.run(self.updateCheck()), daemon=True).start()
@@ -638,8 +641,21 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         (Path(temp_path) / "negar-gui_qrcode.png").unlink()
 
     def _statusBar(self, notification="", timeout=0):
-        message = f"Negar v{negar__version} [[Negar-GUI v{__version__}]] {notification}"
-        self.statusBar.showMessage(message, timeout)
+        prefix = f"Negar v{negar__version} [[Negar-GUI v{__version__}]]"
+        is_persian = self.settings.get("settings", {}).get("language") == "Persian"
+        message = f"\u202b{prefix} {notification}\u202c" if is_persian else f"{prefix} {notification}"
+        self._status_label.setText(message)
+        if timeout:
+            QTimer.singleShot(timeout, self._status_label.clear)
+        self._last_notification = notification
+        self._last_timeout = timeout
+
+    def _statusBar_tr(self, context, source, timeout=0, *args):
+        text = _translate(context, source)
+        if args:
+            text = text.format(*args)
+        self._last_tr = (context, source, args, timeout)
+        self._statusBar(text, timeout)
 
     def open_file_slot(self):
         filename, _ = self.fileDialog.getOpenFileName(
@@ -698,18 +714,27 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-            self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+            self.statusBar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+            self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         elif self.settings["settings"]["language"] == "English":
             self.trans.load("en")
             self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+            self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+            self._status_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         else:
             return
         _app = QApplication.instance()
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
         self._build_llm_menu()
+        if not self.llm_btn.isEnabled() and hasattr(self, "_llm_pending_prompt"):
+            prompt_name = _translate("MainWindow", self._llm_pending_prompt["name"])
+            self._statusBar_tr("MainWindow", "Running {}...", 0, prompt_name)
+        elif hasattr(self, "_last_tr"):
+            ctx, src, args, to = self._last_tr
+            self._statusBar_tr(ctx, src, to, *args)
 
     # def retranslateUi(self, MyWindow):
     # super(MyWindow, self).retranslateUi()
@@ -987,9 +1012,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_pending_text = text
         prompt_key = self.current_llm_prompt_key
         self._llm_pending_prompt = llm_providers.PROMPTS[prompt_key]
-        self._statusBar(
-            _translate("MainWindow", "Running {}...").format(_translate("MainWindow", self._llm_pending_prompt["name"]))
-        )
+        self._statusBar_tr("MainWindow", "Running {}...", 0, _translate("MainWindow", self._llm_pending_prompt["name"]))
         self.statusBar.repaint()
         self._llm_send()
 
@@ -1042,13 +1065,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.output_editor.setPlainText(result)
             self.cleaned_text = result
             self.llm_btn.setEnabled(True)
-            self._statusBar(_translate("MainWindow", "Grammar fix complete."))
+            self._statusBar_tr("MainWindow", "Grammar fix complete.")
             self._llm_reply.deleteLater()
             return
 
         if self._llm_retries > 0:
             self._llm_retries -= 1
-            self._statusBar(_translate("MainWindow", "Retrying..."))
+            self._statusBar_tr("MainWindow", "Retrying...")
             self._llm_reply.deleteLater()
             QTimer.singleShot(1000, self._llm_send)
             return
@@ -1056,16 +1079,14 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_spin_stop()
         self.llm_btn.setEnabled(True)
         self.output_editor.setPlainText(_translate("MainWindow", "AI Error: {}").format(err))
-        self._statusBar(_translate("MainWindow", "AI Error: {}").format(err), timeout=10000)
+        self._statusBar_tr("MainWindow", "AI Error: {}", 10000, err)
         self._llm_reply.deleteLater()
 
 
-def statusbar_timeout(self, notification, timeout=5000):  # Timeout in milliseconds
-    self.statusBar.showMessage(notification, timeout)
-    timer = QTimer()
-    timer.setSingleShot(True)
-    timer.timeout.connect(self.statusBar.clearMessage)
-    timer.start(timeout)
+def statusbar_timeout(self, notification, timeout=5000):
+    self._status_label.setText(notification)
+    if timeout:
+        QTimer.singleShot(timeout, self._status_label.clear)
 
 
 def main(args=docopt(__doc__)):
