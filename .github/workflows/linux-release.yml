@@ -1,6 +1,9 @@
 name: Deploy Python Executable file for Linux
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
@@ -55,9 +58,17 @@ jobs:
         name: Built
         path: dist/
 
+    - name: 'Extract tag message'
+      id: tag
+      run: |
+        if git tag -l "${{ github.ref_name }}" | grep -q .; then
+          git tag -l --format='%(contents)' "${{ github.ref_name }}" > /tmp/release_body.md
+        fi
+
     - name: 'Automatic release'
       uses: "softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228" # v3.0.2
       with:
         token: "${{ secrets.GITHUB_TOKEN }}"
+        body_path: /tmp/release_body.md
         files: |
           dist/*

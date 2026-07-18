@@ -34,5 +34,6 @@
     <file>icons/open.svg</file>
     <file>icons/options.svg</file>
     <file>icons/paste.svg</file>
+    <file>icons/ai.svg</file>
   </qresource>
 </RCC>
