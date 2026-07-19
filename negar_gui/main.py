@@ -291,7 +291,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
-        _ai_icon = QIcon(":/images/icons/ai.svg")
+        _ai_icon = QIcon(str(Path(NEGARGUIPATH) / "icons/ai.svg"))
         self.llm_btn.setIcon(_ai_icon)
         # self.input_editor.setFocus(True)
         self.input_editor.setFocus(Qt.FocusReason.OtherFocusReason)
