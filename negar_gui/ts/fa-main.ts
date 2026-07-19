@@ -37,6 +37,11 @@
         <translation>اصلاح گرامر کامل شد.</translation>
     </message>
     <message>
+        <location filename="../main.py" line="365"/>
+        <source>New version is available for {}. Use `pip install --upgrade {}` to update</source>
+        <translation>نسخه جدیدی برای {} موجود است. برای به‌روزرسانی از `pip install --upgrade {}` استفاده کنید</translation>
+    </message>
+    <message>
         <location filename="../main.py" line="1047"/>
         <source>Retrying...</source>
         <translation>تلاش مجدد...</translation>

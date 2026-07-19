@@ -362,7 +362,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         negar_nv, negargui_nv = (version(i) for i in (negar_v, negargui_v))
         negar_ov, negargui_ov = (version(i) for i in (negar__version, __version__))
         notification = ""
-        message = "New version is available for {}. Use `pip install --upgrade {}` to update"
+        message = _translate("MainWindow", "New version is available for {}. Use `pip install --upgrade {}` to update")
         if negar_nv > negar_ov:
             notification = message.format("negar", "python-negar")
         if negargui_nv > negargui_ov:
