@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1] - 2026-07-19
+
+### Fixed
+- GNOME Wayland crash on `make lins`/`make pins` (race condition writing
+  `negar.desktop` — write to temp file then atomic rename)
+- AI icon not visible when installed from PyPI (`make pins`) — load from
+  Qt resources instead of filesystem; bundle all icons in the wheel
+
 ## [1.0.0] - 2026-07-18
 
 ### Added
