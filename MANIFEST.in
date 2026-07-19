@@ -1,5 +1,4 @@
 include README.md
-include negar_gui/icons/logo.png
-include negar_gui/icons/logo.ico
+recursive-include negar_gui/icons *
 include negar_gui/ts/fa.qm
 include negar_gui/style.qss
