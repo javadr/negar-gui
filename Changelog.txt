@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.2] - 2026-07-19
+
+### Fixed
+- Version update notification ("New version is available...") now translated
+  in Persian mode
+- Version notification re-translates on language switch mid-session
+- AI icon now renders correctly via Qt resources (regenerated
+  `resource_rc.py` with `ai.svg`)
+
 ## [1.0.1] - 2026-07-19
 
 ### Fixed
