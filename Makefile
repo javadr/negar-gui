@@ -6,7 +6,7 @@ PKG_TOOL := $(shell command -v uv >/dev/null 2>&1 && echo uv pip || echo pip)
 # Check whether Make is running inside a virtual environment
 VENV:=$(shell echo "$${VIRTUAL_ENV-}")
 NEGAR:=$(if $(VENV),$(VIRTUAL_ENV)/bin/negar-gui,$(HOME)/.local/bin/negar-gui)
-APP_DESKTOP:="$(HOME)/.local/share/applications/negar.desktop"
+APP_DESKTOP:=$(HOME)/.local/share/applications/negar.desktop
 
 .ONESHELL:
 
@@ -20,18 +20,19 @@ ver: ## Show the version number
 generate_desktop_file: ## Generate a desktop icon for the GUI app
 	@cp negar_gui/icons/logo.png $(HOME)/.local/share/icons/negar.png
 	@echo "Generating the desktop file..."
-	cat <<EOF > $(APP_DESKTOP)
+	cat <<EOF > $(APP_DESKTOP).tmp
 	[Desktop Entry]
 	Name=Negar
 	Exec=$(NEGAR)
-	Icon=negar.png
-	Version=$(VER)
+	Icon=negar
+	Version=1.5
 	Hidden=false
 	Terminal=false
 	Type=Application
 	Categories=Utility;
 	Comment=Graphical User Interface for Negar -- Persian Text Editor
 	EOF
+	mv $(APP_DESKTOP).tmp $(APP_DESKTOP)
 	@chmod +x $(APP_DESKTOP)
 	@echo "Desktop file generated successfully."
 
