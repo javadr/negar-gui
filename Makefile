@@ -25,6 +25,7 @@ install-desktop-file: ## Generate a desktop icon for the GUI app
 	Keywords=Negar;نگار;Persian;فارسی;
 	Exec=$(NEGAR)
 	Icon=negar
+	StartupWMClass=negar
 	Version=1.5
 	Hidden=false
 	Terminal=false

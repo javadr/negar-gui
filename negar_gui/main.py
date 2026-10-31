@@ -31,6 +31,7 @@ from docopt import docopt
 
 from pyperclip import copy as pyclipcopy
 from PyQt6.QtCore import (
+    QEvent,
     QAbstractTableModel,
     QByteArray,
     QCoreApplication,
@@ -288,6 +289,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        for menu in self.menubar.findChildren(QMenu):
+            menu.installEventFilter(self)
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
@@ -377,6 +380,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 "negar-gui",
                 "negar-gui",
             )
+
+    def eventFilter(self, obj, event):
+        # keep menus open when toggling checkable items; close via ESC/outside click
+        if isinstance(obj, QMenu) and event.type() == QEvent.Type.MouseButtonRelease:
+            action = obj.actionAt(event.position().toPoint())
+            if action and action.isCheckable() and action.isEnabled():
+                action.trigger()
+                return True
+        return super().eventFilter(obj, event)
 
     def connectSlots(self):
         self.autoedit_handler()
@@ -1122,6 +1134,9 @@ def main(args=docopt(__doc__)):
     except AttributeError:
         qdarktheme.setup_theme = lambda x, **kw: ()
     app = QApplication(sys.argv)
+    app.setApplicationName("negar")  # X11 WM_CLASS
+    app.setApplicationDisplayName("Negar")
+    app.setDesktopFileName("negar")  # Wayland app_id -> negar.desktop
     qdarktheme.setup_theme("dark")
     MAIN_WINDOW = MyWindow()
     MAIN_WINDOW.show()

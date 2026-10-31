@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.4] - 2026-10-31
+
+### Fixed
+- App name in Alt+Tab/taskbar now shows "Negar" instead of "python3" (set app id and StartupWMClass)
+
+## [1.0.3] - 2026-10-31
+
+### Fixed
+- Menus stay open when toggling checkable items; close with ESC or an outside click
+
 ## [1.0.2] - 2026-07-19
 
 ### Fixed
