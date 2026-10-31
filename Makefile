@@ -21,6 +21,8 @@ install-desktop-file: ## Generate a desktop icon for the GUI app
 	cat <<EOF > $(APP_DESKTOP).tmp
 	[Desktop Entry]
 	Name=Negar
+	Name[fa]=نگار
+	Keywords=Negar;نگار;Persian;فارسی;
 	Exec=$(NEGAR)
 	Icon=negar
 	Version=1.5
