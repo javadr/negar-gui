@@ -17,6 +17,11 @@
 <context>
     <name>MainWindow</name>
     <message>
+        <location filename="../main.py" line="0"/>
+        <source>Persian Keyboard on Startup</source>
+        <translation>صفحه‌کلید فارسی هنگام اجرا</translation>
+    </message>
+    <message>
         <location filename="main.py" line="141"/>
         <source>Open File - A Plain Text</source>
         <translation type="obsolete">باز کردن فایل - فایل متنی ساده</translation>

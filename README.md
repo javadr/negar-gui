@@ -72,6 +72,9 @@ or simply
 
     $ negar
 
+### Persian keyboard on startup
+If a Persian keyboard layout is installed, Negar switches to it when it starts and switches back when it closes (turn it off in *Settings → Persian Keyboard on Startup*). This works on Windows, macOS, KDE Plasma, Sway and X11 desktops. GNOME has no built-in way for apps to change the layout, so there you need the [Shyriiwook](https://extensions.gnome.org/extension/6691/shyriiwook/) extension.
+
 ## Docker
 
 A Docker image is available on [Docker Hub](https://hub.docker.com/r/javadr/negar-gui):

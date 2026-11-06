@@ -61,7 +61,7 @@ from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
-from negar_gui import llm_providers
+from negar_gui import keyboard_layout, llm_providers
 
 # Local application imports
 # The following is neccessary for ICONs
@@ -293,6 +293,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             menu.installEventFilter(self)
         self.input_editor.viewport().installEventFilter(self)
         self.output_editor.viewport().installEventFilter(self)
+        self._restore_keyboard = None
+        self.actionPersian_Keyboard = QtGui.QAction(self, checkable=True, checked=True)
+        self.menuSetting.insertAction(self.menuLanguage.menuAction(), self.actionPersian_Keyboard)
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
@@ -477,6 +480,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
         )
         self.actionQr_Code.triggered.connect(self.qrcode)
+        self.actionPersian_Keyboard.toggled.connect(self._persian_keyboard)
 
         self.vertical_btn.clicked.connect(
             lambda: (
@@ -768,6 +772,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             return
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
+        self.actionPersian_Keyboard.setText(_translate("MainWindow", "Persian Keyboard on Startup"))
         self._build_llm_menu()
         if not self.llm_btn.isEnabled() and hasattr(self, "_llm_pending_prompt"):
             prompt_name = _translate("MainWindow", self._llm_pending_prompt["name"])
@@ -796,8 +801,30 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.input_editor.setPlainText(text)
             self.edit_text()
 
+    def _persian_keyboard(self, on):
+        if on and not self._restore_keyboard:
+            self._restore_keyboard = keyboard_layout.switch_to_persian()
+        elif not on and self._restore_keyboard:
+            self._restore_keyboard()
+            self._restore_keyboard = None
+
+    def changeEvent(self, event):
+        # switch on first focus, not on show: per-window layouts (GNOME, Windows) apply to the focused window
+        if (
+            event.type() == QEvent.Type.ActivationChange
+            and self.isActiveWindow()
+            and not hasattr(self, "_keyboard_initialized")
+        ):
+            self._keyboard_initialized = True
+            on = self.settings.get("settings", {}).get("persian-keyboard", True)
+            self.actionPersian_Keyboard.setChecked(on)
+            if on:
+                self._persian_keyboard(True)
+        super().changeEvent(event)
+
     def closeEvent(self, event):
         self.__save_settings()
+        self._persian_keyboard(False)
         WindowSettings.closeEvent(self, event)
         del event
         # event = QEvent(QEvent.Clipboard)
@@ -873,6 +900,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
+                "persian-keyboard": self.actionPersian_Keyboard.isChecked(),
                 "language": self.settings.get("settings", {"language": "English"})["language"],
                 "editing-option": {
                     "fix-dashes": self.actionFix_Dashes.isChecked(),
