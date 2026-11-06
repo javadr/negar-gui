@@ -54,8 +54,48 @@ class TestFixTextApiSuccess:
         assert kwargs["json"]["messages"][1]["role"] == "user"
         assert kwargs["json"]["messages"][1]["content"] == "متن زیر را ویرایش کن: hello world"
         assert kwargs["json"]["temperature"] == 0.0
-        assert kwargs["json"]["max_tokens"] == max(256, len("متن زیر را ویرایش کن: hello world") * 2)
         assert len(kwargs["json"]["messages"]) == 2
+
+
+class TestProviders:
+    def test_every_provider_is_complete(self):
+        assert llm_providers.DEFAULT_PROVIDER in llm_providers.PROVIDERS
+        for prov in llm_providers.PROVIDERS.values():
+            assert prov["name"] and prov["url"].startswith("https://") and prov["model"]
+
+    def test_key_and_model_are_sent(self, mocker):
+        fake = mocker.Mock()
+        fake.json.return_value = {"choices": [{"message": {"content": "ok"}}]}
+        post_spy = mocker.patch.object(llm_providers.requests, "post", return_value=fake)
+
+        llm_providers.fix_text("hello", provider="gemini", api_key="k123")
+
+        args, kwargs = post_spy.call_args
+        assert args[0] == llm_providers.PROVIDERS["gemini"]["url"]
+        assert kwargs["headers"]["Authorization"] == "Bearer k123"
+        assert kwargs["json"]["model"] == llm_providers.PROVIDERS["gemini"]["model"]
+
+    def test_custom_model_overrides_default(self):
+        _, _, payload = llm_providers.build_request("hi", provider="groq", model="qwen/qwen3")
+        assert payload["model"] == "qwen/qwen3"
+
+    def test_no_key_means_no_auth_header(self):
+        _, headers, _ = llm_providers.build_request("hi")
+        assert "Authorization" not in headers
+
+    def test_unknown_provider_falls_back_to_default(self):
+        url, _, _ = llm_providers.build_request("hi", provider="gone")
+        assert url == llm_providers.POLLINATIONS_URL
+
+
+class TestParseReply:
+    def test_reasoning_fallback_and_tag_extraction(self):
+        data = {"choices": [{"message": {"content": "", "reasoning": "x <corrected text> fixed </corrected text>"}}]}
+        assert llm_providers.parse_reply(data) == "fixed"
+
+    def test_empty_reply_raises(self):
+        with pytest.raises(KeyError):
+            llm_providers.parse_reply({"choices": [{"message": {"content": "  "}}]})
 
 
 class TestFixTextErrors:

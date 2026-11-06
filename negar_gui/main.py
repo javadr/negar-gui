@@ -47,11 +47,15 @@ from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPixma
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
     QApplication,
+    QComboBox,
     QDialog,
+    QDialogButtonBox,
     QFileDialog,
+    QFormLayout,
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QLineEdit,
     QMainWindow,
     QMenu,
     QSizePolicy,
@@ -176,6 +180,7 @@ class WindowSettings(QMainWindow):
 
         with SETTING_FILE.open("w") as toml_file:
             toml.dump(self.settings, toml_file)
+        SETTING_FILE.chmod(0o600)  # it stores LLM API keys
 
         logging.info("Settings Saved on Close!")
 
@@ -282,6 +287,61 @@ class HelpWindow(QDialog, Ui_Dialog):
             self.close()
         else:
             super().keyPressEvent(event)
+
+
+class LLMProviderDialog(QDialog):
+    """Pick the LLM provider and enter its API key and model; edits `llm` (the settings dict) on OK."""
+
+    def __init__(self, parent, llm):
+        super().__init__(parent)
+        self.llm = llm
+        self.keys = dict(llm.get("keys", {}))
+        self.models = dict(llm.get("models", {}))
+        self.setWindowTitle(_translate("MainWindow", "AI Provider"))
+        self.provider = QComboBox()
+        for key, prov in llm_providers.PROVIDERS.items():
+            self.provider.addItem(prov["name"], key)
+        self.api_key = QLineEdit(echoMode=QLineEdit.EchoMode.Password)
+        self.model = QLineEdit()
+        self.key_link = QLabel(openExternalLinks=True)
+        form = QFormLayout(self)
+        form.addRow(_translate("MainWindow", "Provider:"), self.provider)
+        form.addRow(_translate("MainWindow", "API key:"), self.api_key)
+        form.addRow(_translate("MainWindow", "Model:"), self.model)
+        form.addRow("", self.key_link)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        form.addRow(buttons)
+        self.setMinimumWidth(460)
+        self._current = None
+        self.provider.currentIndexChanged.connect(self._switch)
+        self.provider.setCurrentIndex(max(0, self.provider.findData(llm.get("provider"))))
+        self._switch()
+
+    def _stash(self):
+        # remember what was typed for the provider being left, so switching back keeps it
+        if self._current:
+            self.keys[self._current] = self.api_key.text().strip()
+            self.models[self._current] = self.model.text().strip()
+
+    def _switch(self):
+        self._stash()
+        key = self.provider.currentData()
+        prov = llm_providers.PROVIDERS[key]
+        self._current = key
+        self.api_key.setText(self.keys.get(key, ""))
+        self.api_key.setEnabled(bool(prov["key_url"]))
+        self.model.setText(self.models.get(key, ""))
+        self.model.setPlaceholderText(prov["model"])
+        self.key_link.setText(
+            f'<a href="{prov["key_url"]}">{_translate("MainWindow", "Get an API key")}</a>' if prov["key_url"] else ""
+        )
+
+    def accept(self):
+        self._stash()
+        self.llm.update(provider=self._current, keys=self.keys, models=self.models)
+        super().accept()
 
 
 class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
@@ -1089,6 +1149,14 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.menuLLM.addAction(action)
             self._llm_prompt_actions[key] = action
             first = False
+        self.menuLLM.addSeparator()
+        self.menuLLM.addAction(_translate("MainWindow", "AI Provider..."), self._llm_provider_dialog)
+
+    def _llm_settings(self):
+        return self.settings.setdefault("llm", {"provider": llm_providers.DEFAULT_PROVIDER})
+
+    def _llm_provider_dialog(self):
+        return LLMProviderDialog(self, self._llm_settings()).exec() == QDialog.DialogCode.Accepted
 
     def _set_llm_prompt(self, key):
         self.current_llm_prompt_key = key
@@ -1109,6 +1177,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         text = self.input_editor.toPlainText()
         if not text.strip():
             return
+        llm = self._llm_settings()
+        provider = llm.get("provider", llm_providers.DEFAULT_PROVIDER)
+        if provider not in llm_providers.PROVIDERS:
+            provider = llm["provider"] = llm_providers.DEFAULT_PROVIDER
+        needs_key = llm_providers.PROVIDERS[provider]["key_url"]
+        if needs_key and not llm.get("keys", {}).get(provider):
+            if not self._llm_provider_dialog():
+                return
+            return self.llm_fix_text_slot()
         self.llm_btn.setEnabled(False)
         self._llm_spin_timer.start()
         self._llm_retries = 2
@@ -1120,22 +1197,21 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_send()
 
     def _llm_send(self):
-        payload = json.dumps(
-            {
-                "model": "openai",
-                "messages": [
-                    {"role": "system", "content": self._llm_pending_prompt["system_prompt"]},
-                    {"role": "user", "content": f"{self._llm_pending_prompt['prefix']}{self._llm_pending_text}"},
-                ],
-                "temperature": 0.0,
-            }
+        llm = self._llm_settings()
+        provider = llm["provider"]
+        self._llm_provider_name = llm_providers.PROVIDERS[provider]["name"].split(" (")[0]  # drop "(free key)"
+        url, headers, payload = llm_providers.build_request(
+            self._llm_pending_text,
+            self.current_llm_prompt_key,
+            provider,
+            llm.get("keys", {}).get(provider, ""),
+            llm.get("models", {}).get(provider, ""),
         )
+        req = QNetworkRequest(QUrl(url))
+        for name, value in headers.items():
+            req.setRawHeader(name.encode(), value.encode())
 
-        url = QUrl(llm_providers.POLLINATIONS_URL)
-        req = QNetworkRequest(url)
-        req.setHeader(QNetworkRequest.KnownHeaders.ContentTypeHeader, "application/json")
-
-        self._llm_reply = self._llm_nam.post(req, QByteArray(payload.encode()))
+        self._llm_reply = self._llm_nam.post(req, QByteArray(json.dumps(payload).encode()))
         self._llm_reply.finished.connect(self._on_llm_reply)
 
     def _on_llm_reply(self):
@@ -1144,23 +1220,24 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         status = self._llm_reply.attribute(QNetworkRequest.Attribute.HttpStatusCodeAttribute)
 
         ok = False
-        if status and status != 200:
+        retry = True
+        if status in (401, 403):
+            retry = False
+            err = _translate("MainWindow", "{} rejected the API key. Check it in AI → AI Provider...").format(
+                self._llm_provider_name
+            )
+        elif status in (402, 429):
+            retry = False  # retrying a rate limit just burns the next free slot
+            err = _translate(
+                "MainWindow", "{} limit reached. Wait a bit, or pick another provider in AI → AI Provider..."
+            ).format(self._llm_provider_name)
+        elif status and status != 200:
             err = f"HTTP {status}: {data[:200]}"
         else:
             try:
-                msg = json.loads(data)["choices"][0]["message"]
-                import re as _re
-
-                result = (msg.get("content") or "").strip()
-                if not result:
-                    result = (msg.get("reasoning") or "").strip()
-                m = _re.search(r"<corrected\s*text>(.*?)</corrected\s*text>", result, _re.DOTALL)
-                if m:
-                    result = m.group(1).strip()
-                if not result:
-                    raise KeyError("content")
+                result = llm_providers.parse_reply(json.loads(data))
                 ok = True
-            except (KeyError, IndexError, json.JSONDecodeError) as e:
+            except (KeyError, IndexError, TypeError, json.JSONDecodeError) as e:
                 err = f"LLM response parse failed: {e}"
 
         if ok:
@@ -1172,7 +1249,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self._llm_reply.deleteLater()
             return
 
-        if self._llm_retries > 0:
+        if retry and self._llm_retries > 0:
             self._llm_retries -= 1
             self._statusBar_tr("MainWindow", "Retrying...")
             self._llm_reply.deleteLater()

@@ -18,6 +18,46 @@
     <name>MainWindow</name>
     <message>
         <location filename="../main.py" line="0"/>
+        <source>AI Provider...</source>
+        <translation>ارائه‌دهنده هوش مصنوعی...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>AI Provider</source>
+        <translation>ارائه‌دهنده هوش مصنوعی</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Provider:</source>
+        <translation>ارائه‌دهنده:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>API key:</source>
+        <translation>کلید API:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Model:</source>
+        <translation>مدل:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Get an API key</source>
+        <translation>دریافت کلید API</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>{} rejected the API key. Check it in AI → AI Provider...</source>
+        <translation>{} کلید API را نپذیرفت. آن را در هوش مصنوعی ← ارائه‌دهنده هوش مصنوعی... بررسی کنید.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>{} limit reached. Wait a bit, or pick another provider in AI → AI Provider...</source>
+        <translation>سقف استفاده از {} پر شد. کمی صبر کنید یا در هوش مصنوعی ← ارائه‌دهنده هوش مصنوعی... ارائه‌دهنده دیگری انتخاب کنید.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
         <source>Persian Keyboard on Startup</source>
         <translation>صفحه‌کلید فارسی هنگام اجرا</translation>
     </message>

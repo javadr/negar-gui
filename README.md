@@ -75,6 +75,9 @@ or simply
 ### Persian keyboard on startup
 If a Persian keyboard layout is installed, Negar switches to it when it starts and switches back when it closes (turn it off in *Settings → Persian Keyboard on Startup*). This works on Windows, macOS, KDE Plasma, Sway and X11 desktops. GNOME has no built-in way for apps to change the layout, so there you need the [Shyriiwook](https://extensions.gnome.org/extension/6691/shyriiwook/) extension.
 
+### AI grammar fix
+The AI button works without setup through Pollinations, which is free but slow and rate-limited. For better results, open *AI → AI Provider...*, pick a provider and paste your own API key. [Google Gemini](https://aistudio.google.com/apikey), [Groq](https://console.groq.com/keys) and [OpenRouter](https://openrouter.ai/settings/keys) give free keys, and [OpenAI](https://platform.openai.com/api-keys) is paid. Keys are stored in plain text in the settings file (on Linux and macOS the file is made readable only by your user).
+
 ## Docker
 
 A Docker image is available on [Docker Hub](https://hub.docker.com/r/javadr/negar-gui):
