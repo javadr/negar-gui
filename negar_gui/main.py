@@ -291,6 +291,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         for menu in self.menubar.findChildren(QMenu):
             menu.installEventFilter(self)
+        self.input_editor.viewport().installEventFilter(self)
+        self.output_editor.viewport().installEventFilter(self)
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
@@ -382,6 +384,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
 
     def eventFilter(self, obj, event):
+        if (
+            event.type() == QEvent.Type.Wheel
+            and event.modifiers() == Qt.KeyboardModifier.ControlModifier
+            and obj in (self.input_editor.viewport(), self.output_editor.viewport())
+        ):
+            self.wheelEvent(event)
+            return True
         # keep menus open when toggling checkable items; close via ESC/outside click
         if isinstance(obj, QMenu) and event.type() == QEvent.Type.MouseButtonRelease:
             action = obj.actionAt(event.position().toPoint())
@@ -402,17 +411,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionExit.triggered.connect(self.close)
         self.font_slider.valueChanged.connect(self._set_font_size)
         self.actionIncrease_Font_Size.triggered.connect(
-            lambda: (
-                self.font_slider.setValue(self.font_slider.value() + 1),
-                self._set_font_size(),
-            ),
+            lambda: self.font_slider.setValue(self.font_slider.value() + 1),
         )
         self.actionDecrease_Font_Size.triggered.connect(
-            lambda: (
-                self.font_slider.setValue(self.font_slider.value() - 1),
-                self._set_font_size(),
-            )
+            lambda: self.font_slider.setValue(self.font_slider.value() - 1),
         )
+        # keypad "+" sends Key_Plus, not Key_Equal; Qt falls back to non-keypad matches
+        self.actionIncrease_Font_Size.setShortcuts(["Ctrl+=", "Ctrl++"])
+        # stylesheet-styled QSlider draws only the handle in RTL; keep it LTR (small→big = left→right)
+        self.font_slider.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.actionPersian.triggered.connect(
             lambda: (
                 self.settings.update({"settings": {"language": "Persian"}}),
@@ -787,7 +794,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         text = self.clipboard.text()
         if text:
             self.input_editor.setPlainText(text)
-            self._set_font_size()
+            self.edit_text()
 
     def closeEvent(self, event):
         self.__save_settings()
@@ -802,7 +809,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def showEvent(self, event):
         WindowSettings.showEvent(self, event)
         del event
+        self.font_slider.blockSignals(True)  # no zoom popup while restoring settings
         self.__load_settings()
+        self.font_slider.blockSignals(False)
+        self._set_font_size(popup=False)
+        # __load_settings rebuilds the grid (setParent(None)), which drops the focus set in __init__
+        QTimer.singleShot(0, lambda: self.input_editor.setFocus(Qt.FocusReason.OtherFocusReason))
 
     def __load_settings(self):
         try:
@@ -907,9 +919,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         modifiers = event.modifiers()
         # if modifiers == Qt.ControlModifier:
         if modifiers == Qt.KeyboardModifier.ControlModifier:
-            delta_notches = int(event.angleDelta().y() / 120)
-            self.font_slider.setValue(self.font_slider.value() + delta_notches)
-            self._set_font_size()
+            # smooth wheels/touchpads send <120 per event; keep the remainder instead of dropping it
+            self._wheel_acc = getattr(self, "_wheel_acc", 0) + event.angleDelta().y()
+            notches = int(self._wheel_acc / 120)
+            self._wheel_acc -= notches * 120
+            if notches:
+                self.font_slider.setValue(self.font_slider.value() + notches)
 
     def autoedit_handler(self):
         """Edits the input text automatically if `autoedit` is checked."""
@@ -923,21 +938,48 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 self.input_editor.textChanged.disconnect(self.edit_text)
             except:
                 pass
-        self._set_font_size()
-
-    def _set_font_size(self):
-        size = self.font_slider.value()
-        self.input_editor.setFontPointSize(size)
-        self.output_editor.setFontPointSize(size)
-        lines = self.input_editor.toPlainText()
-        self.input_editor.clear()
-        self.input_editor.append(lines)
         self.edit_text()
 
-        html_content = self.output_editor.toHtml()  # Get current content
-        # Replace font-size values with new size
-        new_html = re.sub(r"font-size:(\d+)pt", f"font-size:{size}pt", html_content)
-        self.output_editor.setHtml(new_html)  # Update content
+    def _set_font_size(self, _value=None, popup=True):
+        if not popup:
+            self._apply_font_size()
+            return
+        # relayout of big texts is slow; show the popup now, resize once the wheel/keys pause
+        if not hasattr(self, "_font_timer"):
+            self._font_timer = QTimer(self, singleShot=True, interval=60)
+            self._font_timer.timeout.connect(self._apply_font_size)
+        self._font_timer.start()
+        self._show_zoom_popup(self.font_slider.value())
+
+    def _apply_font_size(self):
+        # widget font = document default font, so all existing and future text follows it
+        size = self.font_slider.value()
+        for editor in (self.input_editor, self.output_editor):
+            font = editor.font()
+            font.setPointSize(size)
+            editor.setFont(font)
+
+    def _show_zoom_popup(self, size):
+        if not hasattr(self, "_zoom_popup"):
+            self._zoom_popup = QLabel(self)
+            self._zoom_popup.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+            self._zoom_popup.setStyleSheet(
+                "QLabel { background: rgba(40, 32, 28, 225); color: #f6e7dc;"
+                " border: 1px solid #d89e76; border-radius: 10px;"
+                " padding: 8px 16px; font-size: 13pt; }"
+            )
+            self._zoom_timer = QTimer(self, singleShot=True, interval=1200)
+            self._zoom_timer.timeout.connect(self._zoom_popup.hide)
+        default = 20  # slider default in mwin.ui
+        self._zoom_popup.setText(
+            f"<b>{size}</b> pt&nbsp;&nbsp;<span style='color:#d89e76'>{round(size * 100 / default)}%</span>"
+        )
+        self._zoom_popup.adjustSize()
+        top = self.input_editor.mapTo(self, QPoint(0, 0)).y() + 24  # over the editors, not the toolbar
+        self._zoom_popup.move((self.width() - self._zoom_popup.width()) // 2, top)
+        self._zoom_popup.raise_()
+        self._zoom_popup.show()
+        self._zoom_timer.start()
 
     def option_control(self):
         """Enable/Disable Editing features."""
