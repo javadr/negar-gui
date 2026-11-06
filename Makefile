@@ -1,6 +1,9 @@
 VER=$(shell grep __version__ negar_gui/constants.py|cut -d= -f2|tr -d '\" ')
 
-PKG_TOOL := $(shell command -v uv >/dev/null 2>&1 && echo uv pip || echo pip)
+HAS_UV := $(shell command -v uv >/dev/null 2>&1 && echo 1)
+PKG_TOOL := $(if $(HAS_UV),uv pip,pip)
+BUILD_TOOL := $(if $(HAS_UV),uv build,python -m build)
+TWINE := $(if $(HAS_UV),uvx twine,twine)
 
 VENV:=$(shell echo "$${VIRTUAL_ENV-}")
 NEGAR:=$(if $(VENV),$(VIRTUAL_ENV)/bin/negar-gui,$(HOME)/.local/bin/negar-gui)
@@ -46,7 +49,7 @@ uninstall: ## Uninstall negar-gui
 	@echo "Desktop file removed successfully."
 
 setup: ver ## Build source and wheel distribution packages
-	python -m build
+	$(BUILD_TOOL)
 
 .PHONY: install-dev
 install-dev: install-desktop-file ## Install negar-gui locally in editable/development mode
@@ -58,11 +61,11 @@ install-pypi: ver install-desktop-file ## Install negar-gui from PyPI using the 
 
 .PHONY: publish-pypi
 publish-pypi: setup ## Publish the package to PyPI
-	twine upload "dist/negar_gui-$(VER).tar.gz"
+	$(TWINE) upload "dist/negar_gui-$(VER).tar.gz"
 
 .PHONY: publish-testpypi
 publish-testpypi: setup ## Publish the package to TestPyPI
-	twine upload -r testpypi "dist/negar_gui-$(VER).tar.gz"
+	$(TWINE) upload -r testpypi "dist/negar_gui-$(VER).tar.gz"
 
 upload: setup publish-pypi publish-testpypi ## Publish the package to both PyPI and TestPyPI
 
