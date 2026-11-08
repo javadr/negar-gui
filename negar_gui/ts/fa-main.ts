@@ -166,5 +166,20 @@
         <source>Prompt used by the AI button</source>
         <translation>پرامپتی که دکمه هوش مصنوعی استفاده می‌کند</translation>
     </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Restore defaults</source>
+        <translation>بازگردانی پیش‌فرض‌ها</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Restore</source>
+        <translation>بازگردانی</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Restore the prompts that come with Negar? Missing ones are added back and edited ones return to their original text. Your own prompts are kept.</source>
+        <translation>پرامپت‌های همراه نگار بازگردانده شوند؟ موارد حذف‌شده برمی‌گردند و موارد ویرایش‌شده به متن اصلی بازمی‌گردند. پرامپت‌های خودتان حفظ می‌شوند.</translation>
+    </message>
 </context>
 </TS>

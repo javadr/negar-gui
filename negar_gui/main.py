@@ -469,7 +469,12 @@ class PromptsDialog(QDialog):
         form.addRow(self.list)
         form.addRow(hint)
         row = QHBoxLayout()
-        for label, slot in (("Add", self._add), ("Edit", self._edit), ("Delete", self._delete)):
+        for label, slot in (
+            ("Add", self._add),
+            ("Edit", self._edit),
+            ("Delete", self._delete),
+            ("Restore defaults", self._restore_defaults),
+        ):
             btn = QPushButton(_translate("MainWindow", label))
             btn.clicked.connect(slot)
             row.addWidget(btn)
@@ -524,6 +529,30 @@ class PromptsDialog(QDialog):
         if i >= 0 and (new := self._ask(self.prompts[i], i)):
             self.prompts[i] = new
             self._refresh()
+
+    def _restore_defaults(self):
+        box = QMessageBox(
+            QMessageBox.Icon.Question,
+            self.windowTitle(),
+            _translate(
+                "MainWindow",
+                "Restore the prompts that come with Negar? Missing ones are added back and edited ones return to "
+                "their original text. Your own prompts are kept.",
+            ),
+            parent=self,
+        )
+        yes = box.addButton(_translate("MainWindow", "Restore"), QMessageBox.ButtonRole.AcceptRole)
+        box.addButton(_translate("MainWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
+        box.exec()
+        if box.clickedButton() is not yes:
+            return
+        by_name = {p["name"]: i for i, p in enumerate(self.prompts)}
+        for default in llm_providers.DEFAULT_USER_PROMPTS:
+            if default["name"] in by_name:
+                self.prompts[by_name[default["name"]]] = dict(default)
+            else:
+                self.prompts.append(dict(default))
+        self._refresh()
 
     def _delete(self):
         i = self.list.currentRow()

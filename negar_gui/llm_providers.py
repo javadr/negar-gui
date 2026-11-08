@@ -3,6 +3,8 @@ import re
 
 import requests
 
+from negar_gui.default_prompts import DEFAULT_PROMPTS
+
 POLLINATIONS_URL = "https://text.pollinations.ai/openai"
 
 # All of these speak the OpenAI chat-completions format; only URL, model and key differ.
@@ -52,26 +54,7 @@ PROMPTS = {
 logger = logging.getLogger(__name__)
 
 
-# Seeded once into the user's own (editable) prompt list.
-DEFAULT_USER_PROMPTS = [
-    {
-        "name": "Fix Grammar",
-        "name_fa": "اصلاح گرامر",
-        "system_prompt": (
-            "You are an expert Persian (Farsi) editor and proofreader. Correct the text below according to the "
-            "standards of the Academy of Persian Language and Literature.\n\n"
-            "Rules:\n"
-            "1. Keep the original meaning, tone and all key facts. Do not add, remove or reorder ideas.\n"
-            "2. Fix grammar, spelling and typos. Do not change the author's wording or style unless it is wrong.\n"
-            "3. Fix punctuation (، ؛ ؟ « ») and spacing around it.\n"
-            "4. Use correct Persian letters (ی، ک) and proper half-spaces (نیم\u200cفاصله), "
-            'e.g. "می\u200cخواهم", "کتاب\u200cها".\n'
-            "5. Keep numbers, names, links, code and technical terms unchanged.\n\n"
-            "Output only the corrected text, with no explanations.\n\n"
-            "Text:"
-        ),
-    },
-]
+DEFAULT_USER_PROMPTS = DEFAULT_PROMPTS  # seeded once into the user's own, editable list
 
 
 def all_prompts(user_prompts=()):
