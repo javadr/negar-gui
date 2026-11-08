@@ -73,7 +73,7 @@ import negar_gui.resource_rc  # noqa: F401
 from negar.constants import INFO, __version__ as negar__version
 from negar.virastar import ImmutableWords, PersianEditor
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
-from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, localize_digits
+from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, bidi_text, localize_digits
 from negar_gui.ui.Ui_hwin import Ui_Dialog
 from negar_gui.ui.Ui_mwin import Ui_MainWindow
 from negar_gui.ui.Ui_uwin import Ui_uwWindow
@@ -1168,8 +1168,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         today, total = usage_log.counts(provider)
         name = llm_providers.PROVIDERS.get(provider, {}).get("name", provider).split(" (")[0]
         self.llm_btn.setToolTip(
-            _translate("MainWindow", "{}: {} requests today, {} in total").format(
-                name, localize_digits(self, today), localize_digits(self, total)
+            bidi_text(
+                self,
+                _translate("MainWindow", "{}: {} requests today, {} in total").format(
+                    f"\u2068{name}\u2069",  # isolate the Latin name so it can't reorder the Persian around it
+                    localize_digits(self, today),
+                    localize_digits(self, total),
+                ),
             )
         )
 

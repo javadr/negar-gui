@@ -55,6 +55,13 @@ def localize_digits(window, text):
     return str(text)
 
 
+def bidi_text(window, text):
+    """Persian mode: start each line with an RLM, else a leading Latin name makes the whole line left-to-right."""
+    if window.settings.get("settings", {}).get("language") != "Persian":
+        return text
+    return "\n".join("\u200f" + line for line in text.split("\n"))
+
+
 class LLMProviderDialog(QDialog, Ui_ProviderDialog):
     """Pick the LLM provider and enter its API key and model; edits `llm` (the settings dict) on OK."""
 
@@ -343,9 +350,10 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
             pie.setLabelsVisible(True)
             view = _chart_view(self, pal, [pie], name=title(tab), description="; ".join(tips))
             layout.addWidget(view)
-            for pie_slice, tip in zip(pie.slices(), tips):
+            shown = [bidi_text(window, tip) for tip in tips]
+            for pie_slice, tip in zip(pie.slices(), shown):
                 pie_slice.hovered.connect(lambda hovering, tip=tip: _show_tip(hovering, tip))
-            for marker, tip in zip(view.chart().legend().markers(pie), tips):
+            for marker, tip in zip(view.chart().legend().markers(pie), shown):
                 marker.hovered.connect(lambda hovering, tip=tip: _show_tip(hovering, tip))
 
     def _show_message(self, text):
