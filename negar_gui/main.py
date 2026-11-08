@@ -73,9 +73,9 @@ from negar.constants import INFO, __version__ as negar__version
 from negar.virastar import ImmutableWords, PersianEditor
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
 from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, localize_digits
-from negar_gui.Ui_hwin import Ui_Dialog
-from negar_gui.Ui_mwin import Ui_MainWindow
-from negar_gui.Ui_uwin import Ui_uwWindow
+from negar_gui.ui.Ui_hwin import Ui_Dialog
+from negar_gui.ui.Ui_mwin import Ui_MainWindow
+from negar_gui.ui.Ui_uwin import Ui_uwWindow
 
 
 _translate = QCoreApplication.translate
@@ -1058,7 +1058,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
             self._zoom_timer = QTimer(self, singleShot=True, interval=1200)
             self._zoom_timer.timeout.connect(self._zoom_popup.hide)
-        default = 20  # slider default in mwin.ui
+        default = 20  # slider default in ui/mwin.ui
         self._zoom_popup.setText(
             f"<b>{size}</b> pt&nbsp;&nbsp;<span style='color:#d89e76'>{round(size * 100 / default)}%</span>"
         )

@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'negar_gui/mwin.ui'
+# Form implementation generated from reading ui file 'negar_gui/ui/mwin.ui'
 #
 # Created by: PyQt6 UI code generator 6.11.0
 #

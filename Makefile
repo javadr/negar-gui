@@ -93,10 +93,10 @@ compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
 
 .PHONY: update-translations
 update-translations: ver ## Update and compile Qt translation files using PyQt tools
-	pylupdate5 -verbose negar_gui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
-	pylupdate5 -verbose negar_gui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
-	pylupdate5 -verbose negar_gui/Ui_hwin.py -ts negar_gui/ts/fa-uihwin.ts
-	lupdate negar_gui/provider.ui negar_gui/promptedit.ui negar_gui/prompts.ui negar_gui/usage.ui -ts negar_gui/ts/fa-uidialogs.ts
+	pylupdate5 -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
+	pylupdate5 -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
+	pylupdate5 -verbose negar_gui/ui/Ui_hwin.py -ts negar_gui/ts/fa-uihwin.ts
+	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui -ts negar_gui/ts/fa-uidialogs.ts
 	pylupdate5 -verbose negar_gui/main.py negar_gui/dialogs.py -ts negar_gui/ts/fa-main.ts
 	lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 
@@ -107,13 +107,13 @@ compile-resources: ver ## Compile the Qt resource file using PyQt tools
 
 .PHONY: compile-ui
 compile-ui: ver ## Convert Qt UI files to Python scripts using PyQt6
-	pyuic6 negar_gui/mwin.ui -xo negar_gui/Ui_mwin.py
-	pyuic6 negar_gui/uwin.ui -xo negar_gui/Ui_uwin.py
-	pyuic6 negar_gui/hwin.ui -xo negar_gui/Ui_hwin.py
-	pyuic6 negar_gui/provider.ui -xo negar_gui/Ui_provider.py
-	pyuic6 negar_gui/promptedit.ui -xo negar_gui/Ui_promptedit.py
-	pyuic6 negar_gui/prompts.ui -xo negar_gui/Ui_prompts.py
-	pyuic6 negar_gui/usage.ui -xo negar_gui/Ui_usage.py
+	pyuic6 negar_gui/ui/mwin.ui -xo negar_gui/ui/Ui_mwin.py
+	pyuic6 negar_gui/ui/uwin.ui -xo negar_gui/ui/Ui_uwin.py
+	pyuic6 negar_gui/ui/hwin.ui -xo negar_gui/ui/Ui_hwin.py
+	pyuic6 negar_gui/ui/provider.ui -xo negar_gui/ui/Ui_provider.py
+	pyuic6 negar_gui/ui/promptedit.ui -xo negar_gui/ui/Ui_promptedit.py
+	pyuic6 negar_gui/ui/prompts.ui -xo negar_gui/ui/Ui_prompts.py
+	pyuic6 negar_gui/ui/usage.ui -xo negar_gui/ui/Ui_usage.py
 
 .PHONY: compile-resources-pyside2
 compile-resources-pyside2: ver ## Compile the Qt resource file using PySide2 tools
@@ -121,13 +121,13 @@ compile-resources-pyside2: ver ## Compile the Qt resource file using PySide2 too
 
 .PHONY: compile-ui-pyside2
 compile-ui-pyside2: ver ## Convert Qt UI files to Python scripts using PySide2
-	pyside2-uic --from-imports negar_gui/mwin.ui -o negar_gui/Ui_mwin.py
-	pyside2-uic --from-imports negar_gui/uwin.ui -o negar_gui/Ui_uwin.py
+	pyside2-uic --from-imports negar_gui/ui/mwin.ui -o negar_gui/ui/Ui_mwin.py
+	pyside2-uic --from-imports negar_gui/ui/uwin.ui -o negar_gui/ui/Ui_uwin.py
 
 .PHONY: update-translations-pyside2
 update-translations-pyside2: ver ## Update and compile Qt translation files using PySide2 tools
-	pyside2-lupdate -verbose negar_gui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
-	pyside2-lupdate -verbose negar_gui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
+	pyside2-lupdate -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
+	pyside2-lupdate -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
 	pyside2-lupdate -verbose negar_gui/main.py -ts negar_gui/ts/fa-main.ts
 	pyside2-lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 

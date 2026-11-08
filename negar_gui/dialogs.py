@@ -1,4 +1,4 @@
-"""AI dialogs: layouts live in provider.ui / promptedit.ui / prompts.ui / usage.ui (see `make compile-ui`)."""
+"""AI dialogs: layouts live in ui/provider.ui, ui/promptedit.ui, ui/prompts.ui, ui/usage.ui (see `make compile-ui`)."""
 
 from PyQt6.QtCore import QCoreApplication, QPoint, QSize, Qt
 from PyQt6.QtGui import QKeySequence, QShortcut
@@ -14,10 +14,10 @@ from PyQt6.QtWidgets import (
 )
 
 from negar_gui import llm_providers, usage_log
-from negar_gui.Ui_promptedit import Ui_PromptEditDialog
-from negar_gui.Ui_prompts import Ui_PromptsDialog
-from negar_gui.Ui_provider import Ui_ProviderDialog
-from negar_gui.Ui_usage import Ui_UsageDialog
+from negar_gui.ui.Ui_promptedit import Ui_PromptEditDialog
+from negar_gui.ui.Ui_prompts import Ui_PromptsDialog
+from negar_gui.ui.Ui_provider import Ui_ProviderDialog
+from negar_gui.ui.Ui_usage import Ui_UsageDialog
 
 _translate = QCoreApplication.translate
 
