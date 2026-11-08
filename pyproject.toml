@@ -25,7 +25,8 @@ dependencies = [
   "docopt",
   "Image",
   "pyqtdarktheme",
-  "toml"
+  "toml",
+  "duckdb"
 ]
 
 [project.urls]

@@ -181,5 +181,55 @@
         <source>Restore the prompts that come with Negar? Missing ones are added back and edited ones return to their original text. Your own prompts are kept.</source>
         <translation>پرامپت‌های همراه نگار بازگردانده شوند؟ موارد حذف‌شده برمی‌گردند و موارد ویرایش‌شده به متن اصلی بازمی‌گردند. پرامپت‌های خودتان حفظ می‌شوند.</translation>
     </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Usage Report...</source>
+        <translation>گزارش مصرف...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>{}: {} requests today, {} in total</source>
+        <translation>{}: {} درخواست امروز، {} درخواست در مجموع</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>AI Usage Report</source>
+        <translation>گزارش مصرف هوش مصنوعی</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Cannot read the usage log: {}</source>
+        <translation>خواندن گزارش مصرف ممکن نیست: {}</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>No AI requests logged yet.</source>
+        <translation>هنوز درخواستی ثبت نشده است.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Day</source>
+        <translation>روز</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Provider</source>
+        <translation>ارائه‌دهنده</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Succeeded</source>
+        <translation>موفق</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Failed</source>
+        <translation>ناموفق</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Total successful requests: {}</source>
+        <translation>مجموع درخواست‌های موفق: {}</translation>
+    </message>
 </context>
 </TS>

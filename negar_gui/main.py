@@ -67,6 +67,9 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QSizePolicy,
     QStyledItemDelegate,
+    QVBoxLayout,
+    QTableWidget,
+    QTableWidgetItem,
     QStyleOptionViewItem,
     QSpacerItem,
 )
@@ -74,7 +77,7 @@ from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
-from negar_gui import keyboard_layout, llm_providers
+from negar_gui import keyboard_layout, llm_providers, usage_log
 
 # Local application imports
 # The following is neccessary for ICONs
@@ -466,6 +469,45 @@ class GripDelegate(QStyledItemDelegate):
     def sizeHint(self, option, index):
         size = super().sizeHint(option, index)
         return QSize(size.width() + self.GRIP, max(size.height(), 34))
+
+
+def localize_digits(window, text):
+    """Persian digits when the app language is Persian."""
+    if window.settings.get("settings", {}).get("language") == "Persian":
+        return str(text).translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
+    return str(text)
+
+
+class UsageReportDialog(QDialog):
+    """Requests per day and provider, from the usage log (DuckDB)."""
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle(_translate("MainWindow", "AI Usage Report"))
+        self.resize(480, 360)
+        layout = QVBoxLayout(self)
+        try:
+            rows = usage_log.report()
+        except Exception as e:  # missing DuckDB or an unreadable log
+            layout.addWidget(QLabel(_translate("MainWindow", "Cannot read the usage log: {}").format(e)))
+            return
+        if not rows:
+            layout.addWidget(QLabel(_translate("MainWindow", "No AI requests logged yet.")))
+            return
+        table = QTableWidget(len(rows), 4)
+        table.setHorizontalHeaderLabels(
+            [_translate("MainWindow", h) for h in ("Day", "Provider", "Succeeded", "Failed")]
+        )
+        table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        for r, row in enumerate(rows):
+            for c, value in enumerate(row):
+                table.setItem(r, c, QTableWidgetItem(localize_digits(parent, value)))
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        layout.addWidget(table)
+        total = sum(row[2] for row in rows)
+        layout.addWidget(
+            QLabel(_translate("MainWindow", "Total successful requests: {}").format(localize_digits(parent, total)))
+        )
 
 
 class PromptsDialog(QDialog):
@@ -1399,6 +1441,18 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.menuLLM.addSeparator()
         self.menuLLM.addAction(_translate("MainWindow", "Manage Prompts..."), self._manage_prompts)
         self.menuLLM.addAction(_translate("MainWindow", "AI Provider..."), self._llm_provider_dialog)
+        self.menuLLM.addAction(_translate("MainWindow", "Usage Report..."), lambda: UsageReportDialog(self).exec())
+        self._update_llm_tooltip()
+
+    def _update_llm_tooltip(self):
+        provider = self._llm_settings().get("provider", llm_providers.DEFAULT_PROVIDER)
+        today, total = usage_log.counts(provider)
+        name = llm_providers.PROVIDERS.get(provider, {}).get("name", provider).split(" (")[0]
+        self.llm_btn.setToolTip(
+            _translate("MainWindow", "{}: {} requests today, {} in total").format(
+                name, localize_digits(self, today), localize_digits(self, total)
+            )
+        )
 
     def _llm_settings(self):
         llm = self.settings.setdefault("llm", {"provider": llm_providers.DEFAULT_PROVIDER})
@@ -1411,7 +1465,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         return llm
 
     def _llm_provider_dialog(self):
-        return LLMProviderDialog(self, self._llm_settings()).exec() == QDialog.DialogCode.Accepted
+        accepted = LLMProviderDialog(self, self._llm_settings()).exec() == QDialog.DialogCode.Accepted
+        self._update_llm_tooltip()
+        return accepted
 
     def prompt_title(self, prompt):
         """Persian name in Persian mode (when set), else the English name."""
@@ -1474,6 +1530,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def _llm_send(self):
         llm = self._llm_settings()
         provider = llm["provider"]
+        self._llm_model = llm.get("models", {}).get(provider) or llm_providers.PROVIDERS[provider]["model"]
         self._llm_provider_name = llm_providers.PROVIDERS[provider]["name"].split(" (")[0]  # drop "(free key)"
         url, headers, payload = llm_providers.build_request(
             self._llm_pending_text,
@@ -1515,6 +1572,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             except (KeyError, IndexError, TypeError, json.JSONDecodeError) as e:
                 err = f"LLM response parse failed: {e}"
 
+        usage_log.log_request(
+            self._llm_settings()["provider"], self._llm_model, self._llm_pending_prompt["name"], status, ok
+        )
+        self._update_llm_tooltip()
         if ok:
             self._llm_spin_stop()
             self.output_editor.setPlainText(result)
