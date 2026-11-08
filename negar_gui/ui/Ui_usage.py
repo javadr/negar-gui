@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'usage.ui'
+# Form implementation generated from reading ui file 'negar_gui/ui/usage.ui'
 #
 # Created by: PyQt6 UI code generator 6.11.0
 #
@@ -9,17 +9,23 @@
 from PyQt6 import QtCore, QtWidgets
 
 
-class Ui_UsageDialog:
+class Ui_UsageDialog(object):
     def setupUi(self, UsageDialog):
         UsageDialog.setObjectName("UsageDialog")
-        UsageDialog.resize(480, 360)
+        UsageDialog.resize(640, 460)
         self.verticalLayout = QtWidgets.QVBoxLayout(UsageDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.message = QtWidgets.QLabel(parent=UsageDialog)
         self.message.setVisible(False)
         self.message.setObjectName("message")
         self.verticalLayout.addWidget(self.message)
-        self.table = QtWidgets.QTableWidget(parent=UsageDialog)
+        self.tabs = QtWidgets.QTabWidget(parent=UsageDialog)
+        self.tabs.setObjectName("tabs")
+        self.tab_table = QtWidgets.QWidget()
+        self.tab_table.setObjectName("tab_table")
+        self.table_layout = QtWidgets.QVBoxLayout(self.tab_table)
+        self.table_layout.setObjectName("table_layout")
+        self.table = QtWidgets.QTableWidget(parent=self.tab_table)
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.setObjectName("table")
         self.table.setColumnCount(4)
@@ -32,10 +38,32 @@ class Ui_UsageDialog:
         self.table.setHorizontalHeaderItem(2, item)
         item = QtWidgets.QTableWidgetItem()
         self.table.setHorizontalHeaderItem(3, item)
-        self.verticalLayout.addWidget(self.table)
-        self.total = QtWidgets.QLabel(parent=UsageDialog)
+        self.table_layout.addWidget(self.table)
+        self.total = QtWidgets.QLabel(parent=self.tab_table)
         self.total.setObjectName("total")
-        self.verticalLayout.addWidget(self.total)
+        self.table_layout.addWidget(self.total)
+        self.tabs.addTab(self.tab_table, "")
+        self.tab_daily = QtWidgets.QWidget()
+        self.tab_daily.setObjectName("tab_daily")
+        self.daily_layout = QtWidgets.QVBoxLayout(self.tab_daily)
+        self.daily_layout.setObjectName("daily_layout")
+        self.tabs.addTab(self.tab_daily, "")
+        self.tab_provider = QtWidgets.QWidget()
+        self.tab_provider.setObjectName("tab_provider")
+        self.provider_layout = QtWidgets.QVBoxLayout(self.tab_provider)
+        self.provider_layout.setObjectName("provider_layout")
+        self.tabs.addTab(self.tab_provider, "")
+        self.tab_prompt = QtWidgets.QWidget()
+        self.tab_prompt.setObjectName("tab_prompt")
+        self.prompt_layout = QtWidgets.QVBoxLayout(self.tab_prompt)
+        self.prompt_layout.setObjectName("prompt_layout")
+        self.tabs.addTab(self.tab_prompt, "")
+        self.tab_rate = QtWidgets.QWidget()
+        self.tab_rate.setObjectName("tab_rate")
+        self.rate_layout = QtWidgets.QVBoxLayout(self.tab_rate)
+        self.rate_layout.setObjectName("rate_layout")
+        self.tabs.addTab(self.tab_rate, "")
+        self.verticalLayout.addWidget(self.tabs)
 
         self.retranslateUi(UsageDialog)
 
@@ -51,6 +79,11 @@ class Ui_UsageDialog:
         item = self.table.horizontalHeaderItem(3)
         item.setText(_translate("UsageDialog", "Failed"))
         self.total.setText(_translate("UsageDialog", "Total successful requests: {}"))
+        self.tabs.setTabText(self.tabs.indexOf(self.tab_table), _translate("UsageDialog", "Table"))
+        self.tabs.setTabText(self.tabs.indexOf(self.tab_daily), _translate("UsageDialog", "Daily"))
+        self.tabs.setTabText(self.tabs.indexOf(self.tab_provider), _translate("UsageDialog", "By provider"))
+        self.tabs.setTabText(self.tabs.indexOf(self.tab_prompt), _translate("UsageDialog", "By prompt"))
+        self.tabs.setTabText(self.tabs.indexOf(self.tab_rate), _translate("UsageDialog", "Success rate"))
 
 
 if __name__ == "__main__":

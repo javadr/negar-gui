@@ -135,15 +135,48 @@ class GripDelegate(QStyledItemDelegate):
         return QSize(size.width() + self.GRIP, max(size.height(), 34))
 
 
+def _chart_view(widget, series_list, axes=()):
+    """A chart view holding `series_list`; `axes` are (axis, alignment) pairs."""
+    from PyQt6.QtCharts import QChart, QChartView
+    from PyQt6.QtGui import QColor, QPainter
+
+    # The app theme is a stylesheet (qdarktheme), so the palette can't tell dark from light: sample what is drawn.
+    dark = widget.grab().toImage().pixelColor(2, 2).lightness() < 128
+    fg = QColor("#e6e6e6" if dark else "#222222")
+    grid = QColor(fg.red(), fg.green(), fg.blue(), 45)
+    chart = QChart()
+    chart.setTheme(QChart.ChartTheme.ChartThemeDark if dark else QChart.ChartTheme.ChartThemeLight)
+    chart.setBackgroundVisible(False)
+    chart.legend().setLabelColor(fg)
+    for series in series_list:
+        chart.addSeries(series)
+        for pie_slice in getattr(series, "slices", list)():
+            pie_slice.setLabelColor(fg)
+            pie_slice.setLabelArmLengthFactor(0.15)
+    for axis, align in axes:
+        chart.addAxis(axis, align)
+        axis.setLabelsColor(fg)
+        axis.setGridLineColor(grid)
+        axis.setLinePenColor(grid)
+        for series in series_list:
+            series.attachAxis(axis)
+    view = QChartView(chart)
+    view.setRenderHint(QPainter.RenderHint.Antialiasing)
+    return view
+
+
 class UsageReportDialog(QDialog, Ui_UsageDialog):
-    """Requests per day and provider, from the usage log (DuckDB)."""
+    """Usage per day / provider / prompt from the usage log (DuckDB): a table and charts (PyQt6-Charts)."""
 
     def __init__(self, parent):
         super().__init__(parent)
         self.setupUi(self)
+        self._load(parent)
+
+    def _load(self, parent):
         try:
             rows = usage_log.report()
-        except Exception as e:  # missing DuckDB or an unreadable log
+        except Exception as e:  # noqa: BLE001  # missing DuckDB or an unreadable log
             return self._show_message(_translate("MainWindow", "Cannot read the usage log: {}").format(e))
         if not rows:
             return self._show_message(_translate("MainWindow", "No AI requests logged yet."))
@@ -153,10 +186,68 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
                 self.table.setItem(r, c, QTableWidgetItem(localize_digits(parent, value)))
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.total.setText(self.total.text().format(localize_digits(parent, sum(row[2] for row in rows))))
+        try:
+            self._add_charts(parent)
+        except ImportError:  # PyQt6-Charts missing or built for another Qt: keep the table
+            for tab in (self.tab_daily, self.tab_provider, self.tab_prompt, self.tab_rate):
+                self.tabs.removeTab(self.tabs.indexOf(tab))
+
+    def _add_charts(self, window):
+        from PyQt6.QtCharts import (
+            QBarCategoryAxis,
+            QBarSet,
+            QLineSeries,
+            QPieSeries,
+            QStackedBarSeries,
+            QValueAxis,
+        )
+
+        def digits(x):
+            return localize_digits(window, x)
+
+        days = usage_log.daily()
+        categories = [digits(d[5:]) for d, _, _ in days]  # MM-DD: the year does not fit the axis
+        left, bottom = Qt.AlignmentFlag.AlignLeft, Qt.AlignmentFlag.AlignBottom
+
+        # daily requests, succeeded + failed stacked
+        bars = QStackedBarSeries()
+        for title, column in (
+            (self.table.horizontalHeaderItem(2).text(), 1),
+            (self.table.horizontalHeaderItem(3).text(), 2),
+        ):
+            bar_set = QBarSet(title)
+            bar_set.append([float(d[column]) for d in days])
+            bars.append(bar_set)
+        y = QValueAxis()
+        y.setLabelFormat("%d")
+        y.setRange(0, max(ok + failed for _, ok, failed in days))
+        y.applyNiceNumbers()
+        x = QBarCategoryAxis()
+        x.append(categories)
+        self.daily_layout.addWidget(_chart_view(self, [bars], [(x, bottom), (y, left)]))
+
+        # success rate per day (%)
+        line = QLineSeries()
+        line.setName(self.tabs.tabText(self.tabs.indexOf(self.tab_rate)))
+        for i, (_, ok, failed) in enumerate(days):
+            line.append(i, 100 * ok / (ok + failed))
+        x = QBarCategoryAxis()
+        x.append(categories)
+        y = QValueAxis()
+        y.setRange(0, 100)
+        y.setLabelFormat("%d%%")
+        self.rate_layout.addWidget(_chart_view(self, [line], [(x, bottom), (y, left)]))
+
+        # shares of successful requests
+        for layout, column in ((self.provider_layout, "provider"), (self.prompt_layout, "prompt")):
+            pie = QPieSeries()
+            for name, n in usage_log.share(column):
+                pie.append(f"{name} ({digits(n)})", n)
+            pie.setLabelsVisible(True)
+            layout.addWidget(_chart_view(self, [pie]))
 
     def _show_message(self, text):
-        self.table.hide()
-        self.total.hide()
+        self.tabs.hide()
         self.message.setText(text)
         self.message.show()
 

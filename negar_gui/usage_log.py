@@ -45,20 +45,42 @@ def counts(provider, path=USAGE_FILE):
     return n_today, n_total
 
 
-def report(path=USAGE_FILE):
-    """Rows (day, provider, ok, failed), newest day first, via DuckDB (imported lazily: report-only)."""
+_SOURCE = """read_json(?, format='newline_delimited',
+    columns={'ts': 'VARCHAR', 'provider': 'VARCHAR', 'prompt': 'VARCHAR', 'ok': 'BOOLEAN'})"""
+
+
+def _query(select, rest, path):
+    """`SELECT <select> FROM <the log> <rest>` via DuckDB (imported lazily: reports only)."""
     if not path.exists() or path.stat().st_size == 0:
         return []
     import duckdb
 
-    return duckdb.execute(
-        """SELECT substr(ts, 1, 10) AS day, provider,
-                  count(*) FILTER (WHERE ok) AS ok, count(*) FILTER (WHERE NOT ok) AS failed
-           FROM read_json(?, format='newline_delimited',
-                          columns={'ts': 'VARCHAR', 'provider': 'VARCHAR', 'ok': 'BOOLEAN'})
-           GROUP BY ALL ORDER BY day DESC, provider""",
-        [str(path)],
-    ).fetchall()
+    return duckdb.execute(f"SELECT {select} FROM {_SOURCE} {rest}", [str(path)]).fetchall()
+
+
+def report(path=USAGE_FILE):
+    """Rows (day, provider, ok, failed), newest day first."""
+    return _query(
+        "substr(ts, 1, 10) AS day, provider, count(*) FILTER (WHERE ok), count(*) FILTER (WHERE NOT ok)",
+        "GROUP BY ALL ORDER BY day DESC, provider",
+        path,
+    )
+
+
+def daily(days=30, path=USAGE_FILE):
+    """Rows (day, ok, failed) for the last `days` days that have requests, oldest first."""
+    rows = _query(
+        "substr(ts, 1, 10) AS day, count(*) FILTER (WHERE ok), count(*) FILTER (WHERE NOT ok)",
+        f"GROUP BY day ORDER BY day DESC LIMIT {int(days)}",
+        path,
+    )
+    return rows[::-1]
+
+
+def share(column, path=USAGE_FILE):
+    """Rows (value, successful requests) of `column` ('provider' or 'prompt'), biggest first."""
+    assert column in ("provider", "prompt")
+    return _query(f"{column}, count(*) AS n", f"WHERE ok GROUP BY {column} ORDER BY n DESC", path)
 
 
 if __name__ == "__main__":
@@ -73,4 +95,8 @@ if __name__ == "__main__":
     assert counts("gemini", p) == (1, 1)
     rows = report(p)
     assert sorted(rows, key=lambda r: r[1]) == [(rows[0][0], "gemini", 1, 1), (rows[0][0], "groq", 1, 0)], rows
+    day = rows[0][0]
+    assert daily(30, p) == [(day, 2, 1)], daily(30, p)
+    assert sorted(share("provider", p)) == [("gemini", 1), ("groq", 1)]
+    assert share("prompt", p) == [("Fix", 2)]
     print("ok")
