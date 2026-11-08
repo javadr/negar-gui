@@ -5,6 +5,8 @@ VER=$(shell grep __version__ negar_gui/constants.py|cut -d= -f2|tr -d '\" ')
 
 HAS_UV := $(shell command -v uv >/dev/null 2>&1 && echo 1)
 PKG_TOOL := $(if $(HAS_UV),uv pip,pip)
+# uv caches the PyPI index for a while, so a version published minutes ago is "not found" without a refresh
+PKG_FRESH := $(if $(HAS_UV),--refresh,--no-cache-dir)
 BUILD_TOOL := $(if $(HAS_UV),uv build,python -m build)
 TWINE := $(if $(HAS_UV),uvx twine,twine)
 
@@ -60,7 +62,7 @@ install-dev: install-desktop-file ## Install negar-gui locally in editable/devel
 
 .PHONY: install-pypi
 install-pypi: ver install-desktop-file ## Install negar-gui from PyPI using the current version
-	@$(PKG_TOOL) install negar-gui==$(VER)
+	@$(PKG_TOOL) install $(PKG_FRESH) negar-gui==$(VER)
 
 .PHONY: publish-pypi
 publish-pypi: setup ## Publish the package to PyPI
