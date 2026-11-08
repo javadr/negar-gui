@@ -43,6 +43,7 @@ DEFAULT_PROVIDER = "pollinations"
 PROMPTS = {
     "fix_grammar": {
         "name": "Fix Grammar",
+        "name_fa": "اصلاح گرامر",
         "system_prompt": "You are an expert Persian editor and proofreader. Correct grammar, spelling, punctuation, and نیم‌فاصله according to the Academy of Persian Language and Literature. Preserve the author's tone and meaning. Return only the final corrected text.",
         "prefix": "متن زیر را ویرایش کن: ",
     },
@@ -51,10 +52,38 @@ PROMPTS = {
 logger = logging.getLogger(__name__)
 
 
-def build_request(text, prompt_key="fix_grammar", provider=DEFAULT_PROVIDER, api_key="", model=""):
-    """Return (url, headers, payload) for one chat-completions call."""
+# Seeded once into the user's own (editable) prompt list.
+DEFAULT_USER_PROMPTS = [
+    {
+        "name": "Fix Grammar",
+        "name_fa": "اصلاح گرامر",
+        "system_prompt": (
+            "You are an expert Persian (Farsi) editor and proofreader. Correct the text below according to the "
+            "standards of the Academy of Persian Language and Literature.\n\n"
+            "Rules:\n"
+            "1. Keep the original meaning, tone and all key facts. Do not add, remove or reorder ideas.\n"
+            "2. Fix grammar, spelling and typos. Do not change the author's wording or style unless it is wrong.\n"
+            "3. Fix punctuation (، ؛ ؟ « ») and spacing around it.\n"
+            "4. Use correct Persian letters (ی، ک) and proper half-spaces (نیم\u200cفاصله), "
+            'e.g. "می\u200cخواهم", "کتاب\u200cها".\n'
+            "5. Keep numbers, names, links, code and technical terms unchanged.\n\n"
+            "Output only the corrected text, with no explanations.\n\n"
+            "Text:"
+        ),
+    },
+]
+
+
+def all_prompts(user_prompts=()):
+    """The user's prompts ({name, system_prompt}), keyed 'user:<name>'."""
+    return {f"user:{p['name']}": {"prefix": "", **p} for p in user_prompts}
+
+
+def build_request(text, prompt="fix_grammar", provider=DEFAULT_PROVIDER, api_key="", model=""):
+    """Return (url, headers, payload) for one chat-completions call; `prompt` is a built-in key or a prompt dict."""
     prov = PROVIDERS.get(provider, PROVIDERS[DEFAULT_PROVIDER])
-    prompt = PROMPTS[prompt_key]
+    if isinstance(prompt, str):
+        prompt = PROMPTS[prompt]
     headers = {"Content-Type": "application/json"}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"

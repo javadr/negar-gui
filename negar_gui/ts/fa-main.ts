@@ -96,5 +96,75 @@
         <source>AI Error: {}</source>
         <translation>خطای هوش مصنوعی: {}</translation>
     </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Manage Prompts...</source>
+        <translation>مدیریت پرامپت‌ها...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Manage Prompts</source>
+        <translation>مدیریت پرامپت</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>A Prompt</source>
+        <translation>یک پرامپت</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>English name:</source>
+        <translation>نام انگلیسی:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Instruction:</source>
+        <translation>دستور:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Add</source>
+        <translation>افزودن</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Edit</source>
+        <translation>ویرایش</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Delete</source>
+        <translation>حذف</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>This name is already used.</source>
+        <translation>این نام قبلاً استفاده شده است.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>OK</source>
+        <translation>تأیید</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Cancel</source>
+        <translation>انصراف</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Persian name:</source>
+        <translation>نام فارسی:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Drag a row by its dots to reorder. Alt+Up / Alt+Down also works.</source>
+        <translation>ردیف را با نقطه‌هایش بکشید تا ترتیب عوض شود. Alt+بالا / Alt+پایین هم کار می‌کند.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Prompt used by the AI button</source>
+        <translation>پرامپتی که دکمه هوش مصنوعی استفاده می‌کند</translation>
+    </message>
 </context>
 </TS>
