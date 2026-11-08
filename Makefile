@@ -1,3 +1,6 @@
+# Host light/dark preference; the container can't detect it itself. GNOME/GTK via gsettings, KDE via kdeglobals.
+KDEGLOBALS=$(or $(XDG_CONFIG_HOME),$(HOME)/.config)/kdeglobals
+HOST_THEME=$(shell { gsettings get org.gnome.desktop.interface color-scheme; gsettings get org.gnome.desktop.interface gtk-theme; grep -Ei '^(ColorScheme|LookAndFeelPackage)=' "$(KDEGLOBALS)"; } 2>/dev/null | grep -qi dark && echo dark || echo light)
 VER=$(shell grep __version__ negar_gui/constants.py|cut -d= -f2|tr -d '\" ')
 
 HAS_UV := $(shell command -v uv >/dev/null 2>&1 && echo 1)
@@ -125,13 +128,14 @@ update-translations-pyside2: ver ## Update and compile Qt translation files usin
 
 .PHONY: docker-build
 docker-build: ## Build the Docker image
-	docker build --build-arg VER=$(VER) -t negar-gui:latest -t negar-gui:$(VER) .
+	docker build -t negar-gui:latest -t negar-gui:$(VER) .
 
 .PHONY: docker-run
 docker-run: ## Run the Docker container (auto-detects Wayland / X11)
 	$(if $(WAYLAND_DISPLAY),\
 		docker run --rm \
 			-e QT_QPA_PLATFORM=wayland \
+			-e NEGAR_HOST_THEME=$(HOST_THEME) \
 			-e XDG_RUNTIME_DIR \
 			-e WAYLAND_DISPLAY \
 			-v $(XDG_RUNTIME_DIR)/$(WAYLAND_DISPLAY):$(XDG_RUNTIME_DIR)/$(WAYLAND_DISPLAY) \
@@ -141,6 +145,7 @@ docker-run: ## Run the Docker container (auto-detects Wayland / X11)
 		$(if $(DISPLAY),\
 			docker run --rm \
 				-e DISPLAY \
+				-e NEGAR_HOST_THEME=$(HOST_THEME) \
 				-v /tmp/.X11-unix:/tmp/.X11-unix \
 				-v $(HOME)/.config/negar-gui:/home/negar/.config/negar-gui \
 				negar-gui:latest,\

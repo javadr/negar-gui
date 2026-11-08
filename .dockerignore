@@ -13,3 +13,6 @@ dist/
 build/
 *.egg-info/
 .gitkeep
+res.tmp/
+images/
+tests/

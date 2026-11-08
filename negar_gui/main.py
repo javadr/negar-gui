@@ -16,6 +16,7 @@ Options:
 import asyncio
 import json
 import logging
+import os
 import re
 import sys
 import tempfile
@@ -122,6 +123,19 @@ def init_decorator(func):
         self.connectSlots()
 
     return wrapper
+
+
+# In a container "auto" can't see the host theme; `make docker-run` passes it as NEGAR_HOST_THEME.
+def _host_aware(setup_theme):
+    def wrapper(theme="dark", **kwargs):
+        host = os.environ.get("NEGAR_HOST_THEME")
+        return setup_theme(host if theme == "auto" and host in ("dark", "light") else theme, **kwargs)
+
+    return wrapper
+
+
+if hasattr(qdarktheme, "setup_theme"):  # absent in some qdarktheme builds (main() stubs it)
+    qdarktheme.setup_theme = _host_aware(qdarktheme.setup_theme)
 
 
 class TableModel(QAbstractTableModel):

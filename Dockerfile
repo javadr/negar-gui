@@ -33,9 +33,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xclip \
     && rm -rf /var/lib/apt/lists/*
 
-# Pinned: an unpinned install is a cached layer, so rebuilds silently kept the old release.
-ARG VER
-RUN pip install --no-cache-dir negar-gui==${VER} typing_extensions
+# Install from the local source, not PyPI: any change to the files invalidates this layer, so a rebuild
+# always contains the current code (a PyPI install was a cached layer that kept serving an old release).
+# pyqtdarktheme 2.1.0 declares python<3.12, so pip silently picks the theme-less 0.1.7 here; force 2.1.0.
+RUN pip install --no-cache-dir --ignore-requires-python pyqtdarktheme==2.1.0
+COPY . /src
+RUN pip install --no-cache-dir /src typing_extensions && rm -rf /src
 
 RUN adduser --disabled-password --gecos "" negar && \
     mkdir -p /home/negar/.config && \
