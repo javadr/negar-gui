@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PromptsDialog</class>
+ <widget class="QDialog" name="PromptsDialog">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>520</width><height>420</height></rect></property>
+  <property name="windowTitle"><string>Manage Prompts</string></property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item><widget class="QListWidget" name="list"><property name="dragDropMode"><enum>QAbstractItemView::InternalMove</enum></property></widget></item>
+   <item><widget class="QLabel" name="hint"><property name="text"><string>Drag a row by its dots to reorder. Alt+Up / Alt+Down also works.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+   <item>
+    <layout class="QHBoxLayout" name="buttons">
+     <item><widget class="QPushButton" name="add_btn"><property name="text"><string>Add</string></property></widget></item>
+     <item><widget class="QPushButton" name="edit_btn"><property name="text"><string>Edit</string></property></widget></item>
+     <item><widget class="QPushButton" name="delete_btn"><property name="text"><string>Delete</string></property></widget></item>
+     <item><widget class="QPushButton" name="restore_btn"><property name="text"><string>Restore defaults</string></property></widget></item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+</ui>

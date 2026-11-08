@@ -44,33 +44,20 @@ from PyQt6.QtCore import (
     QUrl,
 )
 from PyQt6 import QtGui
-from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QKeySequence, QPixmap, QShortcut
+from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPixmap
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
     QApplication,
     QComboBox,
     QDialog,
-    QDialogButtonBox,
     QFileDialog,
-    QFormLayout,
     QHBoxLayout,
     QHeaderView,
     QLabel,
     QListView,
-    QLineEdit,
-    QListWidget,
-    QListWidgetItem,
     QMainWindow,
     QMenu,
-    QMessageBox,
-    QPlainTextEdit,
-    QPushButton,
     QSizePolicy,
-    QStyledItemDelegate,
-    QVBoxLayout,
-    QTableWidget,
-    QTableWidgetItem,
-    QStyleOptionViewItem,
     QSpacerItem,
 )
 from pyuca import Collator
@@ -85,6 +72,7 @@ import negar_gui.resource_rc  # noqa: F401
 from negar.constants import INFO, __version__ as negar__version
 from negar.virastar import ImmutableWords, PersianEditor
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
+from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, localize_digits
 from negar_gui.Ui_hwin import Ui_Dialog
 from negar_gui.Ui_mwin import Ui_MainWindow
 from negar_gui.Ui_uwin import Ui_uwWindow
@@ -314,104 +302,6 @@ class HelpWindow(QDialog, Ui_Dialog):
             super().keyPressEvent(event)
 
 
-def ok_cancel_buttons(dialog):
-    """OK/Cancel box with translated labels (Qt's stock ones stay English with only our .qm loaded)."""
-    box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-    box.button(QDialogButtonBox.StandardButton.Ok).setText(_translate("MainWindow", "OK"))
-    box.button(QDialogButtonBox.StandardButton.Cancel).setText(_translate("MainWindow", "Cancel"))
-    box.accepted.connect(dialog.accept)
-    box.rejected.connect(dialog.reject)
-    return box
-
-
-class LLMProviderDialog(QDialog):
-    """Pick the LLM provider and enter its API key and model; edits `llm` (the settings dict) on OK."""
-
-    def __init__(self, parent, llm):
-        super().__init__(parent)
-        self.llm = llm
-        self.keys = dict(llm.get("keys", {}))
-        self.models = dict(llm.get("models", {}))
-        self.setWindowTitle(_translate("MainWindow", "AI Provider"))
-        self.provider = QComboBox()
-        for key, prov in llm_providers.PROVIDERS.items():
-            self.provider.addItem(prov["name"], key)
-        self.api_key = QLineEdit(echoMode=QLineEdit.EchoMode.Password)
-        self.model = QLineEdit()
-        self.key_link = QLabel(openExternalLinks=True)
-        form = QFormLayout(self)
-        form.addRow(_translate("MainWindow", "Provider:"), self.provider)
-        form.addRow(_translate("MainWindow", "API key:"), self.api_key)
-        form.addRow(_translate("MainWindow", "Model:"), self.model)
-        form.addRow("", self.key_link)
-        form.addRow(ok_cancel_buttons(self))
-        self.setMinimumWidth(460)
-        self._current = None
-        self.provider.currentIndexChanged.connect(self._switch)
-        self.provider.setCurrentIndex(max(0, self.provider.findData(llm.get("provider"))))
-        self._switch()
-
-    def _stash(self):
-        # remember what was typed for the provider being left, so switching back keeps it
-        if self._current:
-            self.keys[self._current] = self.api_key.text().strip()
-            self.models[self._current] = self.model.text().strip()
-
-    def _switch(self):
-        self._stash()
-        key = self.provider.currentData()
-        prov = llm_providers.PROVIDERS[key]
-        self._current = key
-        self.api_key.setText(self.keys.get(key, ""))
-        self.api_key.setEnabled(bool(prov["key_url"]))
-        self.model.setText(self.models.get(key, ""))
-        self.model.setPlaceholderText(prov["model"])
-        self.key_link.setText(
-            f'<a href="{prov["key_url"]}">{_translate("MainWindow", "Get an API key")}</a>' if prov["key_url"] else ""
-        )
-
-    def accept(self):
-        self._stash()
-        self.llm.update(provider=self._current, keys=self.keys, models=self.models)
-        super().accept()
-
-
-class PromptEditDialog(QDialog):
-    """Name + instruction for one user prompt."""
-
-    def __init__(self, parent, prompt=None):
-        super().__init__(parent)
-        prompt = prompt or {}
-        self.setWindowTitle(_translate("MainWindow", "A Prompt"))
-        self.name = QLineEdit(prompt.get("name", ""))
-        self.name_fa = QLineEdit(prompt.get("name_fa", ""))
-        # fixed per field, whatever the app language: English left/LTR, Persian right/RTL
-        self.name.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.name.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        self.name_fa.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        self.name_fa.setAlignment(
-            Qt.AlignmentFlag.AlignLeading
-        )  # Qt mirrors Left/Right in an RTL widget, so Leading = right here
-        self.text = QPlainTextEdit(prompt.get("system_prompt", ""))
-        form = QFormLayout(self)
-        form.addRow(_translate("MainWindow", "English name:"), self.name)
-        form.addRow(_translate("MainWindow", "Persian name:"), self.name_fa)
-        form.addRow(_translate("MainWindow", "Instruction:"), self.text)
-        form.addRow(ok_cancel_buttons(self))
-        self.resize(640, 420)
-
-    def accept(self):
-        if self.name.text().strip() and self.text.toPlainText().strip():
-            super().accept()
-
-    def result_prompt(self):
-        return {
-            "name": self.name.text().strip(),
-            "name_fa": self.name_fa.text().strip(),
-            "system_prompt": self.text.toPlainText().strip(),
-        }
-
-
 # No background/text colours on purpose: qdarktheme (an app stylesheet) supplies them for light and dark.
 PROMPT_COMBO_QSS = """
 QComboBox {
@@ -443,178 +333,6 @@ class PromptCombo(QComboBox):
         cx = 20 if rtl else self.width() - 20
         cy = self.height() // 2
         p.drawPolyline([QPoint(cx - 5, cy - 2), QPoint(cx, cy + 3), QPoint(cx + 5, cy - 2)])
-
-
-class GripDelegate(QStyledItemDelegate):
-    """List rows with a dotted grip on the leading edge, hinting that they can be dragged."""
-
-    GRIP = 28
-
-    def paint(self, painter, option, index):
-        rtl = option.direction == Qt.LayoutDirection.RightToLeft
-        rect = option.rect
-        text_rect = rect.adjusted(0, 0, -self.GRIP, 0) if rtl else rect.adjusted(self.GRIP, 0, 0, 0)
-        opt = QStyleOptionViewItem(option)
-        opt.rect = text_rect
-        super().paint(painter, opt, index)
-        painter.save()
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.setBrush(option.palette.mid())
-        x0 = rect.right() - self.GRIP + 8 if rtl else rect.left() + 8
-        for dx in (0, 6):
-            for dy in (-6, 0, 6):
-                painter.drawEllipse(QPoint(x0 + dx + 2, rect.center().y() + dy), 2, 2)
-        painter.restore()
-
-    def sizeHint(self, option, index):
-        size = super().sizeHint(option, index)
-        return QSize(size.width() + self.GRIP, max(size.height(), 34))
-
-
-def localize_digits(window, text):
-    """Persian digits when the app language is Persian."""
-    if window.settings.get("settings", {}).get("language") == "Persian":
-        return str(text).translate(str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹"))
-    return str(text)
-
-
-class UsageReportDialog(QDialog):
-    """Requests per day and provider, from the usage log (DuckDB)."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setWindowTitle(_translate("MainWindow", "AI Usage Report"))
-        self.resize(480, 360)
-        layout = QVBoxLayout(self)
-        try:
-            rows = usage_log.report()
-        except Exception as e:  # missing DuckDB or an unreadable log
-            layout.addWidget(QLabel(_translate("MainWindow", "Cannot read the usage log: {}").format(e)))
-            return
-        if not rows:
-            layout.addWidget(QLabel(_translate("MainWindow", "No AI requests logged yet.")))
-            return
-        table = QTableWidget(len(rows), 4)
-        table.setHorizontalHeaderLabels(
-            [_translate("MainWindow", h) for h in ("Day", "Provider", "Succeeded", "Failed")]
-        )
-        table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        for r, row in enumerate(rows):
-            for c, value in enumerate(row):
-                table.setItem(r, c, QTableWidgetItem(localize_digits(parent, value)))
-        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        layout.addWidget(table)
-        total = sum(row[2] for row in rows)
-        layout.addWidget(
-            QLabel(_translate("MainWindow", "Total successful requests: {}").format(localize_digits(parent, total)))
-        )
-
-
-class PromptsDialog(QDialog):
-    """Add / edit / delete user prompts; edits the `prompts` list in place."""
-
-    def __init__(self, parent, prompts):
-        super().__init__(parent)
-        self.prompts = prompts
-        self.setWindowTitle(_translate("MainWindow", "Manage Prompts"))
-        self.list = QListWidget()
-        self.list.setItemDelegate(GripDelegate(self.list))
-        hint = QLabel(_translate("MainWindow", "Drag a row by its dots to reorder. Alt+Up / Alt+Down also works."))
-        hint.setWordWrap(True)
-        form = QFormLayout(self)
-        form.addRow(self.list)
-        form.addRow(hint)
-        row = QHBoxLayout()
-        for label, slot in (
-            ("Add", self._add),
-            ("Edit", self._edit),
-            ("Delete", self._delete),
-            ("Restore defaults", self._restore_defaults),
-        ):
-            btn = QPushButton(_translate("MainWindow", label))
-            btn.clicked.connect(slot)
-            row.addWidget(btn)
-        form.addRow(row)
-        self.list.itemDoubleClicked.connect(lambda _: self._edit())
-        # shortcuts, not keyPressEvent: the list swallows arrow keys before the dialog sees them
-        for seq, step in (("Alt+Up", -1), ("Alt+Down", 1)):
-            QShortcut(QKeySequence(seq), self, activated=lambda step=step: self._move(step))
-        self.list.setDragDropMode(QListWidget.DragDropMode.InternalMove)  # drag to reorder
-        self.list.model().rowsMoved.connect(self._sync_order)
-        self.resize(520, 420)
-        self._refresh()
-
-    def _refresh(self, row=-1):
-        self.list.clear()
-        for i, p in enumerate(self.prompts):
-            item = QListWidgetItem(self.parent().prompt_title(p))
-            item.setData(Qt.ItemDataRole.UserRole, i)  # index in self.prompts before any drag
-            self.list.addItem(item)
-        self.list.setCurrentRow(row)
-
-    def _sync_order(self):
-        order = [self.list.item(i).data(Qt.ItemDataRole.UserRole) for i in range(self.list.count())]
-        self.prompts[:] = [self.prompts[i] for i in order]
-        for i in range(self.list.count()):
-            self.list.item(i).setData(Qt.ItemDataRole.UserRole, i)
-
-    def _move(self, step):
-        i, j = self.list.currentRow(), self.list.currentRow() + step
-        if i >= 0 and 0 <= j < len(self.prompts):
-            self.prompts[i], self.prompts[j] = self.prompts[j], self.prompts[i]
-            self._refresh(j)
-
-    def _ask(self, prompt=None, skip=-1):
-        dlg = PromptEditDialog(self, prompt)
-        if dlg.exec() != QDialog.DialogCode.Accepted:
-            return None
-        new = dlg.result_prompt()
-        taken = {p["name"] for i, p in enumerate(self.prompts) if i != skip}
-        if new["name"] in taken:
-            QMessageBox.warning(self, self.windowTitle(), _translate("MainWindow", "This name is already used."))
-            return self._ask(new, skip)
-        return new
-
-    def _add(self):
-        if new := self._ask():
-            self.prompts.append(new)
-            self._refresh()
-
-    def _edit(self):
-        i = self.list.currentRow()
-        if i >= 0 and (new := self._ask(self.prompts[i], i)):
-            self.prompts[i] = new
-            self._refresh()
-
-    def _restore_defaults(self):
-        box = QMessageBox(
-            QMessageBox.Icon.Question,
-            self.windowTitle(),
-            _translate(
-                "MainWindow",
-                "Restore the prompts that come with Negar? Missing ones are added back and edited ones return to "
-                "their original text. Your own prompts are kept.",
-            ),
-            parent=self,
-        )
-        yes = box.addButton(_translate("MainWindow", "Restore"), QMessageBox.ButtonRole.AcceptRole)
-        box.addButton(_translate("MainWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
-        box.exec()
-        if box.clickedButton() is not yes:
-            return
-        by_name = {p["name"]: i for i, p in enumerate(self.prompts)}
-        for default in llm_providers.DEFAULT_USER_PROMPTS:
-            if default["name"] in by_name:
-                self.prompts[by_name[default["name"]]] = dict(default)
-            else:
-                self.prompts.append(dict(default))
-        self._refresh()
-
-    def _delete(self):
-        i = self.list.currentRow()
-        if i >= 0:
-            del self.prompts[i]
-            self._refresh()
 
 
 class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):

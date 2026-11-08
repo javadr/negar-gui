@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UsageDialog</class>
+ <widget class="QDialog" name="UsageDialog">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>360</height></rect></property>
+  <property name="windowTitle"><string>AI Usage Report</string></property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item><widget class="QLabel" name="message"><property name="visible"><bool>false</bool></property></widget></item>
+   <item>
+    <widget class="QTableWidget" name="table">
+     <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+     <column><property name="text"><string>Day</string></property></column>
+     <column><property name="text"><string>Provider</string></property></column>
+     <column><property name="text"><string>Succeeded</string></property></column>
+     <column><property name="text"><string>Failed</string></property></column>
+    </widget>
+   </item>
+   <item><widget class="QLabel" name="total"><property name="text"><string>Total successful requests: {}</string></property></widget></item>
+  </layout>
+ </widget>
+</ui>
