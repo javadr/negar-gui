@@ -2,10 +2,13 @@
 <ui version="4.0">
  <class>UsageDialog</class>
  <widget class="QDialog" name="UsageDialog">
-  <property name="geometry"><rect><x>0</x><y>0</y><width>640</width><height>460</height></rect></property>
+  <property name="geometry"><rect><x>0</x><y>0</y><width>680</width><height>500</height></rect></property>
   <property name="windowTitle"><string>AI Usage Report</string></property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item><widget class="QLabel" name="message"><property name="visible"><bool>false</bool></property></widget></item>
+   <property name="spacing"><number>4</number></property>
+   <item><widget class="QLabel" name="headline"><property name="font"><font><pointsize>18</pointsize><bold>true</bold></font></property></widget></item>
+   <item><widget class="QLabel" name="subtitle"/></item>
+   <item><widget class="QLabel" name="message"><property name="visible"><bool>false</bool></property><property name="wordWrap"><bool>true</bool></property></widget></item>
    <item>
     <widget class="QTabWidget" name="tabs">
      <widget class="QWidget" name="tab_table">
@@ -14,13 +17,13 @@
        <item>
         <widget class="QTableWidget" name="table">
          <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+         <attribute name="verticalHeaderVisible"><bool>false</bool></attribute>
          <column><property name="text"><string>Day</string></property></column>
          <column><property name="text"><string>Provider</string></property></column>
          <column><property name="text"><string>Succeeded</string></property></column>
          <column><property name="text"><string>Failed</string></property></column>
         </widget>
        </item>
-       <item><widget class="QLabel" name="total"><property name="text"><string>Total successful requests: {}</string></property></widget></item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_daily">

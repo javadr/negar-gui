@@ -27,7 +27,8 @@ dependencies = [
   "pyqtdarktheme",
   "toml",
   "duckdb",
-  "PyQt6-Charts"
+  "PyQt6-Charts",
+  "typing_extensions"
 ]
 
 [project.urls]

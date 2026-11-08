@@ -1,7 +1,9 @@
 """AI dialogs: layouts live in ui/provider.ui, ui/promptedit.ui, ui/prompts.ui, ui/usage.ui (see `make compile-ui`)."""
 
+from datetime import datetime
+
 from PyQt6.QtCore import QCoreApplication, QPoint, QSize, Qt
-from PyQt6.QtGui import QKeySequence, QShortcut
+from PyQt6.QtGui import QBrush, QColor, QCursor, QFont, QKeySequence, QPainter, QPen, QShortcut
 from PyQt6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -11,6 +13,7 @@ from PyQt6.QtWidgets import (
     QStyledItemDelegate,
     QStyleOptionViewItem,
     QTableWidgetItem,
+    QToolTip,
 )
 
 from negar_gui import llm_providers, usage_log
@@ -20,6 +23,21 @@ from negar_gui.ui.Ui_provider import Ui_ProviderDialog
 from negar_gui.ui.Ui_usage import Ui_UsageDialog
 
 _translate = QCoreApplication.translate
+MAX_LABEL = 22  # characters of a prompt/provider name shown in a chart label
+CHART_FONT_PT = 11  # HIG minimum for desktop text is 10 pt (typography.md)
+# Chart colours by role: success, failure, text, and a categorical set for pies; each >= 3:1 against its background.
+_DARK = {
+    "fg": "#e6e6e6",
+    "ok": "#4cc38a",
+    "failed": "#ff8a65",
+    "cats": ["#5aa9ff", "#ffb454", "#4cc38a", "#c792ea", "#ff7b8a", "#5fd3d3"],
+}
+_LIGHT = {
+    "fg": "#222222",
+    "ok": "#1f8a5b",
+    "failed": "#c2410c",
+    "cats": ["#1f6fd1", "#b45f06", "#1f8a5b", "#8a4fc9", "#c93a4d", "#0e8a8a"],
+}
 
 
 def setup_buttons(dialog, box):
@@ -135,38 +153,62 @@ class GripDelegate(QStyledItemDelegate):
         return QSize(size.width() + self.GRIP, max(size.height(), 34))
 
 
-def _chart_view(widget, series_list, axes=()):
+def _show_tip(hovering, tip):
+    QToolTip.showText(QCursor.pos(), tip) if hovering else QToolTip.hideText()
+
+
+def _is_persian(window):
+    return window.settings.get("settings", {}).get("language") == "Persian"
+
+
+def _palette(widget):
+    """Chart colours for the theme actually drawn (qdarktheme is a stylesheet, so the palette can't tell)."""
+    bg = widget.grab().toImage().pixelColor(2, 2)
+    dark = bg.lightness() < 128
+    colors = _DARK if dark else _LIGHT
+    return {
+        "dark": dark,
+        "bg": bg,
+        **{k: QColor(v) if isinstance(v, str) else [QColor(c) for c in v] for k, v in colors.items()},
+    }
+
+
+def _chart_view(widget, pal, series_list, axes=(), name="", description=""):
     """A chart view holding `series_list`; `axes` are (axis, alignment) pairs."""
     from PyQt6.QtCharts import QChart, QChartView
-    from PyQt6.QtGui import QColor, QPainter
 
-    # The app theme is a stylesheet (qdarktheme), so the palette can't tell dark from light: sample what is drawn.
-    dark = widget.grab().toImage().pixelColor(2, 2).lightness() < 128
-    fg = QColor("#e6e6e6" if dark else "#222222")
+    fg = pal["fg"]
     grid = QColor(fg.red(), fg.green(), fg.blue(), 45)
+    font = QFont()
+    font.setPointSize(CHART_FONT_PT)
     chart = QChart()
-    chart.setTheme(QChart.ChartTheme.ChartThemeDark if dark else QChart.ChartTheme.ChartThemeLight)
+    chart.setTheme(QChart.ChartTheme.ChartThemeDark if pal["dark"] else QChart.ChartTheme.ChartThemeLight)
     chart.setBackgroundVisible(False)
     chart.legend().setLabelColor(fg)
+    chart.legend().setFont(font)
     for series in series_list:
         chart.addSeries(series)
         for pie_slice in getattr(series, "slices", list)():
             pie_slice.setLabelColor(fg)
+            pie_slice.setLabelFont(font)
             pie_slice.setLabelArmLengthFactor(0.15)
     for axis, align in axes:
         chart.addAxis(axis, align)
         axis.setLabelsColor(fg)
+        axis.setLabelsFont(font)
         axis.setGridLineColor(grid)
         axis.setLinePenColor(grid)
         for series in series_list:
             series.attachAxis(axis)
     view = QChartView(chart)
     view.setRenderHint(QPainter.RenderHint.Antialiasing)
+    view.setAccessibleName(name)
+    view.setAccessibleDescription(description)
     return view
 
 
 class UsageReportDialog(QDialog, Ui_UsageDialog):
-    """Usage per day / provider / prompt from the usage log (DuckDB): a table and charts (PyQt6-Charts)."""
+    """Usage per day / provider / prompt from the usage log (DuckDB): a summary, charts (PyQt6-Charts), a table."""
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -174,18 +216,36 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
         self._load(parent)
 
     def _load(self, parent):
+        def digits(x):
+            return localize_digits(parent, x)
+
         try:
             rows = usage_log.report()
         except Exception as e:  # noqa: BLE001  # missing DuckDB or an unreadable log
             return self._show_message(_translate("MainWindow", "Cannot read the usage log: {}").format(e))
         if not rows:
-            return self._show_message(_translate("MainWindow", "No AI requests logged yet."))
+            return self._show_message(
+                _translate("MainWindow", "No AI requests yet. Press the AI button to get started.")
+            )
+        today = datetime.now().astimezone().date().isoformat()
+        ok = sum(r[2] for r in rows)
+        failed = sum(r[3] for r in rows)
+        self.headline.setText(
+            _translate("MainWindow", "Requests today: {}").format(digits(sum(r[2] for r in rows if r[0] == today)))
+        )
+        self.subtitle.setText(
+            _translate("MainWindow", "All time: {}, success rate: {}%").format(
+                digits(ok + failed), digits(round(100 * ok / (ok + failed)))
+            )
+        )
         self.table.setRowCount(len(rows))
         for r, row in enumerate(rows):
             for c, value in enumerate(row):
-                self.table.setItem(r, c, QTableWidgetItem(localize_digits(parent, value)))
+                item = QTableWidgetItem(digits(value))
+                if c >= 2:  # counts: centred, so they read the same in either text direction
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.table.setItem(r, c, item)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.total.setText(self.total.text().format(localize_digits(parent, sum(row[2] for row in rows))))
         try:
             self._add_charts(parent)
         except ImportError:  # PyQt6-Charts missing or built for another Qt: keep the table
@@ -205,49 +265,93 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
         def digits(x):
             return localize_digits(window, x)
 
-        days = usage_log.daily()
-        categories = [digits(d[5:]) for d, _, _ in days]  # MM-DD: the year does not fit the axis
-        left, bottom = Qt.AlignmentFlag.AlignLeft, Qt.AlignmentFlag.AlignBottom
+        def title(tab):
+            return self.tabs.tabText(self.tabs.indexOf(tab))
 
-        # daily requests, succeeded + failed stacked
+        pal = _palette(self)
+        rtl = _is_persian(window)
+        days = usage_log.daily()
+        if rtl:  # time runs in the reading direction: oldest on the right
+            days = days[::-1]
+        categories = [digits(d[5:]) for d, _, _ in days]  # MM-DD: the year does not fit the axis
+        bottom = Qt.AlignmentFlag.AlignBottom
+        side = Qt.AlignmentFlag.AlignRight if rtl else Qt.AlignmentFlag.AlignLeft
+        day_tips = [
+            _translate("MainWindow", "{}: {} succeeded, {} failed").format(digits(d), digits(o), digits(f))
+            for d, o, f in days
+        ]
+        rate_tips = [
+            _translate("MainWindow", "{}: {}% succeeded").format(digits(d), digits(round(100 * o / (o + f))))
+            for d, o, f in days
+        ]
+
+        # daily requests: succeeded + failed stacked; failed is hatched so colour is not the only cue
         bars = QStackedBarSeries()
-        for title, column in (
-            (self.table.horizontalHeaderItem(2).text(), 1),
-            (self.table.horizontalHeaderItem(3).text(), 2),
+        for column, color, style in (
+            (1, pal["ok"], Qt.BrushStyle.SolidPattern),
+            (2, pal["failed"], Qt.BrushStyle.BDiagPattern),
         ):
-            bar_set = QBarSet(title)
+            bar_set = QBarSet(self.table.horizontalHeaderItem(column + 1).text())
             bar_set.append([float(d[column]) for d in days])
+            bar_set.setBrush(QBrush(color, style))
+            bar_set.setPen(QPen(pal["bg"] if column == 1 else color, 1))
             bars.append(bar_set)
+        bars.hovered.connect(lambda hovering, i, _set: _show_tip(hovering, day_tips[i]))
         y = QValueAxis()
         y.setLabelFormat("%d")
         y.setRange(0, max(ok + failed for _, ok, failed in days))
         y.applyNiceNumbers()
         x = QBarCategoryAxis()
         x.append(categories)
-        self.daily_layout.addWidget(_chart_view(self, [bars], [(x, bottom), (y, left)]))
+        x.setLabelsAngle(-90)  # vertical: horizontal MM-DD labels get elided
+        self.daily_layout.addWidget(
+            _chart_view(self, pal, [bars], [(x, bottom), (y, side)], title(self.tab_daily), "; ".join(day_tips))
+        )
 
-        # success rate per day (%)
+        # success rate per day: fixed 0-100 axis, points on the line so single days are visible
         line = QLineSeries()
-        line.setName(self.tabs.tabText(self.tabs.indexOf(self.tab_rate)))
+        line.setName(title(self.tab_rate))
+        line.setPen(QPen(pal["ok"], 3))  # also sizes the point markers
+        line.setPointsVisible(True)
         for i, (_, ok, failed) in enumerate(days):
             line.append(i, 100 * ok / (ok + failed))
+        line.hovered.connect(lambda point, hovering: _show_tip(hovering, rate_tips[round(point.x())]))
         x = QBarCategoryAxis()
         x.append(categories)
+        x.setLabelsAngle(-90)  # vertical: horizontal MM-DD labels get elided
         y = QValueAxis()
         y.setRange(0, 100)
         y.setLabelFormat("%d%%")
-        self.rate_layout.addWidget(_chart_view(self, [line], [(x, bottom), (y, left)]))
+        self.rate_layout.addWidget(
+            _chart_view(self, pal, [line], [(x, bottom), (y, side)], title(self.tab_rate), "; ".join(rate_tips))
+        )
 
-        # shares of successful requests
-        for layout, column in ((self.provider_layout, "provider"), (self.prompt_layout, "prompt")):
-            pie = QPieSeries()
-            for name, n in usage_log.share(column):
-                pie.append(f"{name} ({digits(n)})", n)
+        # shares of successful requests; long names are shortened, the tooltip has the full one
+        for layout, tab, column in (
+            (self.provider_layout, self.tab_provider, "provider"),
+            (self.prompt_layout, self.tab_prompt, "prompt"),
+        ):
+            pie, tips = QPieSeries(), []
+            rows = usage_log.share(column)
+            total = sum(n for _, n in rows)
+            for i, (name, n) in enumerate(rows):
+                short = name if len(name) <= MAX_LABEL else name[: MAX_LABEL - 1] + "…"
+                pie_slice = pie.append(f"{short} ({digits(n)})", n)
+                pie_slice.setBrush(pal["cats"][i % len(pal["cats"])])
+                pie_slice.setBorderColor(pal["bg"])
+                tips.append(f"{name}\n{digits(n)} ({digits(round(100 * n / total))}%)")
             pie.setLabelsVisible(True)
-            layout.addWidget(_chart_view(self, [pie]))
+            view = _chart_view(self, pal, [pie], name=title(tab), description="; ".join(tips))
+            layout.addWidget(view)
+            for pie_slice, tip in zip(pie.slices(), tips):
+                pie_slice.hovered.connect(lambda hovering, tip=tip: _show_tip(hovering, tip))
+            for marker, tip in zip(view.chart().legend().markers(pie), tips):
+                marker.hovered.connect(lambda hovering, tip=tip: _show_tip(hovering, tip))
 
     def _show_message(self, text):
         self.tabs.hide()
+        self.headline.hide()
+        self.subtitle.hide()
         self.message.setText(text)
         self.message.show()
 

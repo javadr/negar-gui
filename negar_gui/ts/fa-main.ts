@@ -231,5 +231,30 @@
         <source>Total successful requests: {}</source>
         <translation>مجموع درخواست‌های موفق: {}</translation>
     </message>
+    <message>
+        <location filename="../dialogs.py" line="0"/>
+        <source>Requests today: {}</source>
+        <translation>درخواست‌های امروز: {}</translation>
+    </message>
+    <message>
+        <location filename="../dialogs.py" line="0"/>
+        <source>All time: {}, success rate: {}%</source>
+        <translation>در کل: {}، نرخ موفقیت: {}٪</translation>
+    </message>
+    <message>
+        <location filename="../dialogs.py" line="0"/>
+        <source>{}: {} succeeded, {} failed</source>
+        <translation>{}: {} موفق، {} ناموفق</translation>
+    </message>
+    <message>
+        <location filename="../dialogs.py" line="0"/>
+        <source>{}: {}% succeeded</source>
+        <translation>{}: {}٪ موفق</translation>
+    </message>
+    <message>
+        <location filename="../dialogs.py" line="0"/>
+        <source>No AI requests yet. Press the AI button to get started.</source>
+        <translation>هنوز درخواستی ثبت نشده است. برای شروع، دکمه هوش مصنوعی را فشار دهید.</translation>
+    </message>
 </context>
 </TS>

@@ -25,6 +25,7 @@ from threading import Thread
 
 
 # Third-party library import
+import PyQt6.QtCore  # noqa: F401  # first, so qdarktheme binds to PyQt6 and not to an installed PySide6
 import qdarktheme
 import requests
 import toml
@@ -98,6 +99,8 @@ def init_decorator(func):
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
         self, parent = args[0], kwargs.pop("parent", None)
+        # before any showMaximized(): its showEvent already needs the widgets connectSlots() creates
+        self.connectSlots()
         # Maximize Frame Size if either height or width exceeds real screen dimensions
         # screen = QApplication.desktop().screenGeometry()
         screen = QApplication.primaryScreen().geometry()
@@ -110,8 +113,6 @@ def init_decorator(func):
                 self.centralwidget.setLayoutDirection(parent.layoutDirection())
             except:  # QDialog  has no centralwidget
                 pass
-        # connect widgets to their proper slot
-        self.connectSlots()
 
     return wrapper
 

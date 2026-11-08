@@ -1,7 +1,7 @@
 import platform
 from pathlib import Path
 
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 APPDATA = "AppData/Roaming/" if platform.system() == "Windows" else ".config/"
 SETTING_FILE = Path.home() / f"{APPDATA}negar-gui/settings.toml"
