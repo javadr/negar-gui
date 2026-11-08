@@ -125,7 +125,7 @@ update-translations-pyside2: ver ## Update and compile Qt translation files usin
 
 .PHONY: docker-build
 docker-build: ## Build the Docker image
-	docker build -t negar-gui:latest -t negar-gui:$(VER) .
+	docker build --build-arg VER=$(VER) -t negar-gui:latest -t negar-gui:$(VER) .
 
 .PHONY: docker-run
 docker-run: ## Run the Docker container (auto-detects Wayland / X11)

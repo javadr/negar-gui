@@ -33,7 +33,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xclip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir negar-gui typing_extensions
+# Pinned: an unpinned install is a cached layer, so rebuilds silently kept the old release.
+ARG VER
+RUN pip install --no-cache-dir negar-gui==${VER} typing_extensions
 
 RUN adduser --disabled-password --gecos "" negar && \
     mkdir -p /home/negar/.config && \
