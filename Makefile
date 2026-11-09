@@ -173,7 +173,7 @@ clean: ver ## Clean build artifacts
 	@rm gui.build/ -rfv
 	@rm gui.dist/ -rfv
 	@rm negar*.spec -rfv
-	@rm negar_gui/__pycache__ -rfv
+	@find . -name __pycache__ -type d -not -path './.venv/*' -prune -exec rm -rfv {} +
 
 # Backward-compat aliases
 .PHONY: generate_desktop_file lins pins upypi utest nuCompile piCompile
