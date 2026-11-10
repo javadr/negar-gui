@@ -18,6 +18,14 @@ Graphical User interface for `negar`
 ![Negar's English view](https://raw.github.com/javadr/negar-gui/master/images/negar-en.png)
 ![Negar's Persian view](https://raw.github.com/javadr/negar-gui/master/images/negar-fa.png)
 
+Features
+==============
+- **Persian text cleanup** with live side-by-side or comparative (diff) view and configurable editing options.
+- **Screen reader (OCR):** drag a rectangle over anything on screen, or use an image from the clipboard, and read its text into the editor (Persian, English and German). See [Screen reader](#screen-reader).
+- **AI grammar fix:** send the text to an LLM (Gemini, Groq, OpenRouter, OpenAI, or free Pollinations) with your own prompts and a usage report. See [AI grammar fix](#ai-grammar-fix).
+- **Read, fix, copy:** OCR a screenshot, clean it with Negar, and polish it with the AI button, all in one window.
+- QR code of the result, interactive clipboard, Persian keyboard on startup, light/dark themes.
+
 Installation
 ==============
 
@@ -76,11 +84,13 @@ or simply
 If a Persian keyboard layout is installed, Negar switches to it when it starts and switches back when it closes (turn it off in *Settings → Persian Keyboard on Startup*). This works on Windows, macOS, KDE Plasma, Sway and X11 desktops. GNOME has no built-in way for apps to change the layout, so there you need the [Shyriiwook](https://extensions.gnome.org/extension/6691/shyriiwook/) extension.
 
 ### Screen reader
-*Edit → Read Text from Screen* (Ctrl+Shift+O) lets you drag a rectangle over anything on screen; the text is recognised with [Tesseract](https://github.com/tesseract-ocr/tesseract) and put into the input editor. *Edit → Read Text from Clipboard Image* (Ctrl+Alt+O) does the same for an image you copied (e.g. a screenshot). Pick the language in *Edit → OCR Language*: fewer languages are more accurate. Persian recognition is Tesseract's weak spot, so check the result.
+*Edit → Read Text from Screen* (Ctrl+Shift+O) lets you drag a rectangle over anything on screen; the text is recognised with [Tesseract](https://github.com/tesseract-ocr/tesseract) and put into the input editor. *Edit → Read Text from Clipboard Image* (Ctrl+Alt+O) does the same for an image you copied (e.g. a screenshot). Pick the language in *Edit → OCR Language*: fewer languages are more accurate. Persian recognition is Tesseract's weak spot, so check the result; the AI button below can help fix recognition mistakes. Your language choice is remembered between runs.
 
 The standalone executable includes Tesseract with English, Persian and German data. With a pip install you need your own: `pacman -S tesseract tesseract-data-fas tesseract-data-eng tesseract-data-deu`, or `apt install tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu`. On Wayland the screenshot is taken through the desktop's screenshot portal (GNOME and KDE have it; on other compositors install `xdg-desktop-portal-wlr`).
 
 ### AI grammar fix
+The AI button sends the input text (typed, pasted or read by the screen reader) to a language model and shows the model's answer in the output pane. Choose or edit the instruction in *AI → Manage Prompts...*, and see requests and success rate per provider and prompt in *AI → Usage Report...*.
+
 The AI button works without setup through Pollinations, which is free but slow and rate-limited. For better results, open *AI → AI Provider...*, pick a provider and paste your own API key. [Google Gemini](https://aistudio.google.com/apikey), [Groq](https://console.groq.com/keys) and [OpenRouter](https://openrouter.ai/settings/keys) give free keys, and [OpenAI](https://platform.openai.com/api-keys) is paid. Keys are stored in plain text in the settings file (on Linux and macOS the file is made readable only by your user).
 
 ## Docker
