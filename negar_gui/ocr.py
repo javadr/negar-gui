@@ -9,10 +9,15 @@ from functools import lru_cache
 from pathlib import Path
 
 from PyQt6.QtCore import QCoreApplication, QObject, QRect, Qt, QUrl, pyqtSignal, pyqtSlot
-from PyQt6.QtDBus import QDBusConnection, QDBusMessage
+
+try:
+    from PyQt6.QtDBus import QDBusConnection, QDBusMessage
+except ImportError:  # QtDBus only ships in the Linux wheels; the portal is only used on Wayland
+    QDBusConnection = QDBusMessage = None
 from PyQt6.QtGui import QColor, QCursor, QGuiApplication, QImage, QPainter
 from PyQt6.QtWidgets import QWidget
 
+_dbus_slot = pyqtSlot(QDBusMessage) if QDBusMessage else lambda f: f
 LANGS = ("fas", "eng", "deu")
 _NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # no console flash from the windowed exe
 
@@ -28,7 +33,14 @@ class OCRError(RuntimeError):
 def _run(cmd, env=None, timeout=30):
     try:
         return subprocess.run(
-            cmd, capture_output=True, text=True, check=False, env=env, timeout=timeout, creationflags=_NO_WINDOW
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            env=env,
+            timeout=timeout,
+            creationflags=_NO_WINDOW,
+            stdin=subprocess.DEVNULL,  # a windowed exe has no stdin: the child would fail with "invalid handle"
         )
     except (OSError, subprocess.TimeoutExpired) as e:
         raise OCRError(f"{Path(cmd[0]).name}: {e}") from e
@@ -46,7 +58,12 @@ def _engine():
             exe = str(cand)
             env["TESSDATA_PREFIX"] = str(root / "tessdata")
             env["LD_LIBRARY_PATH"] = os.pathsep.join([str(root), env.get("LD_LIBRARY_PATH", "")])  # its bundled libs
-    exe = exe or shutil.which("tesseract")
+    elif "LD_LIBRARY_PATH_ORIG" in env:  # PyInstaller's own libs must not leak into a system tesseract
+        env["LD_LIBRARY_PATH"] = env["LD_LIBRARY_PATH_ORIG"]
+    # GUI apps on macOS/Windows don't see the shell PATH, so also look where the installers put it
+    extra = ["/opt/homebrew/bin", "/usr/local/bin", "/opt/local/bin", r"C:\Program Files\Tesseract-OCR"]
+    extra.append(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Tesseract-OCR"))
+    exe = exe or shutil.which("tesseract", path=os.pathsep.join([env.get("PATH", ""), *extra]))
     if not exe:
         raise OCRError(_tr("Tesseract is not installed. Install it with its fas, eng and deu language data."))
     have = _run([exe, "--list-langs"], env, 15).stdout.split()
@@ -157,7 +174,7 @@ class _PortalShot(QObject):
         if reply.type() == QDBusMessage.MessageType.ErrorMessage:
             raise OCRError(_tr("Could not take a screenshot: {}").format(reply.errorMessage()))
 
-    @pyqtSlot(QDBusMessage)
+    @_dbus_slot
     def _response(self, msg):
         code, results = msg.arguments()
         if code == 2 and not self._interactive:

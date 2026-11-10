@@ -32,6 +32,11 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
+    - name: 'Install Tesseract (bundled into the executable for the screen reader)'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu
+
     - name: 'Resolve Project Dependencies Using Pip'
       shell: bash
       run: |

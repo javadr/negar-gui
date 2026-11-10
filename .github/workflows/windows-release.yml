@@ -32,6 +32,10 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
+    - name: 'Install Tesseract (bundled into the executable for the screen reader)'
+      shell: pwsh
+      run: choco install tesseract --no-progress -y
+
     - name: 'Resolve Project Dependencies Using Pip'
       shell: pwsh
       run: |
