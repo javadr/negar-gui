@@ -362,6 +362,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         )
         self.menuEdit.insertAction(self.actionQr_Code, self.actionScreen_Reader)
         self.actionScreen_Reader.triggered.connect(self.read_screen)
+        self.actionClipboard_Reader = QtGui.QAction(self, shortcut=QtGui.QKeySequence("Ctrl+Alt+O"))
+        self.menuEdit.insertAction(self.actionQr_Code, self.actionClipboard_Reader)
+        self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
         self.menuOCR = QMenu("OCR &Language", self.menuEdit)
         self.menuEdit.insertMenu(self.actionQr_Code, self.menuOCR)
         self._ocr_group = QtGui.QActionGroup(self)
@@ -728,6 +731,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.show()
         QMessageBox.warning(self, "Negar", str(e))
 
+    def read_clipboard_image(self):
+        image = self.clipboard.image()
+        if image.isNull():
+            statusbar_timeout(self, _translate("MainWindow", "There is no image in the clipboard!"))
+        else:
+            self._ocr_done(image)
+
     def _ocr_done(self, image):
         self.show()
         self.activateWindow()
@@ -748,6 +758,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def _retranslate_ocr(self):
         self.actionScreen_Reader.setText(_translate("MainWindow", "&Read Text from Screen"))
+        self.actionClipboard_Reader.setText(_translate("MainWindow", "Read Text from Clipboard &Image"))
         self.menuOCR.setTitle(_translate("MainWindow", "OCR &Language"))
         for a, (title, _) in zip(self._ocr_group.actions(), OCR_CHOICES):
             a.setText(_translate("MainWindow", title))

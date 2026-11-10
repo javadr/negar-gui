@@ -76,7 +76,7 @@ or simply
 If a Persian keyboard layout is installed, Negar switches to it when it starts and switches back when it closes (turn it off in *Settings → Persian Keyboard on Startup*). This works on Windows, macOS, KDE Plasma, Sway and X11 desktops. GNOME has no built-in way for apps to change the layout, so there you need the [Shyriiwook](https://extensions.gnome.org/extension/6691/shyriiwook/) extension.
 
 ### Screen reader
-*Edit → Read Text from Screen* (Ctrl+Shift+O) lets you drag a rectangle over anything on screen; the text is recognised with [Tesseract](https://github.com/tesseract-ocr/tesseract) and put into the input editor. Pick the language in *Edit → OCR Language*: fewer languages are more accurate. Persian recognition is Tesseract's weak spot, so check the result.
+*Edit → Read Text from Screen* (Ctrl+Shift+O) lets you drag a rectangle over anything on screen; the text is recognised with [Tesseract](https://github.com/tesseract-ocr/tesseract) and put into the input editor. *Edit → Read Text from Clipboard Image* (Ctrl+Alt+O) does the same for an image you copied (e.g. a screenshot). Pick the language in *Edit → OCR Language*: fewer languages are more accurate. Persian recognition is Tesseract's weak spot, so check the result.
 
 The standalone executable includes Tesseract with English, Persian and German data. With a pip install you need your own: `pacman -S tesseract tesseract-data-fas tesseract-data-eng tesseract-data-deu`, or `apt install tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu`. On Wayland the screenshot is taken through the desktop's screenshot portal (GNOME and KDE have it; on other compositors install `xdg-desktop-portal-wlr`).
 

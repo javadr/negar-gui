@@ -97,6 +97,16 @@
         <translation>متنی در ناحیه انتخاب‌شده پیدا نشد!</translation>
     </message>
     <message>
+        <location filename="../main.py" line="0"/>
+        <source>Read Text from Clipboard &amp;Image</source>
+        <translation>خواندن متن از &amp;تصویر کلیپ‌بورد</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>There is no image in the clipboard!</source>
+        <translation>هیچ تصویری در کلیپ‌بورد وجود ندارد!</translation>
+    </message>
+    <message>
         <location filename="../ocr.py" line="0"/>
         <source>Tesseract is not installed. Install it with its fas, eng and deu language data.</source>
         <translation>Tesseract نصب نشده است. آن را همراه با داده‌های زبان fas، eng و deu نصب کنید.</translation>
