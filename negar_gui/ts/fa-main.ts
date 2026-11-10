@@ -62,6 +62,66 @@
         <translation>صفحه‌کلید فارسی هنگام اجرا</translation>
     </message>
     <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>&amp;Read Text from Screen</source>
+        <translation>&amp;خواندن متن از صفحه</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>OCR &amp;Language</source>
+        <translation>&amp;زبان تشخیص متن</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Persian + English</source>
+        <translation>فارسی + انگلیسی</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>English</source>
+        <translation>انگلیسی</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Deutsch</source>
+        <translation>آلمانی</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Persian + English + Deutsch</source>
+        <translation>فارسی + انگلیسی + آلمانی</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>No text found in the selected region!</source>
+        <translation>متنی در ناحیه انتخاب‌شده پیدا نشد!</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Tesseract is not installed. Install it with its fas, eng and deu language data.</source>
+        <translation>Tesseract نصب نشده است. آن را همراه با داده‌های زبان fas، eng و deu نصب کنید.</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Tesseract is missing the language data for the selected languages.</source>
+        <translation>داده‌های زبان‌های انتخاب‌شده در Tesseract موجود نیست.</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Could not save the captured region.</source>
+        <translation>ذخیره ناحیه گرفته‌شده ممکن نشد.</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Tesseract failed.</source>
+        <translation>Tesseract با خطا مواجه شد.</translation>
+    </message>
+    <message>
+        <location filename="../ocr.py" line="0"/>
+        <source>Could not take a screenshot: {}</source>
+        <translation>گرفتن عکس از صفحه ممکن نشد: {}</translation>
+    </message>
+    <message>
         <location filename="main.py" line="141"/>
         <source>Open File - A Plain Text</source>
         <translation type="obsolete">باز کردن فایل - فایل متنی ساده</translation>

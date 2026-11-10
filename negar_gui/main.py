@@ -58,6 +58,7 @@ from PyQt6.QtWidgets import (
     QListView,
     QMainWindow,
     QMenu,
+    QMessageBox,
     QSizePolicy,
     QSpacerItem,
 )
@@ -65,7 +66,7 @@ from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
-from negar_gui import keyboard_layout, llm_providers, usage_log
+from negar_gui import keyboard_layout, llm_providers, ocr, usage_log
 
 # Local application imports
 # The following is neccessary for ICONs
@@ -128,6 +129,14 @@ def _host_aware(setup_theme):
 
 if hasattr(qdarktheme, "setup_theme"):  # absent in some qdarktheme builds (main() stubs it)
     qdarktheme.setup_theme = _host_aware(qdarktheme.setup_theme)
+
+
+OCR_CHOICES = (
+    ("Persian + English", ["fas", "eng"]),
+    ("English", ["eng"]),
+    ("Deutsch", ["deu"]),
+    ("Persian + English + Deutsch", ["fas", "eng", "deu"]),
+)  # fewer languages are more accurate, so no all-in-one default
 
 
 class TableModel(QAbstractTableModel):
@@ -348,6 +357,21 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._restore_keyboard = None
         self.actionPersian_Keyboard = QtGui.QAction(self, checkable=True, checked=True)
         self.menuSetting.insertAction(self.menuLanguage.menuAction(), self.actionPersian_Keyboard)
+        self.actionScreen_Reader = QtGui.QAction(
+            "&Read Text from Screen", self, shortcut=QtGui.QKeySequence("Ctrl+Shift+O")
+        )
+        self.menuEdit.insertAction(self.actionQr_Code, self.actionScreen_Reader)
+        self.actionScreen_Reader.triggered.connect(self.read_screen)
+        self.menuOCR = QMenu("OCR &Language", self.menuEdit)
+        self.menuEdit.insertMenu(self.actionQr_Code, self.menuOCR)
+        self._ocr_group = QtGui.QActionGroup(self)
+        for _, langs in OCR_CHOICES:
+            a = self.menuOCR.addAction("")
+            a.setCheckable(True)
+            a.setData(langs)
+            self._ocr_group.addAction(a)
+        self._ocr_group.actions()[0].setChecked(True)
+        self._retranslate_ocr()
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
@@ -690,6 +714,44 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.gridLayout.removeWidget(widget)
             widget.setParent(None)
 
+    def read_screen(self):
+        self.hide()  # keep Negar out of the screenshot
+        QTimer.singleShot(300, self._ocr_run)
+
+    def _ocr_run(self):
+        try:
+            ocr.capture(self._ocr_done, self._ocr_error)
+        except ocr.OCRError as e:
+            self._ocr_error(e)
+
+    def _ocr_error(self, e):
+        self.show()
+        QMessageBox.warning(self, "Negar", str(e))
+
+    def _ocr_done(self, image):
+        self.show()
+        self.activateWindow()
+        if image is None:
+            return
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        try:
+            text = ocr.read_text(image, self._ocr_group.checkedAction().data())
+        except ocr.OCRError as e:
+            return self._ocr_error(e)
+        finally:
+            QApplication.restoreOverrideCursor()
+        if text:
+            self.input_editor.setPlainText(text)
+            self.edit_text()
+        else:
+            statusbar_timeout(self, _translate("MainWindow", "No text found in the selected region!"))
+
+    def _retranslate_ocr(self):
+        self.actionScreen_Reader.setText(_translate("MainWindow", "&Read Text from Screen"))
+        self.menuOCR.setTitle(_translate("MainWindow", "OCR &Language"))
+        for a, (title, _) in zip(self._ocr_group.actions(), OCR_CHOICES):
+            a.setText(_translate("MainWindow", title))
+
     def qrcode(self):
         # Check if Shift is held when button clicked
         modifiers = QApplication.keyboardModifiers()
@@ -833,6 +895,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
         self.actionPersian_Keyboard.setText(_translate("MainWindow", "Persian Keyboard on Startup"))
+        self._retranslate_ocr()
         self._build_llm_menu()
         if not self.llm_btn.isEnabled() and hasattr(self, "_llm_pending_prompt"):
             prompt_name = self.prompt_title(self._llm_pending_prompt)
@@ -921,6 +984,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
             # fmt: on
             self.set_ui_language()
+            for a in self._ocr_group.actions():
+                a.setChecked(a.data() == self.settings["settings"].get("ocr-language", ["fas", "eng"]))
             # connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():
                 self.clipboard.dataChanged.connect(self.onClipboardChanged)
@@ -961,6 +1026,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
+                "ocr-language": self._ocr_group.checkedAction().data(),
                 "persian-keyboard": self.actionPersian_Keyboard.isChecked(),
                 "language": self.settings.get("settings", {"language": "English"})["language"],
                 "editing-option": {

@@ -84,13 +84,19 @@ compile-nuitka: setup ver ## Build a standalone binary with nuitka3
 	--include-data-file=.negar/lib/python3.12/site-packages/negar/data/untouchable.dat=negar/data/untouchable.dat
 	ls -lh dist
 
+# Tesseract language data bundled into the exe for the screen reader (tessdata_fast keeps it small)
+TESSDATA ?= /usr/share/tessdata
+
 .PHONY: compile-pyinstaller
 compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
 	@rm build/gui/ -rfv
 	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
 	--collect-data pyuca --noupx negar_gui/main.py -n negar-gui-v$(VER) \
 	--add-data negar_gui/ts/fa.qm:ts \
-	--add-data ../python-negar/negar/data/untouchable.dat:negar/data
+	--add-data ../python-negar/negar/data/untouchable.dat:negar/data \
+	--add-binary "$$(command -v tesseract):tesseract" \
+	$$(ldd "$$(command -v tesseract)" | awk '/=> \// && $$3 !~ /\/(libc|libm|libpthread|libdl|librt|libresolv)\.so/ {print "--add-binary " $$3 ":tesseract"}') \
+	$(foreach l,fas eng deu,--add-data $(TESSDATA)/$(l).traineddata:tesseract/tessdata)
 	ls -lh dist
 
 .PHONY: update-translations
