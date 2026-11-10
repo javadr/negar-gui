@@ -139,6 +139,23 @@ OCR_CHOICES = (
 )  # fewer languages are more accurate, so no all-in-one default
 
 
+def _svg_icon(svg):
+    pix = QPixmap()
+    pix.loadFromData(svg.encode(), "SVG")
+    return QIcon(pix)
+
+
+_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#d89e76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{}</svg>'
+# viewfinder corners with lines of text
+_SVG_SCREEN = _SVG.format(
+    '<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M8 9h8M8 12h8M8 15h5"/>'
+)
+# clipboard holding a picture
+_SVG_CLIPBOARD = _SVG.format(
+    '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M8 18l3-4 2 2.5 1.5-2L17 18z"/><circle cx="14.5" cy="10.5" r="1"/>'
+)
+
+
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
         super().__init__()
@@ -357,16 +374,14 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._restore_keyboard = None
         self.actionPersian_Keyboard = QtGui.QAction(self, checkable=True, checked=True)
         self.menuSetting.insertAction(self.menuLanguage.menuAction(), self.actionPersian_Keyboard)
-        self.actionScreen_Reader = QtGui.QAction(
-            "&Read Text from Screen", self, shortcut=QtGui.QKeySequence("Ctrl+Shift+O")
-        )
-        self.menuEdit.insertAction(self.actionQr_Code, self.actionScreen_Reader)
+        self.menuEdit.addSeparator()  # the OCR group sits below the QR code entry
+        self.actionScreen_Reader = self.menuEdit.addAction(_svg_icon(_SVG_SCREEN), "")
+        self.actionScreen_Reader.setShortcut(QtGui.QKeySequence("Ctrl+Shift+O"))
         self.actionScreen_Reader.triggered.connect(self.read_screen)
-        self.actionClipboard_Reader = QtGui.QAction(self, shortcut=QtGui.QKeySequence("Ctrl+Alt+O"))
-        self.menuEdit.insertAction(self.actionQr_Code, self.actionClipboard_Reader)
+        self.actionClipboard_Reader = self.menuEdit.addAction(_svg_icon(_SVG_CLIPBOARD), "")
+        self.actionClipboard_Reader.setShortcut(QtGui.QKeySequence("Ctrl+Alt+O"))
         self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
-        self.menuOCR = QMenu("OCR &Language", self.menuEdit)
-        self.menuEdit.insertMenu(self.actionQr_Code, self.menuOCR)
+        self.menuOCR = self.menuEdit.addMenu(QIcon(":/images/icons/languages.svg"), "")
         self._ocr_group = QtGui.QActionGroup(self)
         for _, langs in OCR_CHOICES:
             a = self.menuOCR.addAction("")
@@ -374,6 +389,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             a.setData(langs)
             self._ocr_group.addAction(a)
         self._ocr_group.actions()[0].setChecked(True)
+        self._ocr_group.triggered.connect(lambda a: self.settings["settings"].__setitem__("ocr-language", a.data()))
         self._retranslate_ocr()
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
@@ -718,6 +734,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             widget.setParent(None)
 
     def read_screen(self):
+        self._ocr_hidden = True
         self.hide()  # keep Negar out of the screenshot
         QTimer.singleShot(300, self._ocr_run)
 
@@ -968,6 +985,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         QApplication.instance().quit()
 
     def showEvent(self, event):
+        if getattr(self, "_ocr_hidden", False):  # shown again after the screenshot: keep the live settings
+            self._ocr_hidden = False
+            return QMainWindow.showEvent(self, event)
         WindowSettings.showEvent(self, event)
         del event
         self.font_slider.blockSignals(True)  # no zoom popup while restoring settings
