@@ -59,6 +59,7 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QMenu,
     QMessageBox,
+    QPushButton,
     QSizePolicy,
     QSpacerItem,
 )
@@ -390,7 +391,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self._ocr_group.addAction(a)
         self._ocr_group.actions()[0].setChecked(True)
         self._ocr_group.triggered.connect(lambda a: self.settings["settings"].__setitem__("ocr-language", a.data()))
-        self._retranslate_ocr()
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
@@ -567,7 +567,18 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.prompt_combo.setView(QListView())  # needed for the popup items to take the stylesheet
         self.prompt_combo.setMaxVisibleItems(14)
         self.prompt_combo.setStyleSheet(PROMPT_COMBO_QSS)
-        self.gridLayout_4.addWidget(self.prompt_combo, 0, 7, 1, 1)
+        # OCR buttons go right after the QR button: shift the view, AI and prompt widgets to the right
+        self.screen_btn, self.clipboard_btn = QPushButton(parent=self.frame_2), QPushButton(parent=self.frame_2)
+        for col, btn, action in (
+            (4, self.screen_btn, self.actionScreen_Reader),
+            (5, self.clipboard_btn, self.actionClipboard_Reader),
+        ):
+            btn.setIcon(action.icon())
+            btn.clicked.connect(action.trigger)
+            self.gridLayout_4.addWidget(btn, 0, col, 1, 1)
+        for col, w in enumerate((self.vertical_btn, self.horizontal_btn, self.llm_btn, self.prompt_combo), 6):
+            self.gridLayout_4.addWidget(w, 0, col, 1, 1)
+        self._retranslate_ocr()
         self.prompt_combo.activated.connect(lambda i: self._set_llm_prompt(self.prompt_combo.itemData(i)))
         self._build_llm_menu()
         self.llm_btn.clicked.connect(self.llm_fix_text_slot)
@@ -776,6 +787,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def _retranslate_ocr(self):
         self.actionScreen_Reader.setText(_translate("MainWindow", "&Read Text from Screen"))
         self.actionClipboard_Reader.setText(_translate("MainWindow", "Read Text from Clipboard &Image"))
+        self.screen_btn.setToolTip(_translate("MainWindow", "Read text from screen Ctrl+Shift+O"))
+        self.clipboard_btn.setToolTip(_translate("MainWindow", "Read text from clipboard image Ctrl+Alt+O"))
         self.menuOCR.setTitle(_translate("MainWindow", "OCR &Language"))
         for a, (title, _) in zip(self._ocr_group.actions(), OCR_CHOICES):
             a.setText(_translate("MainWindow", title))

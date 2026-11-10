@@ -98,6 +98,16 @@
     </message>
     <message>
         <location filename="../main.py" line="0"/>
+        <source>Read text from screen Ctrl+Shift+O</source>
+        <translation>خواندن متن از صفحه Ctrl+Shift+O</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Read text from clipboard image Ctrl+Alt+O</source>
+        <translation>خواندن متن از تصویر کلیپ‌بورد Ctrl+Alt+O</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
         <source>Read Text from Clipboard &amp;Image</source>
         <translation>خواندن متن از &amp;تصویر کلیپ‌بورد</translation>
     </message>
