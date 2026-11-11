@@ -68,8 +68,8 @@
     </message>
     <message>
         <location filename="../ocr.py" line="0"/>
-        <source>OCR &amp;Language</source>
-        <translation>&amp;زبان تشخیص متن</translation>
+        <source>&amp;OCR</source>
+        <translation>&amp;تشخیص متن</translation>
     </message>
     <message>
         <location filename="../ocr.py" line="0"/>

@@ -541,6 +541,10 @@
      <property name="title">
        <string>&amp;AI</string>
      </property>
+     <addaction name="separator"/>
+     <addaction name="actionManage_Prompts"/>
+     <addaction name="actionAI_Provider"/>
+     <addaction name="actionUsage_Report"/>
     </widget>
     <widget class="QMenu" name="menuHelp">
      <property name="sizePolicy">
@@ -570,6 +574,14 @@
     <addaction name="separator"/>
     <addaction name="actionQr_Code"/>
    </widget>
+   <widget class="QMenu" name="menuOCR">
+    <property name="title">
+     <string>&amp;OCR</string>
+    </property>
+    <addaction name="actionScreen_Reader"/>
+    <addaction name="actionClipboard_Reader"/>
+    <addaction name="separator"/>
+   </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
      <string>&amp;View</string>
@@ -596,8 +608,9 @@
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menu_View"/>
-    <addaction name="menuSetting"/>
-    <addaction name="menuLLM"/>
+   <addaction name="menuOCR"/>
+   <addaction name="menuLLM"/>
+   <addaction name="menuSetting"/>
     <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1020,6 +1033,37 @@
   <action name="actionUpdate">
    <property name="text">
     <string>Update Check</string>
+   </property>
+  </action>
+  <action name="actionScreen_Reader">
+   <property name="text">
+    <string>&amp;Read Text from Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionClipboard_Reader">
+   <property name="text">
+    <string>Read Text from Clipboard &amp;Image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+O</string>
+   </property>
+  </action>
+  <action name="actionManage_Prompts">
+   <property name="text">
+    <string>Manage Prompts...</string>
+   </property>
+  </action>
+  <action name="actionAI_Provider">
+   <property name="text">
+    <string>AI Provider...</string>
+   </property>
+  </action>
+  <action name="actionUsage_Report">
+   <property name="text">
+    <string>Usage Report...</string>
    </property>
   </action>
   <action name="actionQr_Code">

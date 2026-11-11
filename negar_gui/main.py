@@ -375,14 +375,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._restore_keyboard = None
         self.actionPersian_Keyboard = QtGui.QAction(self, checkable=True, checked=True)
         self.menuSetting.insertAction(self.menuLanguage.menuAction(), self.actionPersian_Keyboard)
-        self.menuEdit.addSeparator()  # the OCR group sits below the QR code entry
-        self.actionScreen_Reader = self.menuEdit.addAction(_svg_icon(_SVG_SCREEN), "")
-        self.actionScreen_Reader.setShortcut(QtGui.QKeySequence("Ctrl+Shift+O"))
+        self.actionManage_Prompts.triggered.connect(self._manage_prompts)
+        self.actionAI_Provider.triggered.connect(self._llm_provider_dialog)
+        self.actionUsage_Report.triggered.connect(lambda: UsageReportDialog(self).exec())
+        self.actionScreen_Reader.setIcon(_svg_icon(_SVG_SCREEN))
         self.actionScreen_Reader.triggered.connect(self.read_screen)
-        self.actionClipboard_Reader = self.menuEdit.addAction(_svg_icon(_SVG_CLIPBOARD), "")
-        self.actionClipboard_Reader.setShortcut(QtGui.QKeySequence("Ctrl+Alt+O"))
+        self.actionClipboard_Reader.setIcon(_svg_icon(_SVG_CLIPBOARD))
         self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
-        self.menuOCR = self.menuEdit.addMenu(QIcon(":/images/icons/languages.svg"), "")
         self._ocr_group = QtGui.QActionGroup(self)
         for _, langs in OCR_CHOICES:
             a = self.menuOCR.addAction("")
@@ -789,7 +788,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionClipboard_Reader.setText(_translate("MainWindow", "Read Text from Clipboard &Image"))
         self.screen_btn.setToolTip(_translate("MainWindow", "Read text from screen Ctrl+Shift+O"))
         self.clipboard_btn.setToolTip(_translate("MainWindow", "Read text from clipboard image Ctrl+Alt+O"))
-        self.menuOCR.setTitle(_translate("MainWindow", "OCR &Language"))
+        self.menuOCR.setTitle(_translate("MainWindow", "&OCR"))
         for a, (title, _) in zip(self._ocr_group.actions(), OCR_CHOICES):
             a.setText(_translate("MainWindow", title))
 
@@ -1249,15 +1248,18 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     ####################### LLM ###############################
     def _build_llm_menu(self):
-        self.menuLLM.clear()
+        for a in getattr(self, "_llm_prompt_actions", {}).values():
+            self.menuLLM.removeAction(a)
         self._llm_prompt_actions = {}
+        acts = self.menuLLM.actions()
+        sep = acts[acts.index(self.actionManage_Prompts) - 1]  # prompts go above the separator
         current = self._llm_prompt_key()
         for key, prompt in self._llm_prompts().items():
             action = QtGui.QAction(self.prompt_title(prompt), self)
             action.setCheckable(True)
             action.setChecked(key == current)
             action.triggered.connect(lambda checked, k=key: self._set_llm_prompt(k))
-            self.menuLLM.addAction(action)
+            self.menuLLM.insertAction(sep, action)
             self._llm_prompt_actions[key] = action
         self.prompt_combo.clear()
         for key, prompt in self._llm_prompts().items():
@@ -1267,10 +1269,6 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
         self.prompt_combo.setCurrentIndex(self.prompt_combo.findData(current))
         self.prompt_combo.setToolTip(_translate("MainWindow", "Prompt used by the AI button"))
-        self.menuLLM.addSeparator()
-        self.menuLLM.addAction(_translate("MainWindow", "Manage Prompts..."), self._manage_prompts)
-        self.menuLLM.addAction(_translate("MainWindow", "AI Provider..."), self._llm_provider_dialog)
-        self.menuLLM.addAction(_translate("MainWindow", "Usage Report..."), lambda: UsageReportDialog(self).exec())
         self._update_llm_tooltip()
 
     def _update_llm_tooltip(self):
