@@ -721,6 +721,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         }
         for i, widget in enumerate(widgets):
             self.gridLayout.addWidget(widget, *elements[layout][i])
+            widget.show()
 
         self.horizontalLayout = QHBoxLayout()
         spacerMin = QSpacerItem(7, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
@@ -728,15 +729,20 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.horizontalLayout.addWidget(self.output_editor_label)
         self.horizontalLayout.addItem(spacerMin)
         self.horizontalLayout.addWidget(self.comparative_output_chkbox)
+        self.output_editor_label.show()
+        self.comparative_output_chkbox.show()
         self.horizontalLayout.addItem(spacerMax)
         span = {"v": (0, 1, 1, 2), "h": (2, 1, 1, 1)}
         self.gridLayout.addLayout(self.horizontalLayout, *span[layout])
 
     def _grid_full_input(self):
-        widgets = (self.output_editor_label, self.output_editor)
+        widgets = (self.output_editor_label, self.output_editor, self.comparative_output_chkbox, self.input_editor)
         for widget in widgets:
             self.gridLayout.removeWidget(widget)
             widget.setParent(None)
+        self.horizontalLayout.setParent(None)
+        self.output_lbl_comp_chk_layout.setParent(None)
+        self.gridLayout.addWidget(self.input_editor, 1, 0, 1, 2)
 
     def read_screen(self):
         self._ocr_hidden = True

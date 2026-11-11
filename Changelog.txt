@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.10] - 2026-11-11
+
+### Fixed
+- Full Screen Input (Ctrl+F) now fills the whole window width and hides the comparison-mode checkbox
+
 ## [1.4.9] - 2026-11-11
 
 ### Changed
