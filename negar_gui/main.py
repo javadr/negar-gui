@@ -17,6 +17,7 @@ import asyncio
 import json
 import logging
 import os
+import platform
 import re
 import sys
 import tempfile
@@ -76,6 +77,7 @@ from negar.constants import INFO, __version__ as negar__version
 from negar.virastar import ImmutableWords, PersianEditor
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
 from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, bidi_text, localize_digits
+from negar_gui.ui.Ui_about import Ui_AboutDialog
 from negar_gui.ui.Ui_hwin import Ui_Dialog
 from negar_gui.ui.Ui_mwin import Ui_MainWindow
 from negar_gui.ui.Ui_uwin import Ui_uwWindow
@@ -298,6 +300,26 @@ class ImmutableWordsWindow(QMainWindow, Ui_uwWindow):
         if self.parent:
             self.parent.show()
             self.parent.edit_text()
+
+
+class AboutDialog(QDialog, Ui_AboutDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self.setLayoutDirection(QApplication.layoutDirection())
+        self.logo_label.setPixmap(QPixmap(LOGO).scaledToWidth(96, Qt.TransformationMode.SmoothTransformation))
+        self.title_label.setStyleSheet("font-size: 18pt; font-weight: bold;")
+        self.buttonBox.buttons()[0].setText(_translate("Dialog", "Close"))
+        self.info_label.setText(
+            self.info_label.text().format(
+                version=__version__,
+                core=negar__version,
+                python=platform.python_version(),
+                qt=PyQt6.QtCore.QT_VERSION_STR,
+                system=platform.system(),
+            )
+        )
+        self.links_label.setText(self.links_label.text().format(repo="https://github.com/javadr/negar-gui"))
 
 
 class HelpWindow(QDialog, Ui_Dialog):
@@ -538,9 +560,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
                 label=self.edit_text(INFO),
             ).show()
         )
-        self.actionAbout_Negar_GUI.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui")),
-        )
+        self.actionAbout_Negar_GUI.triggered.connect(self.about_negar_gui)
         self.actionDonate.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/javadr/negar-gui#donation")),
         )
@@ -679,6 +699,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.input_editor.verticalScrollBar().valueChanged.disconnect(self._sync_inout_scroll)
             self.input_editor.verticalScrollBar().setValue(new_value)
             self.input_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
+
+    def about_negar_gui(self):
+        AboutDialog(self).exec()
 
     def full_screen_input_slot(self):
         (

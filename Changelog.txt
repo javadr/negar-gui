@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.11] - 2026-11-11
+
+### Changed
+- About Negar-GUI is now a dedicated dialog (own .ui file) showing version, core/Python/Qt versions, license, author and links; translated to Persian
+
 ## [1.4.10] - 2026-11-11
 
 ### Fixed

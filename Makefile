@@ -104,7 +104,7 @@ update-translations: ver ## Update and compile Qt translation files using PyQt t
 	pylupdate5 -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
 	pylupdate5 -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
 	pylupdate5 -verbose negar_gui/ui/Ui_hwin.py -ts negar_gui/ts/fa-uihwin.ts
-	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui -ts negar_gui/ts/fa-uidialogs.ts
+	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui negar_gui/ui/about.ui -ts negar_gui/ts/fa-uidialogs.ts
 	pylupdate5 -verbose negar_gui/main.py negar_gui/dialogs.py -ts negar_gui/ts/fa-main.ts
 	lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 
@@ -122,6 +122,7 @@ compile-ui: ver ## Convert Qt UI files to Python scripts using PyQt6
 	pyuic6 negar_gui/ui/promptedit.ui -xo negar_gui/ui/Ui_promptedit.py
 	pyuic6 negar_gui/ui/prompts.ui -xo negar_gui/ui/Ui_prompts.py
 	pyuic6 negar_gui/ui/usage.ui -xo negar_gui/ui/Ui_usage.py
+	pyuic6 negar_gui/ui/about.ui -xo negar_gui/ui/Ui_about.py
 
 .PHONY: compile-resources-pyside2
 compile-resources-pyside2: ver ## Compile the Qt resource file using PySide2 tools
