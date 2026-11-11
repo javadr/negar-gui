@@ -1,0 +1,85 @@
+<html><body>
+<h1>Negar-GUI Help</h1>
+<p>Negar-GUI edits Persian text: it fixes spacing, half-spaces (ZWNJ), punctuation and digits, and can also rewrite text with an AI assistant. Type or paste text in the input box and the corrected text appears in the output box.</p>
+<p><b>Contents:</b>
+<a href="#start">Getting started</a> ·
+<a href="#options">Editing options</a> ·
+<a href="#views">Views</a> ·
+<a href="#ocr">OCR</a> ·
+<a href="#ai">AI assistant</a> ·
+<a href="#untouchable">Untouchable words</a> ·
+<a href="#settings">Settings</a> ·
+<a href="#shortcuts">Shortcuts</a> ·
+<a href="#links">Links</a></p>
+
+<h2><a name="start"></a>Getting started</h2>
+<ul>
+<li>Type, paste (Ctrl+V) or open a file (Ctrl+O) into the <b>input</b> box.</li>
+<li>Press <b>Edit</b>, or tick <b>Automatic edit</b> to edit while you type.</li>
+<li>Copy the result with Ctrl+C, or save it with Ctrl+S / Ctrl+Shift+S. Closing the window with Esc copies the output to the clipboard.</li>
+<li>Ctrl + mouse wheel, or the slider, changes the font size.</li>
+</ul>
+
+<h2><a name="options"></a>Editing options</h2>
+<p>The <b>Edit</b> menu lists every fix Negar can apply (dashes, three dots, quotes, hamzeh, Arabic/English digits, prefix and suffix spacing, kashidas, extra marks, whitespace, ZWNJ…). Each one can be switched on or off; <i>Select All</i>, <i>Unselect All</i> and <i>Invert Selection</i> change them in one go. Your choices are saved.</p>
+
+<h2><a name="views"></a>Views</h2>
+<ul>
+<li><b>Comparison mode</b> – the checkbox under the output marks what changed against the original.</li>
+<li><b>Side-by-Side View</b> (Ctrl+I) – input and output next to each other instead of stacked.</li>
+<li><b>Full Screen Input</b> (Ctrl+F) – hides the output and uses the whole window for the input.</li>
+<li><b>Theme</b> – Dark, Light or Auto (Ctrl+T, then D or L).</li>
+<li><b>Interactive Clipboard</b> (Ctrl+B) – edits whatever you copy, automatically.</li>
+</ul>
+
+<h2><a name="ocr"></a>OCR – text from images</h2>
+<ul>
+<li><b>Read Text from Screen</b> (Ctrl+Shift+O) – drag a rectangle over any part of the screen.</li>
+<li><b>Read Text from Clipboard Image</b> (Ctrl+Alt+O) – reads an image you have copied.</li>
+<li>The <b>OCR</b> menu selects the languages (Persian, English, Deutsch); at least one stays on. The recognised text is put in the input box and edited.</li>
+</ul>
+
+<h2><a name="ai"></a>AI assistant</h2>
+<ul>
+<li>Pick a <b>prompt</b> (for example proofreading, formal, academic or casual rewriting) in the toolbar list and press the AI button (Ctrl+Shift+A). The reply goes to the output box.</li>
+<li><b>AI Provider…</b> chooses the service and enters your API key and model.</li>
+<li><b>Manage Prompts…</b> lets you add, edit or hide prompts, in English and Persian.</li>
+<li><b>Usage Report…</b> shows requests and tokens used over time.</li>
+</ul>
+<p>Your text is sent to the provider you choose; nothing is sent when you only use the normal editing.</p>
+
+<h2><a name="untouchable"></a>Untouchable words</h2>
+<p><b>Edit → Untouchable Words</b> keeps a list of words Negar must never change (names, brands, technical terms). Add a single word and press <i>Add</i>.</p>
+
+<h2><a name="settings"></a>Settings</h2>
+<ul>
+<li><b>Settings → Language</b> switches the interface between Persian and English.</li>
+<li><b>Persian Keyboard on Startup</b> switches your keyboard layout to Persian when Negar starts.</li>
+<li>All options, the window layout and the font size are remembered between sessions.</li>
+<li><b>Update Check</b> tells you if a newer version is available.</li>
+</ul>
+
+<h2><a name="shortcuts"></a>Keyboard shortcuts</h2>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td>F1</td><td>This help</td></tr>
+<tr><td>Ctrl+H</td><td>About Negar</td></tr>
+<tr><td>Ctrl+O / Ctrl+S / Ctrl+Shift+S</td><td>Open / Save / Save as</td></tr>
+<tr><td>Ctrl+C / Ctrl+V</td><td>Copy / Paste</td></tr>
+<tr><td>Ctrl+R</td><td>Reset</td></tr>
+<tr><td>Ctrl+= / Ctrl+-</td><td>Bigger / smaller font</td></tr>
+<tr><td>Ctrl+I</td><td>Side-by-side view</td></tr>
+<tr><td>Ctrl+F</td><td>Full screen input</td></tr>
+<tr><td>Ctrl+B</td><td>Interactive clipboard</td></tr>
+<tr><td>Ctrl+T, D / L</td><td>Dark / Light theme</td></tr>
+<tr><td>Ctrl+L, F / E</td><td>Persian / English interface</td></tr>
+<tr><td>Ctrl+Shift+O</td><td>Read text from screen</td></tr>
+<tr><td>Ctrl+Alt+O</td><td>Read text from clipboard image</td></tr>
+<tr><td>Ctrl+Shift+A</td><td>Run the AI prompt</td></tr>
+<tr><td>Ctrl+Q / Esc</td><td>Exit</td></tr>
+</table>
+
+<h2><a name="links"></a>Links</h2>
+<p><a href="https://github.com/javadr/negar-gui">Home page</a> ·
+<a href="https://github.com/javadr/negar-gui/issues">Report a bug</a> ·
+<a href="https://github.com/javadr/negar-gui#donation">Donate</a></p>
+</body></html>

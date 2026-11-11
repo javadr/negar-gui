@@ -36,6 +36,14 @@ License: GPL-3.0-or-later</source>
     </message>
 </context>
 <context>
+    <name>HelpDialog</name>
+    <message>
+        <location filename="../ui/help.ui" line="14"/>
+        <source>Negar-GUI Help</source>
+        <translation>راهنمای نگار-GUI</translation>
+    </message>
+</context>
+<context>
     <name>PromptEditDialog</name>
     <message>
         <location filename="../ui/promptedit.ui" line="6"/>

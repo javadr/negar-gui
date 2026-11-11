@@ -2,3 +2,4 @@ include README.md
 recursive-include negar_gui/icons *
 include negar_gui/ts/fa.qm
 include negar_gui/style.qss
+include negar_gui/help/*.html

@@ -78,6 +78,7 @@ from negar.virastar import ImmutableWords, PersianEditor
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
 from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, bidi_text, localize_digits
 from negar_gui.ui.Ui_about import Ui_AboutDialog
+from negar_gui.ui.Ui_help import Ui_HelpDialog
 from negar_gui.ui.Ui_hwin import Ui_Dialog
 from negar_gui.ui.Ui_mwin import Ui_MainWindow
 from negar_gui.ui.Ui_uwin import Ui_uwWindow
@@ -300,6 +301,20 @@ class ImmutableWordsWindow(QMainWindow, Ui_uwWindow):
         if self.parent:
             self.parent.show()
             self.parent.edit_text()
+
+
+class HelpDialog(QDialog, Ui_HelpDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self.buttonBox.buttons()[0].setText(_translate("Dialog", "Close"))
+        self.reload()
+
+    def reload(self):
+        """(Re)load the help page in the current UI language."""
+        self.setLayoutDirection(QApplication.layoutDirection())
+        lang = "fa" if QApplication.layoutDirection() == Qt.LayoutDirection.RightToLeft else "en"
+        self.browser.setHtml((Path(NEGARGUIPATH) / "help" / f"{lang}.html").read_text(encoding="utf-8"))
 
 
 class AboutDialog(QDialog, Ui_AboutDialog):
@@ -546,12 +561,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
         )
 
-        self.actionNegar_Help.triggered.connect(
-            lambda: (
-                self.input_editor.setText(INFO),  # puth the info in the input editor
-                self.autoedit_handler(),  # auto adjust the font size
-            )
-        )
+        self.actionNegar_Help.triggered.connect(self.show_help)
         self.actionAbout_Negar.setShortcut("CTRL+H")
         self.actionAbout_Negar.triggered.connect(
             lambda: HelpWindow(
@@ -699,6 +709,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.input_editor.verticalScrollBar().valueChanged.disconnect(self._sync_inout_scroll)
             self.input_editor.verticalScrollBar().setValue(new_value)
             self.input_editor.verticalScrollBar().valueChanged.connect(self._sync_inout_scroll)
+
+    def show_help(self):
+        if not hasattr(self, "_help_dialog"):
+            self._help_dialog = HelpDialog(self)
+        self._help_dialog.setWindowTitle(_translate("HelpDialog", "Negar-GUI Help"))
+        self._help_dialog.reload()
+        self._help_dialog.show()
+        self._help_dialog.raise_()
+        self._help_dialog.activateWindow()
 
     def about_negar_gui(self):
         AboutDialog(self).exec()

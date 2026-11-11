@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.12] - 2026-11-11
+
+### Added
+- Real bilingual help (F1 / Help → Negar Help): a dedicated window with Persian and English pages that follow the interface language, covering all features and shortcuts
+
 ## [1.4.11] - 2026-11-11
 
 ### Changed

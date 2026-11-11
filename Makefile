@@ -93,6 +93,7 @@ compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
 	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
 	--collect-data pyuca --collect-data qdarktheme --noupx negar_gui/main.py -n negar-gui-v$(VER) \
 	--add-data negar_gui/ts/fa.qm:ts \
+	--add-data negar_gui/help:help \
 	--add-data ../python-negar/negar/data/untouchable.dat:negar/data \
 	--add-binary "$$(command -v tesseract):tesseract" \
 	$$(ldd "$$(command -v tesseract)" | awk '/=> \// && $$3 !~ /\/(libc|libm|libpthread|libdl|librt|libresolv)\.so/ {print "--add-binary " $$3 ":tesseract"}') \
@@ -104,7 +105,7 @@ update-translations: ver ## Update and compile Qt translation files using PyQt t
 	pylupdate5 -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
 	pylupdate5 -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
 	pylupdate5 -verbose negar_gui/ui/Ui_hwin.py -ts negar_gui/ts/fa-uihwin.ts
-	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui negar_gui/ui/about.ui -ts negar_gui/ts/fa-uidialogs.ts
+	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui negar_gui/ui/about.ui negar_gui/ui/help.ui -ts negar_gui/ts/fa-uidialogs.ts
 	pylupdate5 -verbose negar_gui/main.py negar_gui/dialogs.py -ts negar_gui/ts/fa-main.ts
 	lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
 
@@ -123,6 +124,7 @@ compile-ui: ver ## Convert Qt UI files to Python scripts using PyQt6
 	pyuic6 negar_gui/ui/prompts.ui -xo negar_gui/ui/Ui_prompts.py
 	pyuic6 negar_gui/ui/usage.ui -xo negar_gui/ui/Ui_usage.py
 	pyuic6 negar_gui/ui/about.ui -xo negar_gui/ui/Ui_about.py
+	pyuic6 negar_gui/ui/help.ui -xo negar_gui/ui/Ui_help.py
 
 .PHONY: compile-resources-pyside2
 compile-resources-pyside2: ver ## Compile the Qt resource file using PySide2 tools
