@@ -73,8 +73,8 @@
     </message>
     <message>
         <location filename="../ocr.py" line="0"/>
-        <source>Persian + English</source>
-        <translation>فارسی + انگلیسی</translation>
+        <source>Persian</source>
+        <translation>فارسی</translation>
     </message>
     <message>
         <location filename="../ocr.py" line="0"/>
@@ -85,11 +85,6 @@
         <location filename="../ocr.py" line="0"/>
         <source>Deutsch</source>
         <translation>آلمانی</translation>
-    </message>
-    <message>
-        <location filename="../ocr.py" line="0"/>
-        <source>Persian + English + Deutsch</source>
-        <translation>فارسی + انگلیسی + آلمانی</translation>
     </message>
     <message>
         <location filename="../ocr.py" line="0"/>

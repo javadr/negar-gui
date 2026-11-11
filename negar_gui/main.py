@@ -132,12 +132,7 @@ if hasattr(qdarktheme, "setup_theme"):  # absent in some qdarktheme builds (main
     qdarktheme.setup_theme = _host_aware(qdarktheme.setup_theme)
 
 
-OCR_CHOICES = (
-    ("Persian + English", ["fas", "eng"]),
-    ("English", ["eng"]),
-    ("Deutsch", ["deu"]),
-    ("Persian + English + Deutsch", ["fas", "eng", "deu"]),
-)  # fewer languages are more accurate, so no all-in-one default
+OCR_CHOICES = (("Persian", "fas"), ("English", "eng"), ("Deutsch", "deu"))  # any combination; fewer is more accurate
 
 
 def _svg_icon(svg):
@@ -382,14 +377,14 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionScreen_Reader.triggered.connect(self.read_screen)
         self.actionClipboard_Reader.setIcon(_svg_icon(_SVG_CLIPBOARD))
         self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
-        self._ocr_group = QtGui.QActionGroup(self)
-        for _, langs in OCR_CHOICES:
+        self._ocr_actions = []
+        for _, code in OCR_CHOICES:
             a = self.menuOCR.addAction("")
             a.setCheckable(True)
-            a.setData(langs)
-            self._ocr_group.addAction(a)
-        self._ocr_group.actions()[0].setChecked(True)
-        self._ocr_group.triggered.connect(lambda a: self.settings["settings"].__setitem__("ocr-language", a.data()))
+            a.setData(code)
+            a.triggered.connect(self._ocr_toggled)
+            self._ocr_actions.append(a)
+        self._set_ocr_langs(["fas", "eng"])
         self.input_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.output_editor.setStyleSheet("border: 1px solid #d89e76;")
         self.setWindowIcon(QIcon(LOGO))
@@ -772,7 +767,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             return
         QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
-            text = ocr.read_text(image, self._ocr_group.checkedAction().data())
+            text = ocr.read_text(image, self._ocr_langs())
         except ocr.OCRError as e:
             return self._ocr_error(e)
         finally:
@@ -783,13 +778,27 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         else:
             statusbar_timeout(self, _translate("MainWindow", "No text found in the selected region!"))
 
+    def _ocr_langs(self):
+        return [a.data() for a in self._ocr_actions if a.isChecked()]
+
+    def _set_ocr_langs(self, langs):
+        for a in self._ocr_actions:
+            a.setChecked(a.data() in langs)
+        if not self._ocr_langs():  # a saved list from an older version, or empty: keep one language on
+            self._ocr_actions[1].setChecked(True)
+
+    def _ocr_toggled(self, checked):
+        if not self._ocr_langs():  # at least one language stays on
+            self.sender().setChecked(True)
+        self.settings["settings"]["ocr-language"] = self._ocr_langs()
+
     def _retranslate_ocr(self):
         self.actionScreen_Reader.setText(_translate("MainWindow", "&Read Text from Screen"))
         self.actionClipboard_Reader.setText(_translate("MainWindow", "Read Text from Clipboard &Image"))
         self.screen_btn.setToolTip(_translate("MainWindow", "Read text from screen Ctrl+Shift+O"))
         self.clipboard_btn.setToolTip(_translate("MainWindow", "Read text from clipboard image Ctrl+Alt+O"))
         self.menuOCR.setTitle(_translate("MainWindow", "&OCR"))
-        for a, (title, _) in zip(self._ocr_group.actions(), OCR_CHOICES):
+        for a, (title, _) in zip(self._ocr_actions, OCR_CHOICES):
             a.setText(_translate("MainWindow", title))
 
     def qrcode(self):
@@ -1027,8 +1036,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
             # fmt: on
             self.set_ui_language()
-            for a in self._ocr_group.actions():
-                a.setChecked(a.data() == self.settings["settings"].get("ocr-language", ["fas", "eng"]))
+            self._set_ocr_langs(self.settings["settings"].get("ocr-language", ["fas", "eng"]))
             # connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():
                 self.clipboard.dataChanged.connect(self.onClipboardChanged)
@@ -1069,7 +1077,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             },
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
-                "ocr-language": self._ocr_group.checkedAction().data(),
+                "ocr-language": self._ocr_langs(),
                 "persian-keyboard": self.actionPersian_Keyboard.isChecked(),
                 "language": self.settings.get("settings", {"language": "English"})["language"],
                 "editing-option": {
