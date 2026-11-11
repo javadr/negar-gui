@@ -91,7 +91,7 @@ TESSDATA ?= /usr/share/tessdata
 compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
 	@rm build/gui/ -rfv
 	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
-	--collect-data pyuca --noupx negar_gui/main.py -n negar-gui-v$(VER) \
+	--collect-data pyuca --collect-data qdarktheme --noupx negar_gui/main.py -n negar-gui-v$(VER) \
 	--add-data negar_gui/ts/fa.qm:ts \
 	--add-data ../python-negar/negar/data/untouchable.dat:negar/data \
 	--add-binary "$$(command -v tesseract):tesseract" \

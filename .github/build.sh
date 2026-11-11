@@ -15,7 +15,7 @@ for lang in fas eng deu; do
 done
 
 pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
-	--collect-data pyuca --noupx negar_gui/main.py -n "negar-gui-v$version" \
+	--collect-data pyuca --collect-data qdarktheme --noupx negar_gui/main.py -n "negar-gui-v$version" \
 	--add-data ./python-negar/negar/data/immutable.words:negar/data \
 	--add-data negar_gui/ts/fa.qm:ts \
 	--add-data negar_gui/icons:icons \

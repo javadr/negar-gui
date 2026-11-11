@@ -20,7 +20,7 @@ foreach ($lang in "fas", "eng", "deu") {
 $tessArgs = @("--add-binary", "$tessDir\tesseract.exe;tesseract", "--add-data", "$tessData;tesseract\tessdata")
 Get-ChildItem "$tessDir\*.dll" | ForEach-Object { $tessArgs += @("--add-binary", "$($_.FullName);tesseract") }
 
-& "python" -m PyInstaller -p negar_gui --onefile --windowed --clean --collect-data pyuca `
+& "python" -m PyInstaller -p negar_gui --onefile --windowed --clean --collect-data pyuca --collect-data qdarktheme `
     --noupx negar_gui/main.py -n "negar-gui-v$versionStr" `
     --add-data "./python-negar/negar/data/immutable.words;negar\data" `
     --add-data "negar_gui/ts/fa.qm;ts" `

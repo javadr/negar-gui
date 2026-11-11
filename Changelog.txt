@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.8] - 2026-11-11
+
+### Fixed
+- Windows and Linux executables had no dark theme: the original pyqtdarktheme is capped at Python <3.12 and pip fell back to a theme-less 0.1.7. Now depends on pyqtdarktheme-fork (same `qdarktheme` module, Python 3.8-3.14)
+- PyInstaller builds now bundle the qdarktheme data files (`--collect-data qdarktheme`)
+- Release workflows replace the original pyqtdarktheme pulled in by an older negar-gui; Dockerfile no longer needs its forced 2.1.0 install
+
 ## [1.4.7] - 2026-11-11
 
 ### Changed

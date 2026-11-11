@@ -24,7 +24,7 @@ dependencies = [
   "qrcode",
   "docopt",
   "Image",
-  "pyqtdarktheme",
+  "pyqtdarktheme-fork",  # same qdarktheme module; the original is capped at Python <3.12 and falls back to a theme-less 0.1.7
   "toml",
   "duckdb",
   "PyQt6-Charts",
