@@ -1,5 +1,112 @@
 # Changelog
 
+## [1.4.7] - 2026-11-11
+
+### Changed
+- Gemini is the default AI provider (the provider dialog opens when no key is set); providers are listed Gemini, OpenAI, Groq, OpenRouter, Pollinations
+- The AI menu is now called "Assistant" (دستیار)
+- Usage charts run oldest to newest from left to right with the y-axis on the left in both languages; the y-axis uses Persian digits in Persian mode
+
+## [1.4.6] - 2026-11-11
+
+### Changed
+- OCR has its own menu (screen reader, clipboard image reader, language); menu order is File, Edit, View, OCR, Assistant, Settings, Help
+- Assistant menu entries (Manage Prompts, AI Provider, Usage Report) are defined in the Qt Designer file
+
+## [1.4.5] - 2026-11-10
+
+### Added
+- Toolbar buttons for the screen reader and the clipboard image reader
+
+## [1.4.4] - 2026-11-10
+
+### Added
+- Tesseract (fas/eng/deu) is bundled in the Linux and Windows executables
+
+### Fixed
+- QtDBus is optional; stdin handling; Tesseract lookup on Windows and macOS
+
+## [1.4.3] - 2026-11-10
+
+### Changed
+- OCR menu group with icons below the QR code entry; the OCR language is saved and survives screen capture
+
+## [1.4.2] - 2026-11-10
+
+### Added
+- Read text from a clipboard image (Ctrl+Alt+O)
+
+## [1.4.1] - 2026-11-10
+
+### Added
+- Screen reader: select a screen region and read its text with Tesseract (fas/eng/deu); portal capture on Wayland
+- Persian menus for the screen reader
+
+## [1.3.3] - 2026-11-09
+
+### Fixed
+- Persian tooltips containing a Latin name no longer scramble (RLM and isolates)
+
+## [1.3.2] - 2026-11-09
+
+### Changed
+- Redesigned usage report: summary, charts, Table first
+
+### Fixed
+- Startup crash on small screens, qdarktheme binding to PyQt6, and missing typing_extensions on Python 3.12
+
+## [1.3.1] - 2026-11-08
+
+### Added
+- Usage report tabs: daily requests, provider, prompt and success-rate charts (PyQt6-Charts)
+
+## [1.3.0] - 2026-11-08
+
+### Changed
+- Qt Designer files and generated Ui_*.py moved into negar_gui/ui/
+
+## [1.2.4] - 2026-11-08
+
+### Changed
+- AI dialogs moved to Qt Designer .ui files and dialogs.py; added fa-uidialogs.ts
+
+## [1.2.3] - 2026-11-08
+
+### Added
+- AI requests are logged to usage.jsonl; per-provider usage tooltip and DuckDB usage report (English/Persian)
+
+## [1.2.2] - 2026-11-08
+
+### Fixed
+- Docker follows the host light/dark theme (GNOME/KDE), builds from local source and installs pyqtdarktheme 2.1.0; the version is pinned so rebuilds don't reuse a cached release
+
+## [1.2.1] - 2026-11-08
+
+### Added
+- Default prompts are shipped; "Restore defaults" in the prompt manager
+
+## [1.2.0] - 2026-11-08
+
+### Added
+- User-defined AI prompts with English/Persian names, a manager dialog with drag reorder, and a prompt selector next to the AI button
+
+## [1.1.0] - 2026-11-06
+
+### Added
+- Choose the AI provider (Gemini, Groq, OpenRouter, OpenAI) with your own API key, model override and a link to get a key; the dialog opens when a key is missing
+- Clear messages for rejected keys (401/403) and rate limits (402/429), without retrying them
+- Settings file is owner-only since it stores keys
+
+## [1.0.6] - 2026-11-06
+
+### Added
+- Switch the keyboard to Persian on startup and restore it on close (Windows, macOS, KDE Plasma, Sway, X11, GNOME via Shyriiwook); toggle in the Settings menu
+
+## [1.0.5] - 2026-11-06
+
+### Fixed
+- Consistent font resizing for both editors; zoom popup (pt and %) on Ctrl+wheel, slider and shortcuts; Ctrl++ works with the keypad; font slider stays LTR; input editor gets focus on startup
+
 ## [1.0.4] - 2026-10-31
 
 ### Fixed

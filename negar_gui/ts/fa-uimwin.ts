@@ -400,8 +400,8 @@
     </message>
     <message>
         <location filename="../Ui_mwin.py" line="559"/>
-        <source>&amp;AI</source>
-        <translation>&amp;هوش مصنوعی</translation>
+        <source>&amp;Assistant</source>
+        <translation>&amp;دستیار</translation>
     </message>
 </context>
 </TS>

@@ -539,7 +539,7 @@
    </widget>
     <widget class="QMenu" name="menuLLM">
      <property name="title">
-       <string>&amp;AI</string>
+       <string>&amp;Assistant</string>
      </property>
      <addaction name="separator"/>
      <addaction name="actionManage_Prompts"/>

@@ -1387,13 +1387,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         retry = True
         if status in (401, 403):
             retry = False
-            err = _translate("MainWindow", "{} rejected the API key. Check it in AI → AI Provider...").format(
+            err = _translate("MainWindow", "{} rejected the API key. Check it in Assistant → AI Provider...").format(
                 self._llm_provider_name
             )
         elif status in (402, 429):
             retry = False  # retrying a rate limit just burns the next free slot
             err = _translate(
-                "MainWindow", "{} limit reached. Wait a bit, or pick another provider in AI → AI Provider..."
+                "MainWindow", "{} limit reached. Wait a bit, or pick another provider in Assistant → AI Provider..."
             ).format(self._llm_provider_name)
         elif status and status != 200:
             err = f"HTTP {status}: {data[:200]}"

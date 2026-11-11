@@ -208,6 +208,9 @@ def _chart_view(widget, pal, series_list, axes=(), name="", description=""):
         for series in series_list:
             series.attachAxis(axis)
     view = QChartView(chart)
+    view.setLayoutDirection(
+        Qt.LayoutDirection.LeftToRight
+    )  # an RTL window would mirror the plot: oldest must stay left
     view.setRenderHint(QPainter.RenderHint.Antialiasing)
     view.setAccessibleName(name)
     view.setAccessibleDescription(description)
@@ -263,10 +266,10 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
         from PyQt6.QtCharts import (
             QBarCategoryAxis,
             QBarSet,
+            QCategoryAxis,
             QLineSeries,
             QPieSeries,
             QStackedBarSeries,
-            QValueAxis,
         )
 
         def digits(x):
@@ -275,14 +278,19 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
         def title(tab):
             return self.tabs.tabText(self.tabs.indexOf(tab))
 
+        def value_axis(top, step, suffix=""):  # labelled by hand: Qt's own number formatting can't use Persian digits
+            axis = QCategoryAxis()
+            axis.setLabelsPosition(QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue)
+            axis.setRange(0, top)
+            for v in range(0, top + 1, step):
+                axis.append(digits(f"{v}{suffix}"), v)
+            return axis
+
         pal = _palette(self)
-        rtl = _is_persian(window)
-        days = usage_log.daily()
-        if rtl:  # time runs in the reading direction: oldest on the right
-            days = days[::-1]
+        days = usage_log.daily()  # oldest first; the view is forced left-to-right below
         categories = [digits(d[5:]) for d, _, _ in days]  # MM-DD: the year does not fit the axis
         bottom = Qt.AlignmentFlag.AlignBottom
-        side = Qt.AlignmentFlag.AlignRight if rtl else Qt.AlignmentFlag.AlignLeft
+        side = Qt.AlignmentFlag.AlignLeft  # same layout in English and Persian
         day_tips = [
             _translate("MainWindow", "{}: {} succeeded, {} failed").format(digits(d), digits(o), digits(f))
             for d, o, f in days
@@ -304,10 +312,9 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
             bar_set.setPen(QPen(pal["bg"] if column == 1 else color, 1))
             bars.append(bar_set)
         bars.hovered.connect(lambda hovering, i, _set: _show_tip(hovering, day_tips[i]))
-        y = QValueAxis()
-        y.setLabelFormat("%d")
-        y.setRange(0, max(ok + failed for _, ok, failed in days))
-        y.applyNiceNumbers()
+        peak = max(ok + failed for _, ok, failed in days)
+        step = -(-peak // 5) or 1  # about five ticks
+        y = value_axis(step * -(-peak // step), step)
         x = QBarCategoryAxis()
         x.append(categories)
         x.setLabelsAngle(-90)  # vertical: horizontal MM-DD labels get elided
@@ -326,9 +333,7 @@ class UsageReportDialog(QDialog, Ui_UsageDialog):
         x = QBarCategoryAxis()
         x.append(categories)
         x.setLabelsAngle(-90)  # vertical: horizontal MM-DD labels get elided
-        y = QValueAxis()
-        y.setRange(0, 100)
-        y.setLabelFormat("%d%%")
+        y = value_axis(100, 25, "%")
         self.rate_layout.addWidget(
             _chart_view(self, pal, [line], [(x, bottom), (y, side)], title(self.tab_rate), "; ".join(rate_tips))
         )

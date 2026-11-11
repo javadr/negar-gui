@@ -48,13 +48,13 @@
     </message>
     <message>
         <location filename="../main.py" line="0"/>
-        <source>{} rejected the API key. Check it in AI → AI Provider...</source>
-        <translation>{} کلید API را نپذیرفت. آن را در هوش مصنوعی ← ارائه‌دهنده هوش مصنوعی... بررسی کنید.</translation>
+        <source>{} rejected the API key. Check it in Assistant → AI Provider...</source>
+        <translation>{} کلید API را نپذیرفت. آن را در دستیار ← ارائه‌دهنده هوش مصنوعی... بررسی کنید.</translation>
     </message>
     <message>
         <location filename="../main.py" line="0"/>
-        <source>{} limit reached. Wait a bit, or pick another provider in AI → AI Provider...</source>
-        <translation>سقف استفاده از {} پر شد. کمی صبر کنید یا در هوش مصنوعی ← ارائه‌دهنده هوش مصنوعی... ارائه‌دهنده دیگری انتخاب کنید.</translation>
+        <source>{} limit reached. Wait a bit, or pick another provider in Assistant → AI Provider...</source>
+        <translation>سقف استفاده از {} پر شد. کمی صبر کنید یا در دستیار ← ارائه‌دهنده هوش مصنوعی... ارائه‌دهنده دیگری انتخاب کنید.</translation>
     </message>
     <message>
         <location filename="../main.py" line="0"/>

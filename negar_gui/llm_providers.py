@@ -9,17 +9,17 @@ POLLINATIONS_URL = "https://text.pollinations.ai/openai"
 
 # All of these speak the OpenAI chat-completions format; only URL, model and key differ.
 PROVIDERS = {
-    "pollinations": {
-        "name": "Pollinations (no key, rate-limited)",
-        "url": POLLINATIONS_URL,
-        "model": "openai",
-        "key_url": "",
-    },
     "gemini": {
         "name": "Google Gemini (free key)",
         "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
         "model": "gemini-3.5-flash-lite",
         "key_url": "https://aistudio.google.com/apikey",
+    },
+    "openai": {
+        "name": "OpenAI (paid key)",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "model": "gpt-6-luna",
+        "key_url": "https://platform.openai.com/api-keys",
     },
     "groq": {
         "name": "Groq (free key)",
@@ -33,14 +33,14 @@ PROVIDERS = {
         "model": "openrouter/free",
         "key_url": "https://openrouter.ai/settings/keys",
     },
-    "openai": {
-        "name": "OpenAI (paid key)",
-        "url": "https://api.openai.com/v1/chat/completions",
-        "model": "gpt-6-luna",
-        "key_url": "https://platform.openai.com/api-keys",
+    "pollinations": {
+        "name": "Pollinations (no key, rate-limited)",
+        "url": POLLINATIONS_URL,
+        "model": "openai",
+        "key_url": "",
     },
 }
-DEFAULT_PROVIDER = "pollinations"
+DEFAULT_PROVIDER = "gemini"
 
 PROMPTS = {
     "fix_grammar": {

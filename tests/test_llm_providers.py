@@ -27,7 +27,7 @@ class TestFixTextEdgeCases:
         assert result == "hello"
 
     def test_no_prompt_key(self):
-        assert llm_providers.fix_text("hello") is not None
+        assert llm_providers.fix_text("hello", provider="pollinations") is not None
 
 
 class TestFixTextApiSuccess:
@@ -45,7 +45,7 @@ class TestFixTextApiSuccess:
         fake.json.return_value = {"choices": [{"message": {"content": "ok"}}]}
         post_spy = mocker.patch.object(llm_providers.requests, "post", return_value=fake)
 
-        llm_providers.fix_text("hello world")
+        llm_providers.fix_text("hello world", provider="pollinations")
 
         post_spy.assert_called_once()
         _, kwargs = post_spy.call_args
@@ -85,7 +85,7 @@ class TestProviders:
 
     def test_unknown_provider_falls_back_to_default(self):
         url, _, _ = llm_providers.build_request("hi", provider="gone")
-        assert url == llm_providers.POLLINATIONS_URL
+        assert url == llm_providers.PROVIDERS[llm_providers.DEFAULT_PROVIDER]["url"]
 
 
 class TestParseReply:
@@ -121,7 +121,7 @@ class TestFixTextErrors:
 class TestIntegration:
     def test_real_api_call(self):
         try:
-            result = llm_providers.fix_text("This has a speling error")
+            result = llm_providers.fix_text("This has a speling error", provider="pollinations")
             assert isinstance(result, str) and len(result) > 0
         except RuntimeError as e:
             if "502" in str(e) or "429" in str(e):
@@ -130,7 +130,7 @@ class TestIntegration:
 
     def test_real_api_persian(self):
         try:
-            result = llm_providers.fix_text("سلام. چطوری؟")
+            result = llm_providers.fix_text("سلام. چطوری؟", provider="pollinations")
             assert isinstance(result, str) and len(result) > 0
         except RuntimeError as e:
             if "502" in str(e) or "429" in str(e):
