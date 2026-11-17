@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.14] - 2026-11-17
+
+### Changed
+- QR Code window now follows the active theme (light/dark colors)
+
 ## [1.4.13] - 2026-11-12
 
 ### Fixed

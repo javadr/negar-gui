@@ -46,7 +46,7 @@ from PyQt6.QtCore import (
     QUrl,
 )
 from PyQt6 import QtGui
-from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPixmap
+from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPalette, QPixmap
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
     QApplication,
@@ -874,7 +874,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         # qr.add_data(self.output_editor.toPlainText())
         qr.add_data(qr_text)
         qr.make(fit=True)
-        img = qr.make_image()
+        # Follow the active theme; dark theme gives light-on-dark modules (scanners that can't read inverted codes need the light theme).
+        pal = self.palette()
+        img = qr.make_image(
+            fill_color=pal.color(QPalette.ColorRole.WindowText).name(),
+            back_color=pal.color(QPalette.ColorRole.Window).name(),
+        )
         temp_path = Path(tempfile.gettempdir())
         img.save(temp_path / "negar-gui_qrcode.png")
         pixmap = QPixmap(f"{(temp_path / 'negar-gui_qrcode.png').absolute()}")
