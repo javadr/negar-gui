@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.3] - 2026-11-20
+
+### Changed
+- Menu shortcuts are shown with Persian key names in Persian mode (کنترل+شیفت+R instead of Ctrl+Shift+R). The names live in `negar_gui/ts/fa-shortcuts.ts`, apart from `fa-main.ts`, so `make update-translations` keeps them.
+
 ## [1.5.2] - 2026-11-20
 
 ### Added
