@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0] - 2026-11-20
+
+### Added
+- Read Aloud: offline Persian text-to-speech on the CPU with Cilla Mini (mehdi-hf/cilla-mini, CC BY-NC 4.0). Use the new Speech menu, the toolbar speaker button or Ctrl+Shift+R; it reads the selection or the whole text, highlights the sentence being read, and stops when pressed again.
+- The voice model loads in the background when Negar starts, so Read Aloud starts speaking almost at once. First use downloads the ~112 MB model with a progress bar.
+- README section "Read aloud" with the setup steps.
+
+### Notes
+- Optional and pip-only: `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"`. The standalone executable does not include it and says so.
+- The model is gated: accept its terms on Hugging Face and run `hf auth login` once.
+- The engine runs in a separate process, so a crash in it cannot take Negar down.
+
 ## [1.4.14] - 2026-11-17
 
 ### Changed

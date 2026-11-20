@@ -331,5 +331,45 @@
         <source>No AI requests yet. Press the AI button to get started.</source>
         <translation>هنوز درخواستی ثبت نشده است. برای شروع، دکمه هوش مصنوعی را فشار دهید.</translation>
     </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>&amp;Speech</source>
+        <translation>&amp;گفتار</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Read &amp;Aloud</source>
+        <translation>&amp;خواندن با صدا</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Stop &amp;Reading</source>
+        <translation>توقف &amp;خواندن</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>There is no text to read!</source>
+        <translation>متنی برای خواندن وجود ندارد!</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Preparing the voice model...</source>
+        <translation>در حال آماده‌سازی مدل صدا...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Loading the voice model...</source>
+        <translation>در حال بارگذاری مدل صدا...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Downloading the voice model (one time only)...</source>
+        <translation>در حال دانلود مدل صدا (فقط یک بار)...</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Read the text aloud (press again to stop) Ctrl+Shift+R</source>
+        <translation>خواندن متن با صدا (برای توقف دوباره فشار دهید) Ctrl+Shift+R</translation>
+    </message>
 </context>
 </TS>

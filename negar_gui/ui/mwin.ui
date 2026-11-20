@@ -582,6 +582,12 @@
     <addaction name="actionClipboard_Reader"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuSpeech">
+    <property name="title">
+     <string>&amp;Speech</string>
+    </property>
+    <addaction name="actionRead_Aloud"/>
+   </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
      <string>&amp;View</string>
@@ -609,6 +615,7 @@
    <addaction name="menuEdit"/>
    <addaction name="menu_View"/>
    <addaction name="menuOCR"/>
+   <addaction name="menuSpeech"/>
    <addaction name="menuLLM"/>
    <addaction name="menuSetting"/>
     <addaction name="menuHelp"/>
@@ -1049,6 +1056,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+O</string>
+   </property>
+  </action>
+  <action name="actionRead_Aloud">
+   <property name="text">
+    <string>Read &amp;Aloud</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
    </property>
   </action>
   <action name="actionManage_Prompts">

@@ -88,6 +88,17 @@ If a Persian keyboard layout is installed, Negar switches to it when it starts a
 
 The standalone executable includes Tesseract with English, Persian and German data. With a pip install you need your own: `pacman -S tesseract tesseract-data-fas tesseract-data-eng tesseract-data-deu`, or `apt install tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu`. On Wayland the screenshot is taken through the desktop's screenshot portal (GNOME and KDE have it; on other compositors install `xdg-desktop-portal-wlr`).
 
+### Read aloud
+*Speech → Read Aloud* (Ctrl+Shift+R, or the speaker button in the toolbar) reads the selection, or the whole text, in Persian with the offline [Cilla Mini](https://huggingface.co/mehdi-hf/cilla-mini) voice. It runs on the CPU, nothing is sent to a cloud, and the sentence being read is highlighted. Press it again to stop.
+
+It is optional and **only available with a pip install** (not in the standalone executable, which would grow by several hundred MB). Set it up once:
+
+1. `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"` (Python 3.10+).
+2. The voice model is gated: open [its page](https://huggingface.co/mehdi-hf/cilla-mini) and accept the terms, create a *Read* token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens), then run `hf auth login --token <your token>`.
+3. Press Read Aloud. The model (about 112 MB) downloads once, with a progress bar.
+
+The model is licensed CC BY-NC 4.0, so it is for non-commercial use only. It loads in the background when Negar starts and uses about 1 GB of RAM while the app is open. Only Persian letters are read: write English words and numbers in Persian.
+
 ### AI grammar fix
 The AI button sends the input text (typed, pasted or read by the screen reader) to a language model and shows the model's answer in the output pane. Choose or edit the instruction in *Assistant → Manage Prompts...*, and see requests and success rate per provider and prompt in *Assistant → Usage Report...*.
 

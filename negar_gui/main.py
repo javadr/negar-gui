@@ -20,9 +20,10 @@ import os
 import platform
 import re
 import sys
+import shutil
 import tempfile
 from pathlib import Path
-from threading import Thread
+from threading import Event, Thread
 
 
 # Third-party library import
@@ -40,13 +41,14 @@ from PyQt6.QtCore import (
     QCoreApplication,
     QPoint,
     QSize,
+    pyqtSignal,
     Qt,
     QTimer,
     QTranslator,
     QUrl,
 )
 from PyQt6 import QtGui
-from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPalette, QPixmap
+from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPalette, QPixmap, QTextCursor
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
     QApplication,
@@ -60,15 +62,17 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QMenu,
     QMessageBox,
+    QProgressDialog,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
+    QTextEdit,
 )
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
-from negar_gui import keyboard_layout, llm_providers, ocr, usage_log
+from negar_gui import keyboard_layout, llm_providers, ocr, tts, usage_log
 
 # Local application imports
 # The following is neccessary for ICONs
@@ -149,6 +153,8 @@ _SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="
 _SVG_SCREEN = _SVG.format(
     '<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M8 9h8M8 12h8M8 15h5"/>'
 )
+# speaker with sound waves
+_SVG_SPEAK = _SVG.format('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>')
 # clipboard holding a picture
 _SVG_CLIPBOARD = _SVG.format(
     '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M8 18l3-4 2 2.5 1.5-2L17 18z"/><circle cx="14.5" cy="10.5" r="1"/>'
@@ -396,6 +402,10 @@ class PromptCombo(QComboBox):
 
 
 class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
+    tts_chunk = pyqtSignal(int, str, int)  # (generation, wav path, sentence number), from the synthesis thread
+    tts_progress = pyqtSignal(int, int)  # (generation, percent downloaded; -1 while loading the models)
+    tts_done = pyqtSignal(int, str)  # (generation, error text or "")
+
     @init_decorator
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -414,6 +424,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionScreen_Reader.triggered.connect(self.read_screen)
         self.actionClipboard_Reader.setIcon(_svg_icon(_SVG_CLIPBOARD))
         self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
+        self.actionRead_Aloud.setIcon(_svg_icon(_SVG_SPEAK))
+        self.actionRead_Aloud.triggered.connect(self.read_aloud)
+        self.tts_chunk.connect(self._tts_on_chunk)
+        self.tts_progress.connect(self._tts_on_progress)
+        self.tts_done.connect(self._tts_on_done)
+        self._tts_gen, self._tts_stop, self._tts_queue, self._tts_dir, self._tts_player = 0, None, [], None, None
+        self._tts_dlg, self._tts_busy, self._tts_ed, self._tts_spans = None, False, None, []
+        self._tts_set_text(False)
+        tts.preload()  # the model loads while the user starts typing
         self._ocr_actions = []
         for _, code in OCR_CHOICES:
             a = self.menuOCR.addAction("")
@@ -593,14 +612,16 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.prompt_combo.setStyleSheet(PROMPT_COMBO_QSS)
         # OCR buttons go right after the QR button: shift the view, AI and prompt widgets to the right
         self.screen_btn, self.clipboard_btn = QPushButton(parent=self.frame_2), QPushButton(parent=self.frame_2)
+        self.speak_btn = QPushButton(parent=self.frame_2)
         for col, btn, action in (
             (4, self.screen_btn, self.actionScreen_Reader),
             (5, self.clipboard_btn, self.actionClipboard_Reader),
+            (6, self.speak_btn, self.actionRead_Aloud),
         ):
             btn.setIcon(action.icon())
             btn.clicked.connect(action.trigger)
             self.gridLayout_4.addWidget(btn, 0, col, 1, 1)
-        for col, w in enumerate((self.vertical_btn, self.horizontal_btn, self.llm_btn, self.prompt_combo), 6):
+        for col, w in enumerate((self.vertical_btn, self.horizontal_btn, self.llm_btn, self.prompt_combo), 7):
             self.gridLayout_4.addWidget(w, 0, col, 1, 1)
         self._retranslate_ocr()
         self.prompt_combo.activated.connect(lambda i: self._set_llm_prompt(self.prompt_combo.itemData(i)))
@@ -786,6 +807,152 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.output_lbl_comp_chk_layout.setParent(None)
         self.gridLayout.addWidget(self.input_editor, 1, 0, 1, 2)
 
+    def _tts_set_text(self, speaking):
+        self.actionRead_Aloud.setText(
+            _translate("MainWindow", "Stop &Reading") if speaking else _translate("MainWindow", "Read &Aloud")
+        )
+
+    def read_aloud(self):
+        if self._tts_stop:  # second press stops
+            return self._tts_halt()
+        ed = self.focusWidget() if self.focusWidget() in (self.input_editor, self.output_editor) else self.output_editor
+        text = ed.textCursor().selectedText().replace("\u2029", "\n")
+        base = ed.textCursor().selectionStart()  # where the text sits in the editor, for the highlight
+        if not text.strip():
+            text = self.cleaned_text if ed is self.output_editor and self.cleaned_text else ed.toPlainText()
+            base = 0 if text == ed.toPlainText() else None  # the output editor can show more than it reads
+        if not text.strip():
+            return statusbar_timeout(self, _translate("MainWindow", "There is no text to read!"))
+        if not tts.available():
+            return QMessageBox.information(self, "Negar", tts.INSTALL_HINT)
+        try:
+            from PyQt6.QtMultimedia import QAudioOutput, QMediaPlayer
+        except ImportError:
+            return QMessageBox.warning(self, "Negar", "QtMultimedia is not available.")
+        if self._tts_player is None:
+            self._tts_player = QMediaPlayer(self)
+            self._tts_player.setAudioOutput(QAudioOutput(self))
+            self._tts_player.mediaStatusChanged.connect(
+                lambda st: st == QMediaPlayer.MediaStatus.EndOfMedia and self._tts_next()
+            )
+        self._tts_gen += 1
+        self._tts_stop, self._tts_dir, self._tts_finished = Event(), tempfile.mkdtemp(prefix="negar-tts-"), False
+        self._tts_busy = False
+        self._tts_set_text(True)
+        self._tts_ed, self._tts_spans = (
+            ed,
+            [(base + a, base + b) for a, b in tts.segments(text)] if base is not None else [],
+        )
+        self._tts_dlg = dlg = QProgressDialog(
+            _translate("MainWindow", "Preparing the voice model..."), _translate("MainWindow", "Cancel"), 0, 0, self
+        )
+        dlg.setWindowTitle("Negar")
+        dlg.setWindowModality(Qt.WindowModality.NonModal)  # the window stays usable meanwhile
+        dlg.setAutoClose(False)
+        dlg.setAutoReset(False)
+        dlg.setMinimumDuration(0)
+        dlg.canceled.connect(self._tts_halt)
+        dlg.show()
+        Thread(target=self._tts_worker, args=(self._tts_gen, text, self._tts_stop, self._tts_dir), daemon=True).start()
+
+    def _tts_worker(self, gen, text, stop, folder):
+        def progress(done, total):
+            self.tts_progress.emit(gen, done * 100 // total if total else -1)
+
+        try:
+            for path, seg in tts.synthesize(text, stop, progress, folder):
+                self.tts_chunk.emit(gen, path, seg)
+            self.tts_done.emit(gen, "")
+        except RuntimeError as e:
+            if "has been deleted" not in str(e):  # window closed while speaking: nothing left to tell
+                self.tts_done.emit(gen, str(e) if isinstance(e, tts.TTSError) else f"Text-to-speech failed: {e}")
+        except Exception as e:  # anything else must not die silently in the thread
+            self.tts_done.emit(gen, f"Text-to-speech failed: {e}")
+
+    def _tts_on_progress(self, gen, percent):
+        if gen != self._tts_gen or not self._tts_dlg:
+            return
+        dlg, phase = self._tts_dlg, percent < 0
+        if getattr(dlg, "_loading", None) != phase:  # relayout only when the phase changes, not per percent
+            dlg._loading = phase
+            dlg.setLabelText(
+                _translate("MainWindow", "Loading the voice model...")
+                if phase
+                else _translate("MainWindow", "Downloading the voice model (one time only)...")
+            )
+            dlg.setRange(0, 0 if phase else 100)
+        if not phase:
+            dlg.setValue(percent)
+
+    def _tts_close_dialog(self):
+        if self._tts_dlg:
+            self._tts_dlg.canceled.disconnect(self._tts_halt)  # hiding must not count as cancelling
+            self._tts_dlg.close()
+            self._tts_dlg.deleteLater()
+            self._tts_dlg = None
+
+    def _tts_highlight(self, seg):
+        ed = self._tts_ed
+        if ed is None:
+            return
+        if seg is None or seg >= len(self._tts_spans):
+            return ed.setExtraSelections([])
+        cur = QTextCursor(ed.document())
+        cur.setPosition(self._tts_spans[seg][0])
+        cur.setPosition(self._tts_spans[seg][1], QTextCursor.MoveMode.KeepAnchor)
+        sel = QTextEdit.ExtraSelection()
+        sel.cursor = cur
+        sel.format.setBackground(QColor(216, 158, 118, 110))  # the app's accent colour
+        ed.setExtraSelections([sel])
+        keep = ed.textCursor()  # scroll to the sentence without touching the user's selection
+        ed.setTextCursor(cur)
+        ed.ensureCursorVisible()
+        ed.setTextCursor(keep)
+
+    def _tts_on_chunk(self, gen, path, seg):
+        if gen != self._tts_gen:
+            return
+        self._tts_close_dialog()
+        self._tts_queue.append((path, seg))
+        if not self._tts_busy:  # the player's own state lags behind play(), and chunks now arrive within milliseconds
+            self._tts_next()
+
+    def _tts_on_done(self, gen, error):
+        if gen != self._tts_gen:
+            return
+        self._tts_finished = True
+        if error:
+            self._tts_halt()
+            QMessageBox.warning(self, "Negar", error)
+        elif not self._tts_busy and not self._tts_queue:
+            self._tts_halt()
+
+    def _tts_next(self):
+        self._tts_busy = bool(self._tts_queue)
+        if self._tts_queue:
+            path, seg = self._tts_queue.pop(0)
+            self._tts_highlight(seg)
+            self._tts_player.setSource(QUrl.fromLocalFile(path))
+            self._tts_player.play()
+        elif self._tts_finished:
+            self._tts_halt()
+
+    def _tts_halt(self):
+        if self._tts_stop:
+            self._tts_stop.set()
+        self._tts_gen += 1  # drops anything the worker still emits
+        self._tts_stop, self._tts_queue, self._tts_busy = None, [], False
+        self._tts_close_dialog()
+        self._tts_highlight(None)
+        if self._tts_player:
+            self._tts_player.stop()
+            self._tts_player.setSource(QUrl())
+        if self._tts_dir:
+            shutil.rmtree(self._tts_dir, ignore_errors=True)
+            self._tts_dir = None
+        self._tts_set_text(False)
+        self._statusBar()
+
     def read_screen(self):
         self._ocr_hidden = True
         self.hide()  # keep Negar out of the screenshot
@@ -845,6 +1012,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionClipboard_Reader.setText(_translate("MainWindow", "Read Text from Clipboard &Image"))
         self.screen_btn.setToolTip(_translate("MainWindow", "Read text from screen Ctrl+Shift+O"))
         self.clipboard_btn.setToolTip(_translate("MainWindow", "Read text from clipboard image Ctrl+Alt+O"))
+        self.speak_btn.setToolTip(_translate("MainWindow", "Read the text aloud (press again to stop) Ctrl+Shift+R"))
         self.menuOCR.setTitle(_translate("MainWindow", "&OCR"))
         for a, (title, _) in zip(self._ocr_actions, OCR_CHOICES):
             a.setText(_translate("MainWindow", title))
@@ -1048,6 +1216,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         super().changeEvent(event)
 
     def closeEvent(self, event):
+        self._tts_halt()
+        tts.shutdown()
         self.__save_settings()
         self._persian_keyboard(False)
         WindowSettings.closeEvent(self, event)
