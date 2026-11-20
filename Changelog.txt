@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.2] - 2026-11-20
+
+### Added
+- `negar-gui -v` now prints a logo with a coloured shadow, an Environment table (Negar-GUI, Negar, Python, Qt, platform) and a Packages table with the required and installed version of every dependency (plus the optional Read Aloud packages), using rich.
+
+### Changed
+- Requires `python-negar>=1.4.15` and `rich`.
+
 ## [1.5.1] - 2026-11-20
 
 ### Fixed

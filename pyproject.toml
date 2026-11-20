@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["Spellcheck", "Persian", "Text-Editor"]
 dependencies = [
-  "python-negar>=1.4.3",
+  "python-negar>=1.4.15",
   "PyQt6",
   "pyperclip",
   "pyuca",
@@ -28,7 +28,8 @@ dependencies = [
   "toml",
   "duckdb",
   "PyQt6-Charts",
-  "typing_extensions"
+  "typing_extensions",
+  "rich"
 ]
 
 [project.urls]

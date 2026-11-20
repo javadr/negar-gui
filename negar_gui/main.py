@@ -9,7 +9,7 @@ Usage:
 
 Options:
     -h, --help          Show this screen.
-    -v, --version       Show version and exit
+    -v, --version       Show the version of Negar-GUI and of every package it needs, then exit
 """
 
 # Standard library imports
@@ -1673,7 +1673,9 @@ def statusbar_timeout(self, notification, timeout=5000):
 def main(args=docopt(__doc__)):
     """Program entry point."""
     if args["--version"]:
-        print(f"negar-gui, Version {__version__}")  # noqa
+        from negar_gui import versions
+
+        versions.show()
         sys.exit()
 
     global MAIN_WINDOW
