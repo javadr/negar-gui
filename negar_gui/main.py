@@ -1144,7 +1144,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.statusBar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-            self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+            self._status_label.setAlignment(
+                Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter
+            )  # Qt flips left/right itself in RTL
             self.menubar.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             for menu in self.menubar.findChildren(QMenu):
                 menu.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
@@ -1155,7 +1157,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             self.centralwidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             self.autoedit_chkbox.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
             self.statusBar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-            self._status_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            self._status_label.setAlignment(Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignVCenter)
             self.menubar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
             for menu in self.menubar.findChildren(QMenu):
                 menu.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
