@@ -5,15 +5,22 @@ from datetime import datetime
 from PyQt6.QtCore import QCoreApplication, QPoint, QSize, Qt
 from PyQt6.QtGui import QBrush, QColor, QCursor, QFont, QKeySequence, QPainter, QPen, QShortcut
 from PyQt6.QtWidgets import (
+    QCheckBox,
     QDialog,
     QDialogButtonBox,
+    QHBoxLayout,
     QHeaderView,
+    QLabel,
+    QLayout,
+    QListWidget,
     QListWidgetItem,
     QMessageBox,
+    QPushButton,
     QStyledItemDelegate,
     QStyleOptionViewItem,
     QTableWidgetItem,
     QToolTip,
+    QVBoxLayout,
 )
 
 from negar_gui import llm_providers, usage_log
@@ -434,23 +441,19 @@ class PromptsDialog(QDialog, Ui_PromptsDialog):
             self._refresh()
 
     def _restore_defaults(self):
-        box = QMessageBox(
-            QMessageBox.Icon.Question,
-            self.windowTitle(),
-            _translate(
-                "MainWindow",
-                "Restore the prompts that come with Negar? Missing ones are added back and edited ones return to "
-                "their original text. Your own prompts are kept.",
-            ),
-            parent=self,
-        )
-        yes = box.addButton(_translate("MainWindow", "Restore"), QMessageBox.ButtonRole.AcceptRole)
-        box.addButton(_translate("MainWindow", "Cancel"), QMessageBox.ButtonRole.RejectRole)
-        box.exec()
-        if box.clickedButton() is not yes:
+        win = self.parent()
+        fresh = set(win.settings.get("llm", {}).get("new_prompts", []))
+        dlg = RestoreDialog(self, self.prompts, fresh)
+        if dlg.exec() != QDialog.DialogCode.Accepted:
             return
+        llm = win.settings.get("llm", {})
+        if "new_prompts" in llm:  # fetched ones need no more announcing; drop the notice once none are left
+            got = {d["name"] for d in dlg.chosen()}
+            llm["new_prompts"] = [n for n in llm["new_prompts"] if n not in got]
+            if not llm["new_prompts"]:
+                del llm["new_prompts"]
         by_name = {p["name"]: i for i, p in enumerate(self.prompts)}
-        for default in llm_providers.DEFAULT_USER_PROMPTS:
+        for default in dlg.chosen():
             if default["name"] in by_name:
                 self.prompts[by_name[default["name"]]] = dict(default)
             else:
@@ -462,3 +465,92 @@ class PromptsDialog(QDialog, Ui_PromptsDialog):
         if i >= 0:
             del self.prompts[i]
             self._refresh()
+
+
+class RestoreDialog(QDialog):
+    """Pick which ready-made prompts to (re)install; new/missing ones start ticked, existing ones don't."""
+
+    def __init__(self, parent, prompts, fresh):
+        super().__init__(parent)
+        self.setWindowTitle(_translate("MainWindow", "Restore default prompts"))
+        have = {p["name"] for p in prompts}
+        self.defaults = llm_providers.DEFAULT_USER_PROMPTS
+        self.list = QListWidget()
+        for d in self.defaults:
+            item = QListWidgetItem(parent.parent().prompt_title(d))
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            is_new = d["name"] in fresh or d["name"] not in have
+            item.setCheckState(Qt.CheckState.Checked if is_new else Qt.CheckState.Unchecked)
+            self.list.addItem(item)
+        note = QLabel(
+            _translate(
+                "MainWindow",
+                "Tick the prompts to install. Ticking one you already have resets it to its original text, "
+                "so your own edits to it are lost. Unticked prompts are left alone.",
+            )
+        )
+        note.setWordWrap(True)
+        all_btn = QPushButton(_translate("MainWindow", "Select all"))
+        none_btn = QPushButton(_translate("MainWindow", "Deselect all"))
+        all_btn.clicked.connect(lambda: self._set_all(Qt.CheckState.Checked))
+        none_btn.clicked.connect(lambda: self._set_all(Qt.CheckState.Unchecked))
+        box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        setup_buttons(self, box)
+        row = QHBoxLayout()
+        row.addWidget(all_btn)
+        row.addWidget(none_btn)
+        row.addStretch()
+        row.addWidget(box)
+        lay = QVBoxLayout(self)
+        lay.addWidget(note)
+        lay.addWidget(self.list)
+        lay.addLayout(row)
+        self.resize(480, 460)
+
+    def _set_all(self, state):
+        for i in range(self.list.count()):
+            self.list.item(i).setCheckState(state)
+
+    def chosen(self):
+        return [d for i, d in enumerate(self.defaults) if self.list.item(i).checkState() == Qt.CheckState.Checked]
+
+
+class NewPromptsDialog(QDialog):
+    """One-time notice of added prompts; `show_again` says whether to keep showing it."""
+
+    def __init__(self, parent, names):
+        super().__init__(parent)
+        self.setWindowTitle("Negar")
+        text = (
+            _translate("MainWindow", "New ready-made prompts were added:")
+            + "\n\n"
+            + names
+            + "\n\n"
+            + _translate(
+                "MainWindow",
+                "To get the latest versions of the other ready-made prompts, open the prompt manager and press "
+                "Restore defaults, then choose which ones to restore.",
+            )
+        )
+        label = QLabel(text)
+        label.setWordWrap(True)
+        self.show_again = QCheckBox(_translate("MainWindow", "Show this message next time"))
+        self.show_again.setChecked(True)
+        box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        box.button(QDialogButtonBox.StandardButton.Ok).setText(_translate("MainWindow", "OK"))
+        box.accepted.connect(self.accept)
+        self.ok = box.button(QDialogButtonBox.StandardButton.Ok)
+        self.ok.setDefault(True)
+        label.setFixedWidth(420)  # the long hint wraps at this width instead of widening the window
+        row = QHBoxLayout()
+        row.addWidget(self.show_again)
+        row.addStretch()
+        row.addWidget(box)
+        lay = QVBoxLayout(self)
+        lay.addWidget(label)
+        lay.addLayout(row)
+        lay.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)  # height follows the wrapped text
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.ok.setFocus()  # after show, or the checkbox takes the focus first

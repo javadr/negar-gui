@@ -19,12 +19,11 @@ import logging
 import os
 import platform
 import re
-import sys
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 from threading import Event, Thread
-
 
 # Third-party library import
 import PyQt6.QtCore  # noqa: F401  # first, so qdarktheme binds to PyQt6 and not to an installed PySide6
@@ -32,22 +31,24 @@ import qdarktheme
 import requests
 import toml
 from docopt import docopt
-
+from negar.constants import INFO
+from negar.constants import __version__ as negar__version
+from negar.virastar import ImmutableWords, PersianEditor
 from pyperclip import copy as pyclipcopy
+from PyQt6 import QtGui
 from PyQt6.QtCore import (
-    QEvent,
     QAbstractTableModel,
     QByteArray,
     QCoreApplication,
+    QEvent,
     QPoint,
     QSize,
-    pyqtSignal,
     Qt,
     QTimer,
     QTranslator,
     QUrl,
+    pyqtSignal,
 )
-from PyQt6 import QtGui
 from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPalette, QPixmap, QTextCursor
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
@@ -72,21 +73,24 @@ from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
-from negar_gui import keyboard_layout, llm_providers, ocr, tts, usage_log
-
 # Local application imports
 # The following is neccessary for ICONs
 import negar_gui.resource_rc  # noqa: F401
-from negar.constants import INFO, __version__ as negar__version
-from negar.virastar import ImmutableWords, PersianEditor
+from negar_gui import keyboard_layout, llm_providers, ocr, tts, usage_log
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
-from negar_gui.dialogs import LLMProviderDialog, PromptsDialog, UsageReportDialog, bidi_text, localize_digits
+from negar_gui.dialogs import (
+    LLMProviderDialog,
+    NewPromptsDialog,
+    PromptsDialog,
+    UsageReportDialog,
+    bidi_text,
+    localize_digits,
+)
 from negar_gui.ui.Ui_about import Ui_AboutDialog
 from negar_gui.ui.Ui_help import Ui_HelpDialog
 from negar_gui.ui.Ui_hwin import Ui_Dialog
 from negar_gui.ui.Ui_mwin import Ui_MainWindow
 from negar_gui.ui.Ui_uwin import Ui_uwWindow
-
 
 _translate = QCoreApplication.translate
 if getattr(sys, "frozen", False):
@@ -1539,13 +1543,30 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
 
     def _llm_settings(self):
         llm = self.settings.setdefault("llm", {"provider": llm_providers.DEFAULT_PROVIDER})
-        if not llm.get("seeded"):  # one-time: built-in prompts become ordinary, editable ones
-            have = {p["name"] for p in llm.get("prompts", [])}
-            llm["prompts"] = [p for p in llm_providers.DEFAULT_USER_PROMPTS if p["name"] not in have] + llm.get(
-                "prompts", []
-            )
+        defaults = llm_providers.DEFAULT_USER_PROMPTS
+        # shortcut: old settings only have the bool, so the 14 defaults of v1.5.5 count as already seeded
+        seen = set(llm.get("seeded_prompts") or ([p["name"] for p in defaults[:14]] if llm.get("seeded") else []))
+        have = {p["name"] for p in llm.get("prompts", [])}
+        new = [p for p in defaults if p["name"] not in seen]  # new defaults are added once, so deleting one sticks
+        if new:
+            llm["prompts"] = [p for p in new if p["name"] not in have] + llm.get("prompts", [])
+            llm["seeded_prompts"] = [p["name"] for p in defaults]
             llm["seeded"] = True
+            if len(seen):  # an existing user: tell them what arrived
+                llm["new_prompts"] = [p["name"] for p in new]
+        if llm.get("new_prompts") and not getattr(self, "_new_prompts_shown", False):
+            self._new_prompts_shown = True
+            QTimer.singleShot(0, self._show_new_prompts)
         return llm
+
+    def _show_new_prompts(self):
+        llm = self.settings["llm"]
+        by_name = {p["name"]: p for p in llm_providers.DEFAULT_USER_PROMPTS}
+        names = "\n".join("• " + self.prompt_title(by_name.get(n, {"name": n})) for n in llm["new_prompts"])
+        dlg = NewPromptsDialog(self, names)
+        dlg.exec()
+        if not dlg.show_again.isChecked():
+            llm.pop("new_prompts", None)
 
     def _llm_provider_dialog(self):
         accepted = LLMProviderDialog(self, self._llm_settings()).exec() == QDialog.DialogCode.Accepted

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.6] - 2026-11-21
+
+### Added
+- Six ready-made prompts: English Tutor (TOEFL/IELTS), English Proofreader, Professional English Translator, German Tutor, German Translator by CEFR level (A1–C1, set with `Level: B1` on the first line) and German Proofreader.
+- New ready-made prompts reach existing users automatically, once; a notice lists them (with a "Show this message next time" checkbox) and stops after they are restored. Deleted prompts stay deleted.
+- **Restore defaults** now shows a checklist with Select all / Deselect all: new or missing prompts start ticked, ones you already have don't, so your edits are kept unless you tick them.
+
 ## [1.5.5] - 2026-11-21
 
 ### Added

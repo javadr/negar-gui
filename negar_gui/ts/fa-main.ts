@@ -248,6 +248,41 @@
     </message>
     <message>
         <location filename="../main.py" line="0"/>
+        <source>New ready-made prompts were added:</source>
+        <translation>پرامپت‌های آماده‌ی جدید اضافه شد:</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Show this message next time</source>
+        <translation>این پیام دفعه‌ی بعد هم نمایش داده شود</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Restore default prompts</source>
+        <translation>بازگردانی پرامپت‌های پیش‌فرض</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Tick the prompts to install. Ticking one you already have resets it to its original text, so your own edits to it are lost. Unticked prompts are left alone.</source>
+        <translation>پرامپت‌هایی را که می‌خواهید نصب شوند علامت بزنید. علامت زدن پرامپتی که از قبل دارید، آن را به متن اصلی برمی‌گرداند و ویرایش‌های شما روی آن از بین می‌رود. پرامپت‌های بدون علامت دست‌نخورده می‌مانند.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Select all</source>
+        <translation>انتخاب همه</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Deselect all</source>
+        <translation>لغو انتخاب همه</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>To get the latest versions of the other ready-made prompts, open the prompt manager and press Restore defaults, then choose which ones to restore.</source>
+        <translation>برای دریافت آخرین نسخه‌ی بقیه‌ی پرامپت‌های آماده، مدیریت پرامپت‌ها را باز کنید، «بازگردانی پیش‌فرض‌ها» را بزنید و پرامپت‌های دلخواه را انتخاب کنید.</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
         <source>Restore</source>
         <translation>بازگردانی</translation>
     </message>
