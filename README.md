@@ -91,7 +91,7 @@ If a Persian keyboard layout is installed, Negar switches to it when it starts a
 The standalone executable includes Tesseract with English, Persian and German data. With a pip install you need your own: `pacman -S tesseract tesseract-data-fas tesseract-data-eng tesseract-data-deu`, or `apt install tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu`. On Wayland the screenshot is taken through the desktop's screenshot portal (GNOME and KDE have it; on other compositors install `xdg-desktop-portal-wlr`).
 
 ### Read aloud
-*Speech → Read Aloud* (Ctrl+Shift+R, or the speaker button in the toolbar) reads the selection, or the whole text, in Persian with the offline [Cilla Mini](https://huggingface.co/mehdi-hf/cilla-mini) voice. It runs on the CPU, nothing is sent to a cloud, and the sentence being read is highlighted. Press it again to stop.
+*Speech → Read Aloud* (Ctrl+Shift+R, or the speaker button in the toolbar) reads the selection, or the whole text, of the box you last worked in, in Persian with the offline [Cilla Mini](https://huggingface.co/mehdi-hf/cilla-mini) voice. Each box also has its own speaker button in its top-left corner that reads just that box. It runs on the CPU, nothing is sent to a cloud, and the sentence being read is highlighted. While reading, the buttons turn into Stop; press again to stop.
 
 It is optional and **only available with a pip install** (not in the standalone executable, which would grow by several hundred MB). Set it up once:
 

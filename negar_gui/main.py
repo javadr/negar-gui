@@ -68,6 +68,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QSpacerItem,
     QTextEdit,
+    QToolButton,
 )
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
@@ -146,19 +147,9 @@ if hasattr(qdarktheme, "setup_theme"):  # absent in some qdarktheme builds (main
 OCR_CHOICES = (("Persian", "fas"), ("English", "eng"), ("Deutsch", "deu"))  # any combination; fewer is more accurate
 
 
-def _svg_icon(svg):
-    pix = QPixmap()
-    pix.loadFromData(svg.encode(), "SVG")
-    return QIcon(pix)
-
-
-_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#d89e76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{}</svg>'
-# viewfinder corners with lines of text
-_SVG_SCREEN = _SVG.format(
-    '<path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M8 9h8M8 12h8M8 15h5"/>'
-)
-# speaker with sound waves
-_SVG_SPEAK = _SVG.format('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>')
+def _u16(text, i):
+    """Qt text positions count UTF-16 units: an emoji is 2 there but 1 in Python."""
+    return len(text[:i].encode("utf-16-le")) // 2
 
 
 class TableModel(QAbstractTableModel):
@@ -410,6 +401,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self._box_speak_btns = {}  # editor -> its own corner Read Aloud button; eventFilter reads it
         for menu in self.menubar.findChildren(QMenu):
             menu.installEventFilter(self)
         self.input_editor.viewport().installEventFilter(self)
@@ -420,19 +412,28 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionManage_Prompts.triggered.connect(self._manage_prompts)
         self.actionAI_Provider.triggered.connect(self._llm_provider_dialog)
         self.actionUsage_Report.triggered.connect(lambda: UsageReportDialog(self).exec())
-        self.actionScreen_Reader.setIcon(_svg_icon(_SVG_SCREEN))
+        self.actionScreen_Reader.setIcon(QIcon(":/images/icons/ocr_screen.svg"))
         self.actionScreen_Reader.triggered.connect(self.read_screen)
         self.actionClipboard_Reader.setIcon(QIcon(":/images/icons/ocr_clipboard.svg"))
         self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
-        self.actionRead_Aloud.setIcon(_svg_icon(_SVG_SPEAK))
         self.menuOCRPrompt.menuAction().setIcon(QIcon(":/images/icons/ocr_prompt.svg"))
-        self.actionRead_Aloud.triggered.connect(self.read_aloud)
+        self.actionRead_Aloud.triggered.connect(lambda: self.read_aloud())
+        for ed in (self.input_editor, self.output_editor):
+            b = self._box_speak_btns[ed] = QToolButton(ed)
+            b.setAutoRaise(True)
+            b.setCursor(Qt.CursorShape.PointingHandCursor)
+            b.clicked.connect(lambda _, ed=ed: self.read_aloud(ed))
+        self._last_box = self.output_editor  # the box Read Aloud reads: clicking a toolbar button moves focus off it
+        self._tts_ed = None
+        self._tts_set_text(False)
+        QApplication.instance().focusChanged.connect(
+            lambda _, new: new in self._box_speak_btns and setattr(self, "_last_box", new)
+        )
         self.tts_chunk.connect(self._tts_on_chunk)
         self.tts_progress.connect(self._tts_on_progress)
         self.tts_done.connect(self._tts_on_done)
         self._tts_gen, self._tts_stop, self._tts_queue, self._tts_dir, self._tts_player = 0, None, [], None, None
         self._tts_dlg, self._tts_busy, self._tts_ed, self._tts_spans = None, False, None, []
-        self._tts_set_text(False)
         tts.preload()  # the model loads while the user starts typing
         self._ocr_actions = []
         for _, code in OCR_CHOICES:
@@ -532,6 +533,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
 
     def eventFilter(self, obj, event):
+        if event.type() in (QEvent.Type.Resize, QEvent.Type.Move):  # keep the corner buttons on the viewport's top-left
+            for ed, b in self._box_speak_btns.items():
+                if obj is ed.viewport():
+                    b.move(obj.geometry().topLeft() + QPoint(2, 2))
         if (
             event.type() == QEvent.Type.Wheel
             and event.modifiers() == Qt.KeyboardModifier.ControlModifier
@@ -809,14 +814,26 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.gridLayout.addWidget(self.input_editor, 1, 0, 1, 2)
 
     def _tts_set_text(self, speaking):
+        """Turn the Read Aloud action, its toolbar button and the reading box's corner button into Stop (or back)."""
         self.actionRead_Aloud.setText(
             _translate("MainWindow", "Stop &Reading") if speaking else _translate("MainWindow", "Read &Aloud")
         )
+        speak, stop = QIcon(":/images/icons/speak.svg"), QIcon(":/images/icons/stop.svg")
+        self.actionRead_Aloud.setIcon(stop if speaking else speak)
+        if hasattr(self, "speak_btn"):  # first call runs before the toolbar is built
+            self.speak_btn.setIcon(self.actionRead_Aloud.icon())
+        for ed, b in self._box_speak_btns.items():
+            b.setIcon(stop if speaking and ed is self._tts_ed else speak)
 
-    def read_aloud(self):
-        if self._tts_stop:  # second press stops
-            return self._tts_halt()
-        ed = self.focusWidget() if self.focusWidget() in (self.input_editor, self.output_editor) else self.output_editor
+    def read_aloud(self, ed=None):
+        """Read ed (or the focused box) aloud; a second press stops, a press on the other box switches to it."""
+        if self._tts_stop:
+            prev = self._tts_ed
+            self._tts_halt()
+            if ed is None or ed is prev:
+                return
+        if ed is None:
+            ed = self._last_box
         text = ed.textCursor().selectedText().replace("\u2029", "\n")
         base = ed.textCursor().selectionStart()  # where the text sits in the editor, for the highlight
         if not text.strip():
@@ -839,11 +856,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._tts_gen += 1
         self._tts_stop, self._tts_dir, self._tts_finished = Event(), tempfile.mkdtemp(prefix="negar-tts-"), False
         self._tts_busy = False
-        self._tts_set_text(True)
         self._tts_ed, self._tts_spans = (
             ed,
-            [(base + a, base + b) for a, b in tts.segments(text)] if base is not None else [],
+            [(base + _u16(text, a), base + _u16(text, b)) for a, b in tts.segments(text)] if base is not None else [],
         )
+        self._tts_set_text(True)
         self._tts_dlg = dlg = QProgressDialog(
             _translate("MainWindow", "Preparing the voice model..."), _translate("MainWindow", "Cancel"), 0, 0, self
         )
@@ -1018,6 +1035,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.screen_btn.setToolTip(_translate("MainWindow", "Read text from screen Ctrl+Shift+O"))
         self.clipboard_btn.setToolTip(_translate("MainWindow", "Read text from clipboard image Ctrl+Alt+O"))
         self.speak_btn.setToolTip(_translate("MainWindow", "Read the text aloud (press again to stop) Ctrl+Shift+R"))
+        for b in self._box_speak_btns.values():
+            b.setToolTip(_translate("MainWindow", "Read this box aloud (press again to stop)"))
         self.menuOCR.setTitle(_translate("MainWindow", "&OCR"))
         for a, (title, _) in zip(self._ocr_actions, OCR_CHOICES):
             a.setText(_translate("MainWindow", title))

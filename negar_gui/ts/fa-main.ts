@@ -408,6 +408,11 @@
     </message>
     <message>
         <location filename="../main.py" line="0"/>
+        <source>Read this box aloud (press again to stop)</source>
+        <translation>خواندن این کادر با صدا (برای توقف دوباره فشار دهید)</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
         <source>None</source>
         <translation>هیچ‌کدام</translation>
     </message>

@@ -37,5 +37,8 @@
     <file>icons/ai.svg</file>
     <file>icons/ocr_clipboard.svg</file>
     <file>icons/ocr_prompt.svg</file>
+    <file>icons/ocr_screen.svg</file>
+    <file>icons/speak.svg</file>
+    <file>icons/stop.svg</file>
   </qresource>
 </RCC>

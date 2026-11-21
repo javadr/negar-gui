@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.7] - 2026-11-21
+
+### Added
+- Each box (input and output) has its own Read Aloud button in its top-left corner that reads just that box.
+- While reading, the toolbar Read Aloud button and the reading box's corner button turn into Stop.
+
+### Changed
+- The Read Aloud, Stop and screen OCR icons are now files in `negar_gui/icons/` like the others.
+
+### Fixed
+- The toolbar Read Aloud button always read the output box: clicking it took the focus away. It now reads the box you last worked in.
+- The read-aloud highlight drifted ahead of the spoken sentence after emojis.
+
 ## [1.5.6] - 2026-11-21
 
 ### Added
