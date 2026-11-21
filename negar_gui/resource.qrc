@@ -35,5 +35,7 @@
     <file>icons/options.svg</file>
     <file>icons/paste.svg</file>
     <file>icons/ai.svg</file>
+    <file>icons/ocr_clipboard.svg</file>
+    <file>icons/ocr_prompt.svg</file>
   </qresource>
 </RCC>

@@ -581,6 +581,12 @@
     <addaction name="actionScreen_Reader"/>
     <addaction name="actionClipboard_Reader"/>
     <addaction name="separator"/>
+    <widget class="QMenu" name="menuOCRPrompt">
+     <property name="title">
+      <string>Run Prompt after &amp;OCR</string>
+     </property>
+    </widget>
+    <addaction name="menuOCRPrompt"/>
    </widget>
    <widget class="QMenu" name="menuSpeech">
     <property name="title">

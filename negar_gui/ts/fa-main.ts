@@ -371,5 +371,10 @@
         <source>Read the text aloud (press again to stop) Ctrl+Shift+R</source>
         <translation>خواندن متن با صدا (برای توقف دوباره فشار دهید) Ctrl+Shift+R</translation>
     </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>None</source>
+        <translation>هیچ‌کدام</translation>
+    </message>
 </context>
 </TS>

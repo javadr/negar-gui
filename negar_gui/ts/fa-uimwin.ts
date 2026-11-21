@@ -403,5 +403,10 @@
         <source>&amp;Assistant</source>
         <translation>&amp;دستیار</translation>
     </message>
+    <message>
+        <location filename="../ui/Ui_mwin.py" line="0"/>
+        <source>Run Prompt after &amp;OCR</source>
+        <translation>اجرای پرامپت پس از &amp;OCR</translation>
+    </message>
 </context>
 </TS>

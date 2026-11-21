@@ -86,6 +86,8 @@ If a Persian keyboard layout is installed, Negar switches to it when it starts a
 ### Screen reader
 *Edit → Read Text from Screen* (Ctrl+Shift+O) lets you drag a rectangle over anything on screen; the text is recognised with [Tesseract](https://github.com/tesseract-ocr/tesseract) and put into the input editor. *Edit → Read Text from Clipboard Image* (Ctrl+Alt+O) does the same for an image you copied (e.g. a screenshot). Pick the language in *Edit → OCR Language*: fewer languages are more accurate. Persian recognition is Tesseract's weak spot, so check the result; the AI button below can help fix recognition mistakes. Your language choice is remembered between runs.
 
+*OCR → Run Prompt after OCR* binds one of your AI prompts to both OCR commands: after the text is read, that prompt runs on it automatically (for example to fix recognition mistakes) and the result lands in the output box. Choose *None* to just read the text. The choice is remembered, and the menu follows the GUI language.
+
 The standalone executable includes Tesseract with English, Persian and German data. With a pip install you need your own: `pacman -S tesseract tesseract-data-fas tesseract-data-eng tesseract-data-deu`, or `apt install tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu`. On Wayland the screenshot is taken through the desktop's screenshot portal (GNOME and KDE have it; on other compositors install `xdg-desktop-portal-wlr`).
 
 ### Read aloud

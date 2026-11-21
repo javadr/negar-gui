@@ -155,10 +155,6 @@ _SVG_SCREEN = _SVG.format(
 )
 # speaker with sound waves
 _SVG_SPEAK = _SVG.format('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>')
-# clipboard holding a picture
-_SVG_CLIPBOARD = _SVG.format(
-    '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M8 18l3-4 2 2.5 1.5-2L17 18z"/><circle cx="14.5" cy="10.5" r="1"/>'
-)
 
 
 class TableModel(QAbstractTableModel):
@@ -422,9 +418,10 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.actionUsage_Report.triggered.connect(lambda: UsageReportDialog(self).exec())
         self.actionScreen_Reader.setIcon(_svg_icon(_SVG_SCREEN))
         self.actionScreen_Reader.triggered.connect(self.read_screen)
-        self.actionClipboard_Reader.setIcon(_svg_icon(_SVG_CLIPBOARD))
+        self.actionClipboard_Reader.setIcon(QIcon(":/images/icons/ocr_clipboard.svg"))
         self.actionClipboard_Reader.triggered.connect(self.read_clipboard_image)
         self.actionRead_Aloud.setIcon(_svg_icon(_SVG_SPEAK))
+        self.menuOCRPrompt.menuAction().setIcon(QIcon(":/images/icons/ocr_prompt.svg"))
         self.actionRead_Aloud.triggered.connect(self.read_aloud)
         self.tts_chunk.connect(self._tts_on_chunk)
         self.tts_progress.connect(self._tts_on_progress)
@@ -989,7 +986,11 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             QApplication.restoreOverrideCursor()
         if text:
             self.input_editor.setPlainText(text)
-            self.edit_text()
+            key = self._llm_settings().get("ocr_prompt")
+            if key in self._llm_prompts():
+                self.llm_fix_text_slot(key)  # the source's bound prompt runs right after reading
+            else:
+                self.edit_text()
         else:
             statusbar_timeout(self, _translate("MainWindow", "No text found in the selected region!"))
 
@@ -1502,7 +1503,24 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             )
         self.prompt_combo.setCurrentIndex(self.prompt_combo.findData(current))
         self.prompt_combo.setToolTip(_translate("MainWindow", "Prompt used by the AI button"))
+        self._build_ocr_prompt_menu()
         self._update_llm_tooltip()
+
+    def _build_ocr_prompt_menu(self):
+        """Submenu of the OCR menu: the prompt that runs right after either OCR button reads text."""
+        menu, llm = self.menuOCRPrompt, self._llm_settings()
+        menu.clear()
+        group = QtGui.QActionGroup(menu)
+        choices = [(None, _translate("MainWindow", "None"))]
+        choices += [(k, self.prompt_title(p)) for k, p in self._llm_prompts().items()]
+        for key, name in choices:
+            a = menu.addAction(name)
+            a.setCheckable(True)
+            a.setChecked(llm.get("ocr_prompt") == key)
+            a.triggered.connect(lambda _, k=key: llm.__setitem__("ocr_prompt", k))
+            group.addAction(a)
+        if not group.checkedAction():  # bound prompt was deleted
+            group.actions()[0].setChecked(True)
 
     def _update_llm_tooltip(self):
         provider = self._llm_settings().get("provider", llm_providers.DEFAULT_PROVIDER)
@@ -1568,7 +1586,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._llm_spin_timer.stop()
         self.llm_btn.setIcon(QIcon(self._llm_icon_base))
 
-    def llm_fix_text_slot(self):
+    def llm_fix_text_slot(self, key=None):  # clicked(bool) passes False: falls back to the selected prompt
         text = self.input_editor.toPlainText()
         if not text.strip():
             return
@@ -1582,12 +1600,12 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if needs_key and not llm.get("keys", {}).get(provider):
             if not self._llm_provider_dialog():
                 return
-            return self.llm_fix_text_slot()
+            return self.llm_fix_text_slot(key)
         self.llm_btn.setEnabled(False)
         self._llm_spin_timer.start()
         self._llm_retries = 2
         self._llm_pending_text = text
-        self._llm_pending_prompt = self._llm_prompts()[self._llm_prompt_key()]
+        self._llm_pending_prompt = self._llm_prompts()[key or self._llm_prompt_key()]
         self._statusBar_tr("MainWindow", "Running {}...", 0, self.prompt_title(self._llm_pending_prompt))
         self.statusBar.repaint()
         self._llm_send()

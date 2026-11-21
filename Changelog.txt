@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.4] - 2026-11-21
+
+### Added
+- **OCR → Run Prompt after OCR:** bind one AI prompt to both OCR commands (screen and clipboard image). After the text is read, the prompt runs on it automatically and the result goes to the output box. *None* keeps the old behaviour. The choice is saved and the menu follows the GUI language.
+- New solid icons for the clipboard reader and the prompt menu, stored in `negar_gui/icons/`.
+
 ## [1.5.3] - 2026-11-20
 
 ### Changed
