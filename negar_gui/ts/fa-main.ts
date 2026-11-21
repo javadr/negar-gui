@@ -18,6 +18,21 @@
     <name>MainWindow</name>
     <message>
         <location filename="../main.py" line="0"/>
+        <source>Show the changes Negar made, struck through and highlighted</source>
+        <translation>تغییرات اعمال‌شده توسط نگار را خط‌خورده و هایلایت‌شده نشان می‌دهد</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>Render the output as Markdown; the text itself is not edited again</source>
+        <translation>خروجی را به‌صورت مارک‌داون نمایش می‌دهد؛ متن دوباره ویرایش نمی‌شود</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
+        <source>&amp;Markdown</source>
+        <translation>&amp;مارک‌داون</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="0"/>
         <source>AI Provider...</source>
         <translation>ارائه‌دهنده هوش مصنوعی...</translation>
     </message>

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.9] - 2026-11-21
+
+### Added
+- A Markdown checkbox next to Comparative Mode renders the output as Markdown. Toggling it redraws the text already shown without running Negar again, and Save/Export still write the Markdown source.
+
 ## [1.5.8] - 2026-11-21
 
 ### Added

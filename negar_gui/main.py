@@ -53,6 +53,7 @@ from PyQt6.QtGui import QColor, QDesktopServices, QGuiApplication, QIcon, QPalet
 from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt6.QtWidgets import (
     QApplication,
+    QCheckBox,
     QComboBox,
     QDialog,
     QFileDialog,
@@ -769,6 +770,9 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         out_row.addWidget(self.output_editor_label)
         out_row.addSpacing(7)
         out_row.addWidget(self.comparative_output_chkbox)
+        self.markdown_chkbox = QCheckBox(_translate("MainWindow", "&Markdown"))
+        self.markdown_chkbox.stateChanged.connect(self._rerender_output)
+        out_row.addWidget(self.markdown_chkbox)
         out_row.addStretch()
         # same height as the checkbox row, so the two boxes start level side by side
         self.input_editor_label.setMinimumHeight(self.comparative_output_chkbox.sizeHint().height())
@@ -1125,7 +1129,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if hasattr(self, "filename") and self.filename:
             with open(self.filename, "w", encoding="utf-8") as f:
                 try:
-                    f.write(self.output_editor.toPlainText())
+                    f.write(self._output_text())
                     statusbar_timeout(self, "File Saved.")
                 except Exception as e:
                     self.output_editor.setPlainText(e.args[1])
@@ -1145,7 +1149,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if filename:
             with Path(f"{filename}{ext}").open("w", encoding="utf-8") as f:
                 try:
-                    f.write(self.output_editor.toPlainText())
+                    f.write(self._output_text())
                     self.filename = Path(f"{filename}{ext}")
                     MAIN_WINDOW.setWindowTitle(f"Negar - {self.filename.name}")
                     statusbar_timeout(self, "File Saved.")
@@ -1183,6 +1187,13 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             return
         _app.installTranslator(self.trans)
         self.retranslateUi(self)
+        self.markdown_chkbox.setText(_translate("MainWindow", "&Markdown"))
+        self.comparative_output_chkbox.setToolTip(
+            _translate("MainWindow", "Show the changes Negar made, struck through and highlighted")
+        )
+        self.markdown_chkbox.setToolTip(
+            _translate("MainWindow", "Render the output as Markdown; the text itself is not edited again")
+        )
         self.actionPersian_Keyboard.setText(_translate("MainWindow", "Persian Keyboard on Startup"))
         self._retranslate_ocr()
         self._build_llm_menu()
@@ -1494,7 +1505,31 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             except:  # noqa: E722
                 pass
         else:
-            self.output_editor.append(persian_editor.cleanup())
+            self._show_output(self.cleaned_text)
+
+    def _rerender_output(self):
+        """Redraw the already-edited text; unlike edit_text it doesn't run Negar again."""
+        if self.comparative_output_chkbox.isChecked() or not self.cleaned_text:
+            return
+        self.output_editor.clear()
+        self._show_output(self.cleaned_text)
+
+    def _show_output(self, text):
+        """Plain text with HTML tags compiled, or rendered Markdown (common tags converted) when the Markdown box is checked."""
+        if self.markdown_chkbox.isChecked():
+            # shortcut: Qt's Markdown shows raw HTML literally, so only these tags are converted; extend if more show up
+            text = re.sub(r"(?i)<br\s*/?>", "  \n", text)
+            text = re.sub(r"(?i)</?(b|strong)>", "**", text)
+            text = re.sub(r"(?i)</?(i|em)>", "*", text)
+            self.output_editor.setMarkdown(text)
+        elif re.search(r"(?i)</?(br|b|i|u|p|strong|em|ul|ol|li|h[1-6])\b[^>]*>", text):
+            self.output_editor.setHtml(text.replace("\n", "<br>"))
+        else:
+            self.output_editor.append(text)
+
+    def _output_text(self):
+        """Output as plain text; rendered Markdown would lose its markup on save."""
+        return self.cleaned_text if self.markdown_chkbox.isChecked() else self.output_editor.toPlainText()
 
     ####################### LLM ###############################
     def _build_llm_menu(self):
@@ -1694,7 +1729,8 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self._update_llm_tooltip()
         if ok:
             self._llm_spin_stop()
-            self.output_editor.setPlainText(result)
+            self.output_editor.clear()
+            self._show_output(result)
             self.cleaned_text = result
             self.llm_btn.setEnabled(True)
             self._statusBar_tr("MainWindow", "Grammar fix complete.")
