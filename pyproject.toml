@@ -32,6 +32,9 @@ dependencies = [
   "rich"
 ]
 
+[project.optional-dependencies]
+tts = ["torch", "pocket-tts>=4.0.1"]  # Read Aloud; install torch from the CPU index, see the README
+
 [project.urls]
 Homepage = "http://github.com/javadr/negar-gui"
 

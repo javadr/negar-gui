@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.5] - 2026-11-21
+
+### Added
+- `tts` extra: `pip install "negar-gui[tts]"` installs the Read Aloud packages (`torch`, `pocket-tts`). Add `--extra-index-url https://download.pytorch.org/whl/cpu` for the small CPU build of torch.
+
 ## [1.5.4] - 2026-11-21
 
 ### Added

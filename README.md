@@ -95,7 +95,7 @@ The standalone executable includes Tesseract with English, Persian and German da
 
 It is optional and **only available with a pip install** (not in the standalone executable, which would grow by several hundred MB). Set it up once:
 
-1. `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"` (Python 3.10+).
+1. `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"` (Python 3.10+). Or, from a pip install of Negar: `pip install --extra-index-url https://download.pytorch.org/whl/cpu "negar-gui[tts]"`.
 2. The voice model is gated: open [its page](https://huggingface.co/mehdi-hf/cilla-mini) and accept the terms, create a *Read* token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens), then run `hf auth login --token <your token>`.
 3. Press Read Aloud. The model (about 112 MB) downloads once, with a progress bar.
 
