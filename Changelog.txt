@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.8] - 2026-11-21
+
+### Added
+- Drag the gap between the input and output boxes to make one bigger and the other smaller, in both stacked and side-by-side views. The gap is invisible and lights up on hover; switching view resets the split to half and half.
+
+### Fixed
+- In side-by-side view the two boxes now start level, at the same height.
+
 ## [1.5.7] - 2026-11-21
 
 ### Added

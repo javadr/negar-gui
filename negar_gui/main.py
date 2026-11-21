@@ -66,9 +66,11 @@ from PyQt6.QtWidgets import (
     QProgressDialog,
     QPushButton,
     QSizePolicy,
-    QSpacerItem,
+    QSplitter,
     QTextEdit,
     QToolButton,
+    QVBoxLayout,
+    QWidget,
 )
 from pyuca import Collator
 from qrcode import ERROR_CORRECT_L, QRCode
@@ -401,6 +403,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self._build_inout_splitter()
         self._box_speak_btns = {}  # editor -> its own corner Read Aloud button; eventFilter reads it
         for menu in self.menubar.findChildren(QMenu):
             menu.installEventFilter(self)
@@ -758,60 +761,50 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             else self._grid_layout("h")
         )
 
-    # Change GridLayout Orientation
+    def _build_inout_splitter(self):
+        """Put Original and Revision in a QSplitter: dragging the bar between them grows one and shrinks the other."""
+        self.gridLayout.removeItem(self.output_lbl_comp_chk_layout)
+        self.output_lbl_comp_chk_layout.setParent(None)
+        out_row = QHBoxLayout()
+        out_row.addWidget(self.output_editor_label)
+        out_row.addSpacing(7)
+        out_row.addWidget(self.comparative_output_chkbox)
+        out_row.addStretch()
+        # same height as the checkbox row, so the two boxes start level side by side
+        self.input_editor_label.setMinimumHeight(self.comparative_output_chkbox.sizeHint().height())
+        self.inout_splitter = QSplitter(childrenCollapsible=False, handleWidth=4)
+        # explicit policy: QSplitter's default is (Expanding, Preferred), so side by side it wouldn't grow in height
+        self.inout_splitter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        for row, ed in ((self.input_editor_label, self.input_editor), (out_row, self.output_editor)):
+            pane = QWidget()
+            box = QVBoxLayout(pane)
+            box.setContentsMargins(0, 0, 0, 0)
+            box.addLayout(row) if isinstance(row, QHBoxLayout) else box.addWidget(row)
+            box.addWidget(ed)
+            self.inout_splitter.addWidget(pane)
+        self.output_pane = pane
+        self.gridLayout.addWidget(self.inout_splitter, 0, 0)
+
     def _grid_layout(self, layout="h"):
         assert layout in ("v", "h"), "Layout must be 'v' or 'h'"
-        if layout == "v":
-            self.gridLayout.setHorizontalSpacing(5)
-        elif layout == "h":
-            self.gridLayout.setVerticalSpacing(0)
-        widgets = (
-            self.input_editor_label,
-            self.input_editor,
-            self.output_editor,
-        )
-        for widget in widgets:
-            self.gridLayout.removeWidget(widget)
-            widget.setParent(None)
-        self.horizontalLayout.setParent(None)
-        self.output_lbl_comp_chk_layout.setParent(None)
-        # (row, col, rowspan, colspan)
-        elements = {
-            "v": (  # VERTICAL
-                (0, 0, 1, 1),
-                (1, 0, 1, 1),
-                (1, 1, 1, 1),
-            ),
-            "h": (  # HORIZONTAL
-                (0, 0, 1, 2),
-                (1, 0, 1, 2),
-                (3, 0, 1, 2),
-            ),
-        }
-        for i, widget in enumerate(widgets):
-            self.gridLayout.addWidget(widget, *elements[layout][i])
-            widget.show()
+        horizontal = Qt.Orientation.Horizontal  # "v" = side by side
+        self.inout_splitter.setOrientation(horizontal if layout == "v" else Qt.Orientation.Vertical)
+        self.output_pane.show()
+        QTimer.singleShot(0, self._fit_splitter)  # after the new orientation is laid out
 
-        self.horizontalLayout = QHBoxLayout()
-        spacerMin = QSpacerItem(7, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-        spacerMax = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
-        self.horizontalLayout.addWidget(self.output_editor_label)
-        self.horizontalLayout.addItem(spacerMin)
-        self.horizontalLayout.addWidget(self.comparative_output_chkbox)
-        self.output_editor_label.show()
-        self.comparative_output_chkbox.show()
-        self.horizontalLayout.addItem(spacerMax)
-        span = {"v": (0, 1, 1, 2), "h": (2, 1, 1, 1)}
-        self.gridLayout.addLayout(self.horizontalLayout, *span[layout])
+    def _fit_splitter(self):
+        """Split 50/50 and make the bar exactly as long as the boxes (side by side it skips the label row)."""
+        self.inout_splitter.setSizes([10**6, 10**6])
+        side = self.inout_splitter.orientation() == Qt.Orientation.Horizontal
+        top = self.input_editor.y() if side else 0
+        # re-set on every switch: Qt doesn't repolish the handle by itself when the orientation flips
+        self.inout_splitter.setStyleSheet(
+            f"QSplitter::handle {{ background: transparent; margin-top: {top}px; }}"
+            "QSplitter::handle:hover { background: #d89e76; }"
+        )
 
     def _grid_full_input(self):
-        widgets = (self.output_editor_label, self.output_editor, self.comparative_output_chkbox, self.input_editor)
-        for widget in widgets:
-            self.gridLayout.removeWidget(widget)
-            widget.setParent(None)
-        self.horizontalLayout.setParent(None)
-        self.output_lbl_comp_chk_layout.setParent(None)
-        self.gridLayout.addWidget(self.input_editor, 1, 0, 1, 2)
+        self.output_pane.hide()
 
     def _tts_set_text(self, speaking):
         """Turn the Read Aloud action, its toolbar button and the reading box's corner button into Stop (or back)."""
