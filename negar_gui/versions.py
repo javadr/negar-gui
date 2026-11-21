@@ -7,39 +7,20 @@ from importlib import metadata
 
 from negar_gui.constants import __version__
 
-ACCENT = "#d89e76"  # the app's accent colour
-# "Negar" and "GUI" as pixel bitmaps (rasterised once from Noto Sans ExtraBold, OFL). Each pixel is half a terminal
-# line, so the pixels are square, and every face pixel casts a one-pixel shadow down and to the right.
-_NEGAR = """
-###....##..................................
-####...##..................................
-#####..##....####....###.##...####....#..##
-#####..##...######..#######...#####...#####
-##.###.##..###..##..###..##......###..###..
-##..##.##..#######..##...##...######..##...
-##..#####..#######..##...##..#######..##...
-##...####..###......##...##..##..###..##...
-##...####...######..#######..#######..##...
-##....###....#####...######..####.##..##...
-.........................##................
-....................#######................
-....................######.................
-"""
-_GUI = """
-..#####...##....##..#####
-.#######..###...##..####.
-###.......###...##...###.
-##........###...##...###.
-##..####..###...##...###.
-##..####..###...##...###.
-##....##..###...##...###.
-###...##..###...##...###.
-.#######...#######..####.
-..######....#####...#####
-"""
-# (face colour at the top, face colour at the bottom, shadow colour)
-_NEGAR_COLORS = ("#ffffff", "#b4b4b4", "#4a4a4a")
-_GUI_COLORS = ("#f8d9b8", "#d89e76", "#7a4d30")
+# Catppuccin Mocha: https://catppuccin.com/palette
+TEXT, SUBTEXT, MUTED, GREEN, RED = "#cdd6f4", "#a6adc8", "#7f849c", "#a6e3a1", "#f38ba8"
+ACCENT = "#cba6f7"  # mauve: the middle of the logo gradient
+# "NEGAR" in figlet's "ANSI Shadow" font: █ is the face, box-drawing lines are the shadow.
+_GLYPHS = [
+    ("███╗   ██╗", "████╗  ██║", "██╔██╗ ██║", "██║╚██╗██║", "██║ ╚████║", "╚═╝  ╚═══╝"),  # N
+    ("███████╗", "██╔════╝", "█████╗  ", "██╔══╝  ", "███████╗", "╚══════╝"),  # E
+    (" ██████╗ ", "██╔════╝ ", "██║  ███╗", "██║   ██║", "╚██████╔╝", " ╚═════╝ "),  # G
+    (" █████╗ ", "██╔══██╗", "███████║", "██╔══██║", "██║  ██║", "╚═╝  ╚═╝"),  # A
+    ("██████╗ ", "██╔══██╗", "██████╔╝", "██╔══██╗", "██║  ██║", "╚═╝  ╚═╝"),  # R
+]
+_NEGAR = ["".join(g[r] + " " for g in _GLYPHS).rstrip() for r in range(6)]
+_GRADIENT = ("#f5c2e7", "#cba6f7", "#89b4fa")  # pink, mauve, blue: left to right
+_SHADE = "#313244"  # the shadow is the face colour pulled this far toward the dark
 OPTIONAL = ("torch", "pocket-tts")  # Read Aloud, see the README
 
 
@@ -79,73 +60,85 @@ def about():
     ]
 
 
+def _rgb(c):
+    return tuple(int(c[i : i + 2], 16) for i in (1, 3, 5))
+
+
 def _mix(c1, c2, t):
-    a, b = (tuple(int(c[i : i + 2], 16) for i in (1, 3, 5)) for c in (c1, c2))
-    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(a, b))
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(_rgb(c1), _rgb(c2)))
 
 
-def logo():
-    """Negar in white and GUI in the accent colour, each casting a coloured shadow; plain text if too narrow."""
-    from rich.console import Console
+def _gradient(t):
+    return _mix(_GRADIENT[0], _GRADIENT[1], t * 2) if t < 0.5 else _mix(_GRADIENT[1], _GRADIENT[2], t * 2 - 1)
+
+
+def logo_width():
+    return max(map(len, _NEGAR))
+
+
+def logo(shadow=True):
+    """NEGAR in ANSI-Shadow letters: a pink-to-blue gradient on the face, the same hue dimmed on the shadow lines."""
     from rich.style import Style
     from rich.text import Text
 
-    words = [(w.strip().splitlines(), c) for w, c in ((_NEGAR, _NEGAR_COLORS), (_GUI, _GUI_COLORS))]
-    gap = 2
-    width = sum(len(rows[0]) for rows, _ in words) + gap + 1  # +1: the shadow
-    height = max(len(rows) for rows, _ in words) + 1
-    console = Console()
-    if console.width < width + 4:
-        return Text("NEGAR-GUI", style=f"bold {ACCENT}")
-    shadows = console.color_system is not None  # without colour a shadow would just fatten the letters
-    grid = [[None] * width for _ in range(height)]
-    x0 = 0
-    for rows, (top, bottom, shade) in words:
-        for y, row in enumerate(rows):
-            for x, ch in enumerate(row):
-                if ch == "#":
-                    if shadows and grid[y + 1][x0 + x + 1] is None:
-                        grid[y + 1][x0 + x + 1] = shade
-                    grid[y][x0 + x] = _mix(top, bottom, y / max(len(rows) - 1, 1))  # a face pixel wins over a shadow
-        x0 += len(rows[0]) + gap
+    w = logo_width()
     out = Text()
-    for y in range(0, height, 2):
-        for x in range(width):
-            up = grid[y][x]
-            down = grid[y + 1][x] if y + 1 < height else None
-            if up and down:
-                out.append("▀", Style(color=up, bgcolor=down))
-            elif up:
-                out.append("▀", Style(color=up))
-            elif down:
-                out.append("▄", Style(color=down))
-            else:
-                out.append(" ")
+    for y, row in enumerate(_NEGAR):
+        for x, c in enumerate(row):
+            face = _gradient((x / (w - 1)) * 0.85 + (y / 5) * 0.15)
+            tone = face if c == "█" else _mix(face, _SHADE, 0.45)
+            out.append(c, Style(color=tone) if c != " " else None)
         out.append("\n")
     out.rstrip()
     return out
 
 
+def _summary():
+    try:
+        return metadata.metadata("negar-gui")["Summary"].split("--")[-1].strip()
+    except (metadata.PackageNotFoundError, KeyError):
+        return "Persian text editor"
+
+
 def show():
     from rich import box
+    from rich.align import Align
     from rich.console import Console, Group
     from rich.padding import Padding
     from rich.table import Table
+    from rich.text import Text
 
-    def make(title, *cols):
-        t = Table(title=title, title_justify="left", title_style=f"bold {ACCENT}", box=box.ROUNDED, border_style=ACCENT)
-        for col in cols:
-            t.add_column(col, header_style="bold")
-        return t
-
-    env = make("Environment", "Item", "Value")
-    for label, value in about():
-        env.add_row(label, value)
-    pkgs = make("Packages", "Package", "Required", "Installed", "Status")
+    console = Console()
+    mono = console.color_system is None
+    info = Table.grid(padding=(0, 2))
+    info.style = TEXT
+    for label, value in about()[2:]:  # the versions are in the heading
+        info.add_row(Text(label, style=MUTED), value)
+    head = Group(
+        Text.assemble((f"Negar-GUI {__version__}", f"bold {TEXT}")),
+        Text(f"Persian text editor · Negar {installed('python-negar') or '-'}", style=SUBTEXT),
+        "",
+        info,
+    )
+    art = logo(shadow=not mono)  # without colour a shadow would only fatten the letters
+    banner = Table.grid(padding=(0, 4))
+    if console.width >= logo_width() + 4 + 52:  # art + gap + info
+        banner.add_row(art, Align(head, vertical="middle"))
+    else:
+        banner.add_row(art)
+        banner.add_row(head)
+    pkgs = Table(box=box.SIMPLE_HEAD, header_style=f"bold {ACCENT}", pad_edge=False, show_edge=False, style=TEXT)
+    for col in ("Dependency", "Required", "Installed", "Status"):
+        pkgs.add_column(col)
     for name, spec in sorted(requirements(), key=lambda r: r[0].lower()):
         v = installed(name)
-        pkgs.add_row(name, spec, v or "-", "[green]ok" if v else "[red]missing")  # the word carries it, not the colour
-    for name in OPTIONAL:
+        pkgs.add_row(name, Text(spec, style=MUTED), v or "-", f"[{GREEN}]ok" if v else f"[bold {RED}]missing")
+    for name in OPTIONAL:  # the Read Aloud extras are not dependencies: set them apart and dim
         v = installed(name)
-        pkgs.add_row(name, "optional", v or "-", "[green]ok" if v else "[dim]not installed")
-    Console().print(Padding(Group(logo(), "", env, "", pkgs), (1, 2)))
+        pkgs.add_row(
+            Text(name, style=MUTED),
+            Text("optional", style=MUTED),
+            v or "-",
+            f"[{GREEN}]ok" if v else f"[{MUTED}]not installed",
+        )
+    console.print(Padding(Group(banner, "", Align.left(pkgs)), (1, 2)))
