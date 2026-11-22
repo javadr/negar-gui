@@ -3,7 +3,7 @@ import re
 
 import requests
 
-from negar_gui.default_prompts import DEFAULT_PROMPTS
+from negar_gui.services.default_prompts import DEFAULT_PROMPTS
 
 POLLINATIONS_URL = "https://text.pollinations.ai/openai"
 

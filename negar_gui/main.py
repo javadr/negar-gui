@@ -78,9 +78,12 @@ from qrcode import ERROR_CORRECT_L, QRCode
 from redlines import Redlines
 
 # Local application imports
+sys.path.append(
+    Path(__file__).parent.parent.as_posix()
+)  # lets `python negar_gui/main.py` find the package, as gui.py does
 # The following is neccessary for ICONs
-import negar_gui.resource_rc  # noqa: F401
-from negar_gui import keyboard_layout, llm_providers, ocr, tts, usage_log
+import negar_gui.resources.resource_rc  # noqa: F401
+from negar_gui.services import keyboard_layout, llm_providers, ocr, tts, usage_log
 from negar_gui.constants import LOGO, SETTING_FILE, __version__
 from negar_gui.dialogs import (
     LLMProviderDialog,
@@ -100,7 +103,7 @@ _translate = QCoreApplication.translate
 if getattr(sys, "frozen", False):
     NEGARGUIPATH = Path(sys._MEIPASS).as_posix()
 else:
-    NEGARGUIPATH = Path(__file__).parent.as_posix()
+    NEGARGUIPATH = (Path(__file__).parent / "resources").as_posix()
 
 collator = Collator()
 
@@ -1792,7 +1795,7 @@ def statusbar_timeout(self, notification, timeout=5000):
 def main(args=docopt(__doc__)):
     """Program entry point."""
     if args["--version"]:
-        from negar_gui import versions
+        from negar_gui.services import versions
 
         versions.show()
         sys.exit()

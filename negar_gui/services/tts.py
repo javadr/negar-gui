@@ -5,7 +5,7 @@
 * chatterbox: Chatterbox Farsi (mehdi-hf/chatterbox-farsi, a Chatterbox fine-tune). Better voice and zero-shot cloning,
   3 GB, slow to load; wants an NVIDIA GPU (it runs on the CPU, much slower than real time).
 
-Synthesis runs in a child process (python -m negar_gui.tts <engine>): importing torch inside the Qt process crashed the
+Synthesis runs in a child process (python -m negar_gui.services.tts <engine>): importing torch inside the Qt process crashed the
 whole app (SIGSEGV in libtriton/LLVM) and a busy worker thread starved the UI. The child talks to the app through
 "@@{json}" lines on stdout; a crash there only fails the read-aloud request, and cancelling just kills it.
 
@@ -199,7 +199,11 @@ def set_engine(name):
         shutdown()
 
 
-_CMD = [sys.executable, "-m", "negar_gui.tts"]  # the engine name is appended  # tests replace this with a fake worker
+_CMD = [
+    sys.executable,
+    "-m",
+    "negar_gui.services.tts",
+]  # the engine name is appended  # tests replace this with a fake worker
 _proc = None  # the engine stays loaded between requests: loading torch and the model takes seconds
 _err = None
 _lock = threading.Lock()

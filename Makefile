@@ -24,7 +24,7 @@ ver: ## Show the version number
 
 .PHONY: install-desktop-file
 install-desktop-file: ## Generate a desktop icon for the GUI app
-	@cp negar_gui/icons/logo.png $(HOME)/.local/share/icons/negar.png
+	@cp negar_gui/resources/icons/logo.png $(HOME)/.local/share/icons/negar.png
 	@echo "Generating the desktop file..."
 	cat <<EOF > $(APP_DESKTOP).tmp
 	[Desktop Entry]
@@ -76,7 +76,7 @@ upload: setup publish-pypi publish-testpypi ## Publish the package to both PyPI 
 
 .PHONY: compile-nuitka
 compile-nuitka: setup ver ## Build a standalone binary with nuitka3
-	nuitka3 negar_gui/main.py --standalone --onefile --linux-onefile-icon=negar_gui/icons/logo.png \
+	nuitka3 negar_gui/main.py --standalone --onefile --linux-onefile-icon=negar_gui/resources/icons/logo.png \
 	--enable-plugin=pyqt5 --nofollow-import-to=tkinter --lto=no \
 	-o dist/negar-gui-v$(VER).bin \
 	--output-dir=dist --remove-output \
@@ -90,10 +90,10 @@ TESSDATA ?= /usr/share/tessdata
 .PHONY: compile-pyinstaller
 compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
 	@rm build/gui/ -rfv
-	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
+	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/resources/icons/logo.ico" \
 	--collect-data pyuca --collect-data qdarktheme --noupx negar_gui/main.py -n negar-gui-v$(VER) \
-	--add-data negar_gui/ts/fa.qm:ts \
-	--add-data negar_gui/help:help \
+	--add-data negar_gui/resources/ts/fa.qm:ts \
+	--add-data negar_gui/resources/help:help \
 	--add-data ../python-negar/negar/data/untouchable.dat:negar/data \
 	--add-binary "$$(command -v tesseract):tesseract" \
 	$$(ldd "$$(command -v tesseract)" | awk '/=> \// && $$3 !~ /\/(libc|libm|libpthread|libdl|librt|libresolv)\.so/ {print "--add-binary " $$3 ":tesseract"}') \
@@ -102,17 +102,17 @@ compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
 
 .PHONY: update-translations
 update-translations: ver ## Update and compile Qt translation files using PyQt tools
-	pylupdate5 -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
-	pylupdate5 -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
-	pylupdate5 -verbose negar_gui/ui/Ui_hwin.py -ts negar_gui/ts/fa-uihwin.ts
-	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui negar_gui/ui/about.ui negar_gui/ui/help.ui -ts negar_gui/ts/fa-uidialogs.ts
-	pylupdate5 -verbose negar_gui/main.py negar_gui/dialogs.py -ts negar_gui/ts/fa-main.ts
-	lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
+	pylupdate5 -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/resources/ts/fa-uimwin.ts
+	pylupdate5 -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/resources/ts/fa-uiuwin.ts
+	pylupdate5 -verbose negar_gui/ui/Ui_hwin.py -ts negar_gui/resources/ts/fa-uihwin.ts
+	lupdate negar_gui/ui/provider.ui negar_gui/ui/promptedit.ui negar_gui/ui/prompts.ui negar_gui/ui/usage.ui negar_gui/ui/about.ui negar_gui/ui/help.ui -ts negar_gui/resources/ts/fa-uidialogs.ts
+	pylupdate5 -verbose negar_gui/main.py negar_gui/dialogs.py -ts negar_gui/resources/ts/fa-main.ts
+	lrelease negar_gui/resources/ts/fa-*.ts -qm negar_gui/resources/ts/fa.qm
 
 .PHONY: compile-resources
 compile-resources: ver ## Compile the Qt resource file using PyQt tools
-	pyrcc5 negar_gui/resource.qrc -o negar_gui/resource_rc.py
-	sed "s/PyQt5/PyQt6/g" -i negar_gui/resource_rc.py
+	pyrcc5 negar_gui/resources/resource.qrc -o negar_gui/resources/resource_rc.py
+	sed "s/PyQt5/PyQt6/g" -i negar_gui/resources/resource_rc.py
 
 .PHONY: compile-ui
 compile-ui: ver ## Convert Qt UI files to Python scripts using PyQt6
@@ -128,7 +128,7 @@ compile-ui: ver ## Convert Qt UI files to Python scripts using PyQt6
 
 .PHONY: compile-resources-pyside2
 compile-resources-pyside2: ver ## Compile the Qt resource file using PySide2 tools
-	pyside2-rcc negar_gui/resource.qrc -o negar_gui/resource_rc.py
+	pyside2-rcc negar_gui/resources/resource.qrc -o negar_gui/resources/resource_rc.py
 
 .PHONY: compile-ui-pyside2
 compile-ui-pyside2: ver ## Convert Qt UI files to Python scripts using PySide2
@@ -137,10 +137,10 @@ compile-ui-pyside2: ver ## Convert Qt UI files to Python scripts using PySide2
 
 .PHONY: update-translations-pyside2
 update-translations-pyside2: ver ## Update and compile Qt translation files using PySide2 tools
-	pyside2-lupdate -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/ts/fa-uimwin.ts
-	pyside2-lupdate -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/ts/fa-uiuwin.ts
-	pyside2-lupdate -verbose negar_gui/main.py -ts negar_gui/ts/fa-main.ts
-	pyside2-lrelease negar_gui/ts/fa-*.ts -qm negar_gui/ts/fa.qm
+	pyside2-lupdate -verbose negar_gui/ui/Ui_mwin.py -ts negar_gui/resources/ts/fa-uimwin.ts
+	pyside2-lupdate -verbose negar_gui/ui/Ui_uwin.py -ts negar_gui/resources/ts/fa-uiuwin.ts
+	pyside2-lupdate -verbose negar_gui/main.py -ts negar_gui/resources/ts/fa-main.ts
+	pyside2-lrelease negar_gui/resources/ts/fa-*.ts -qm negar_gui/resources/ts/fa.qm
 
 .PHONY: docker-build
 docker-build: ## Build the Docker image

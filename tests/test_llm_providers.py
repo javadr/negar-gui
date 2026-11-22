@@ -1,6 +1,6 @@
 import pytest
 
-from negar_gui import llm_providers
+from negar_gui.services import llm_providers
 
 
 class TestPrompts:

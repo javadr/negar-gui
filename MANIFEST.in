@@ -1,5 +1,5 @@
 include README.md
-recursive-include negar_gui/icons *
-include negar_gui/ts/fa.qm
-include negar_gui/style.qss
-include negar_gui/help/*.html
+recursive-include negar_gui/resources/icons *
+include negar_gui/resources/ts/fa.qm
+include negar_gui/resources/style.qss
+include negar_gui/resources/help/*.html

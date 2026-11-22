@@ -1,4 +1,4 @@
-from negar_gui import versions
+from negar_gui.services import versions
 
 
 def test_requirements_come_from_the_package_metadata():

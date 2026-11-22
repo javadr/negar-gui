@@ -23,7 +23,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
 )
 
-from negar_gui import llm_providers, usage_log
+from negar_gui.services import llm_providers, usage_log
 from negar_gui.ui.Ui_promptedit import Ui_PromptEditDialog
 from negar_gui.ui.Ui_prompts import Ui_PromptsDialog
 from negar_gui.ui.Ui_provider import Ui_ProviderDialog

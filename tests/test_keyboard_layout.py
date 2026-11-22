@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from negar_gui import keyboard_layout as kl
+from negar_gui.services import keyboard_layout as kl
 
 
 @pytest.fixture

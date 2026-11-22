@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from negar_gui import tts
+from negar_gui.services import tts
 
 
 def fake(monkeypatch, tmp_path, body):

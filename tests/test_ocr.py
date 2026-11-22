@@ -4,7 +4,7 @@ import subprocess
 import pytest
 from PyQt6.QtGui import QColor, QFont, QGuiApplication, QImage, QPainter
 
-from negar_gui import ocr
+from negar_gui.services import ocr
 
 pytestmark = pytest.mark.skipif(not shutil.which("tesseract"), reason="tesseract not installed")
 
