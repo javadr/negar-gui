@@ -1,12 +1,16 @@
-"""Offline Persian text-to-speech: Cilla Mini (mehdi-hf/cilla-mini, pocket-tts based) on CPU.
+"""Offline Persian text-to-speech with a choice of two engines (ENGINES):
 
-Synthesis runs in a child process (python -m negar_gui.tts): importing torch inside the Qt process crashed the
+* cilla-lite: Cilla Lite (mehdi-hf/cilla-lite), same family and files layout as Cilla Mini, 109M parameters.
+* cilla: Cilla Mini (mehdi-hf/cilla-mini, pocket-tts based). Small (112 MB), loads fast, runs on the CPU.
+* chatterbox: Chatterbox Farsi (mehdi-hf/chatterbox-farsi, a Chatterbox fine-tune). Better voice and zero-shot cloning,
+  3 GB, slow to load; wants an NVIDIA GPU (it runs on the CPU, much slower than real time).
+
+Synthesis runs in a child process (python -m negar_gui.tts <engine>): importing torch inside the Qt process crashed the
 whole app (SIGSEGV in libtriton/LLVM) and a busy worker thread starved the UI. The child talks to the app through
 "@@{json}" lines on stdout; a crash there only fails the read-aloud request, and cancelling just kills it.
 
-The model repo ships its own text frontend (normalize_fa.py) and sentence pipeline (speak_fa.py); both are
-downloaded with the weights and reused here. torch / pocket-tts are optional and imported lazily. The repo is
-gated: each user accepts its terms once and logs in to Hugging Face. After the first download it runs offline.
+The packages are optional and imported lazily. Both model repos are gated: each user accepts the terms once and logs
+in to Hugging Face. After the first download they run offline.
 """
 
 import fnmatch
@@ -14,6 +18,7 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -21,22 +26,102 @@ import threading
 import wave
 from pathlib import Path
 
-MODEL_ID = "mehdi-hf/cilla-mini"
-VOICE = "prompts/parisa.wav"  # bundled in the model repo: a 3-10 s clip ending at a pause, as the model needs
 PAUSE_SEC = 0.15  # between sentences
-SKIP = ["phonon/*", "samples/*", "prompts/voice*.wav", "*.md", ".gitattributes"]  # Mac/browser runtimes, demos, docs
 FROZEN = getattr(sys, "frozen", False)  # PyInstaller build: no torch inside, and sys.executable is Negar itself
-INSTALL_HINT = (
-    "Read Aloud is not part of the standalone executable.\nInstall Negar-GUI with pip to use it (see the README)."
-    if FROZEN
-    else "Text-to-speech needs optional packages (Python 3.10+):\n"
-    'pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"'
-)
-GATED_HINT = (
-    "The voice model is gated. Once, in a browser: open https://huggingface.co/mehdi-hf/cilla-mini and accept the "
-    "terms. Then create a Read token at https://huggingface.co/settings/tokens and run:\n"
-    "hf auth login --token <your token>\n\n(The model is non-commercial: CC BY-NC 4.0.)"
-)
+CILLA = "mehdi-hf/cilla-mini"
+CILLA_LITE = "mehdi-hf/cilla-lite"
+CHATTERBOX = "mehdi-hf/chatterbox-farsi"
+CHATTERBOX_BASE = "ResembleAI/chatterbox"
+CILLA_SKIP = ["phonon/*", "samples/*", "prompts/voice*.wav", "*.md", ".gitattributes"]  # Mac/browser runtimes, demos
+LITE_SKIP = ["samples/*", "prompts/voice2.wav", "*.md", ".gitattributes"]  # demos, the second voice, docs
+CHATTERBOX_BASE_FILES = ["ve.pt", "s3gen.pt", "conds.pt", "grapheme_mtl_merged_expanded_v1.json", "Cangjie5_TC.json"]
+ENGINES = {
+    "cilla": {
+        "title": "Fast (Cilla Mini, CPU)",
+        "fa": "سریع (سیلا مینی، پردازنده)",
+        "packages": ("torch", "pocket_tts"),
+        "pip": 'pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"',
+        "page": f"https://huggingface.co/{CILLA}",
+        "files": {CILLA: {"ignore_patterns": CILLA_SKIP}},
+        "license": "(The model is non-commercial: CC BY-NC 4.0.)",
+        "license_fa": "(مدل غیرتجاری است: CC BY-NC 4.0.)",
+    },
+    "cilla-lite": {
+        "title": "Balanced (Cilla Lite, CPU)",
+        "fa": "متعادل (سیلا لایت، پردازنده)",
+        "packages": ("torch", "pocket_tts"),
+        "pip": 'pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"',
+        "page": f"https://huggingface.co/{CILLA_LITE}",
+        "files": {CILLA_LITE: {"ignore_patterns": LITE_SKIP}},
+        "license": "(The model is non-commercial: CC BY-NC 4.0.)",
+        "license_fa": "(مدل غیرتجاری است: CC BY-NC 4.0.)",
+    },
+    "chatterbox": {
+        "title": "High quality (Chatterbox Farsi, GPU recommended)",
+        "fa": "کیفیت بالا (چتربکس فارسی، کارت گرافیک توصیه می‌شود)",
+        "packages": ("torch", "chatterbox"),
+        "pip": 'pip install chatterbox-tts "setuptools<81"',
+        "page": f"https://huggingface.co/{CHATTERBOX}",
+        "files": {
+            CHATTERBOX: {"allow_patterns": ["t3_fa.safetensors", "voices/female.wav"]},
+            CHATTERBOX_BASE: {"allow_patterns": CHATTERBOX_BASE_FILES},
+        },
+        "license": (
+            '(The model is non-commercial; public use must say "Powered by OncillaAI Chatterbox Farsi". '
+            "Output carries an inaudible watermark.)"
+        ),
+        "license_fa": (
+            "(مدل غیرتجاری است؛ در استفادهٔ عمومی باید نوشته شود «Powered by OncillaAI Chatterbox Farsi». "
+            "خروجی دارای واترمارک نامحسوس است.)"
+        ),
+    },
+}
+DEFAULT_ENGINE = "cilla"
+_engine = DEFAULT_ENGINE  # the one the app asked for; the child process of another one is replaced on the next request
+
+
+def hints(name):
+    """(install hint, gated hint) in English and Persian for engine name: {english: persian}."""
+    e = ENGINES[name]
+    install = (
+        "Read Aloud is not part of the standalone executable.\nInstall Negar-GUI with pip to use it (see the README)."
+        if FROZEN
+        else f"Text-to-speech needs optional packages (Python 3.10+):\n{e['pip']}"
+    )
+    install_fa = (
+        "خواندن متن در فایل اجرایی مستقل وجود ندارد.\nNegar-GUI را با pip نصب کنید (به README نگاه کنید)."
+        if FROZEN
+        else f"تبدیل متن به گفتار به بسته‌های اختیاری نیاز دارد (پایتون ۳.۱۰ به بالا):\n{e['pip']}"
+    )
+    gated = (
+        f"The voice model is gated. Once, in a browser: open {e['page']} and accept the terms. Then create a Read "
+        "token at https://huggingface.co/settings/tokens and run:\nhf auth login --token <your token>\n\n"
+        + e["license"]
+    )
+    gated_fa = (
+        f"دسترسی به مدل صوتی محدود است. یک بار در مرورگر: {e['page']} را باز کنید و شرایط را بپذیرید. سپس در "
+        "https://huggingface.co/settings/tokens یک توکن Read بسازید و اجرا کنید:\nhf auth login --token <your token>"
+        "\n\n" + e["license_fa"]
+    )
+    return {install: install_fa, gated: gated_fa}
+
+
+def install_hint(name=None):
+    return next(iter(hints(name or _engine)))
+
+
+NO_PERSIAN = "The text has no Persian letters: English words and symbols are skipped, write them in Persian."
+NO_PERSIAN_FA = "متن حروف فارسی ندارد: واژه‌ها و نمادهای انگلیسی خوانده نمی‌شوند، آن‌ها را فارسی بنویسید."
+
+
+def localized(message, persian):
+    """The Persian version of one of our messages (any engine's), or the message itself."""
+    if not persian:
+        return message
+    table = {NO_PERSIAN: NO_PERSIAN_FA}
+    for name in ENGINES:
+        table.update(hints(name))
+    return table.get(message, message)
 
 
 class TTSError(RuntimeError):
@@ -47,23 +132,36 @@ class Cancelled(Exception):
     pass
 
 
-def _download(progress, stop, repos=(MODEL_ID,), skip=SKIP):
-    """Fetch the model repos into the hub cache, reporting progress(done_bytes, total_bytes). No-op when cached."""
+def _wanted(name, kw):
+    allow, ignore = kw.get("allow_patterns") or ["*"], kw.get("ignore_patterns") or []
+    return any(fnmatch.fnmatch(name, p) for p in allow) and not any(fnmatch.fnmatch(name, p) for p in ignore)
+
+
+def _cached(name):
+    """True when every file of the engine is already in the hub cache (no network needed)."""
+    from huggingface_hub import snapshot_download
+
+    for repo, kw in ENGINES[name]["files"].items():
+        snapshot_download(repo, local_files_only=True, **kw)
+
+
+def _download(name, progress, stop):
+    """Fetch the engine's files into the hub cache, reporting progress(done_bytes, total_bytes). No-op when cached."""
     from huggingface_hub import HfApi, snapshot_download
     from tqdm.auto import tqdm
 
+    files = ENGINES[name]["files"]
     try:
-        for repo in repos:
-            snapshot_download(repo, ignore_patterns=skip, local_files_only=True)
+        _cached(name)
         return
     except Exception:  # noqa: BLE001, S110  # any failure here just means: download
         pass
     api = HfApi()
     total = sum(
         f.size or 0
-        for repo in repos
+        for repo, kw in files.items()
         for f in api.model_info(repo, files_metadata=True).siblings
-        if not any(fnmatch.fnmatch(f.rfilename, pat) for pat in skip)
+        if _wanted(f.rfilename, kw)
     )
     done = [0]
 
@@ -77,17 +175,31 @@ def _download(progress, stop, repos=(MODEL_ID,), skip=SKIP):
                 progress(min(done[0], total), total)
             return super().update(n)
 
-    for repo in repos:
-        snapshot_download(repo, ignore_patterns=skip, tqdm_class=Bar)
+    for repo, kw in files.items():
+        snapshot_download(repo, tqdm_class=Bar, **kw)
 
 
-def available():
+def available(name=None):
     return (
-        not FROZEN and sys.version_info >= (3, 10) and all(importlib.util.find_spec(p) for p in ("torch", "pocket_tts"))
+        not FROZEN
+        and sys.version_info >= (3, 10)
+        and all(importlib.util.find_spec(p) for p in ENGINES[name or _engine]["packages"])
     )
 
 
-_CMD = [sys.executable, "-m", "negar_gui.tts"]  # tests replace this with a fake worker
+def engine():
+    return _engine
+
+
+def set_engine(name):
+    """Choose the engine for the next request; the running one (if another) is stopped."""
+    global _engine
+    if name in ENGINES and name != _engine:
+        _engine = name
+        shutdown()
+
+
+_CMD = [sys.executable, "-m", "negar_gui.tts"]  # the engine name is appended  # tests replace this with a fake worker
 _proc = None  # the engine stays loaded between requests: loading torch and the model takes seconds
 _err = None
 _lock = threading.Lock()
@@ -97,7 +209,7 @@ def _start():
     global _proc, _err
     _err = tempfile.TemporaryFile()  # noqa: SIM115  # stderr of the child, read on failure
     _proc = subprocess.Popen(
-        _CMD,
+        [*_CMD, _engine],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=_err,
@@ -118,9 +230,7 @@ def preload():
 
     def go():
         try:
-            from huggingface_hub import snapshot_download
-
-            snapshot_download(MODEL_ID, ignore_patterns=SKIP, local_files_only=True)
+            _cached(_engine)
         except Exception:  # noqa: BLE001  # not downloaded (or hub missing): the first Read Aloud will explain
             return
         with _lock:
@@ -149,7 +259,7 @@ def synthesize(text, stop, progress=lambda done, total: None, folder=None):
     """
     folder = folder or tempfile.mkdtemp(prefix="negar-tts-")
     if not available():
-        raise TTSError(INSTALL_HINT)
+        raise TTSError(install_hint())
     with _lock:  # one request at a time
         if _proc is None or _proc.poll() is not None:
             _start()
@@ -204,9 +314,11 @@ def _say(**msg):
     print("@@" + json.dumps(msg), flush=True)
 
 
-def _load():
-    """Download (first use) and load the model; returns what _speak needs, or None after reporting an error."""
-    from huggingface_hub import snapshot_download
+def _load(name):
+    """Download (first use) and load the engine; returns (speak, sample_rate), or None after reporting an error.
+
+    speak(text) yields the audio (float32 numpy) of each sentence of one segment.
+    """
     from huggingface_hub.errors import GatedRepoError, RepositoryNotFoundError
 
     last = [-2]
@@ -218,43 +330,92 @@ def _load():
             _say(p=[done, total])
 
     try:
-        _download(progress, threading.Event())
+        _download(name, progress, threading.Event())
     except (GatedRepoError, RepositoryNotFoundError):  # 401 until the terms are accepted and a token is set
-        return _say(err=GATED_HINT)
+        return _say(err=list(hints(name))[1])
     progress(0, 0)  # downloaded (or cached): now loading into memory
+    return _load_chatterbox() if name == "chatterbox" else _load_cilla(name)
+
+
+def _snap(repo):
+    from huggingface_hub import snapshot_download
+
+    return Path(snapshot_download(repo, local_files_only=True, **_repo_kw(repo)))
+
+
+def _repo_kw(repo):
+    return next(kw for e in ENGINES.values() for r, kw in e["files"].items() if r == repo)
+
+
+def _load_cilla(name):
     from pocket_tts import TTSModel
 
-    snap = Path(snapshot_download(MODEL_ID, ignore_patterns=SKIP, local_files_only=True))
+    repo, voice = (CILLA, "prompts/parisa.wav") if name == "cilla" else (CILLA_LITE, "prompts/voice1.wav")
+    snap = _snap(repo)
     sys.path.insert(0, str(snap))  # normalize_fa.py and speak_fa.py come with the weights
     import speak_fa as sf
 
     # The shipped config points at hf:// URLs; point it at the cached files so loading needs no network or login
     cfg = (snap / "config.yaml").read_text(encoding="utf-8")
-    for name in ("model.safetensors", "tokenizer.model"):
-        cfg = cfg.replace(f"hf://{MODEL_ID}/{name}", str((snap / name).resolve()))
+    for f in ("model.safetensors", "tokenizer.model"):
+        cfg = cfg.replace(f"hf://{repo}/{f}", str((snap / f).resolve()))
     with tempfile.TemporaryDirectory(prefix="negar-tts-cfg-") as tmp:
         cfg_path = Path(tmp) / "config.yaml"
         cfg_path.write_text(cfg, encoding="utf-8")
         model = TTSModel.load_model(config=str(cfg_path), temp=0.3, eos_threshold=-2.0)
-    state = model.get_state_for_audio_prompt(str(snap / VOICE))
-    return model, state, int(model.mimi.sample_rate), model.flow_lm.conditioner.tokenizer.sp, sf
+    state = model.get_state_for_audio_prompt(str(snap / voice))  # a 3-10 s clip ending at a pause
+    sr, sp = int(model.mimi.sample_rate), model.flow_lm.conditioner.tokenizer.sp
+
+    def speak(seg):
+        text = sf.normalize(sf.with_end(" ".join(seg.split())))
+        if not text.strip():
+            return
+        for piece in sf.split_sentences(text, lambda s: len(sp.encode(s))):
+            # one sentence per piece, never cut inside it: a cut made the model repeat words
+            audio = sf.generate_chunk(model, state, piece, frames_after_eos=0, sample_rate=sr, max_tokens=10_000)
+            yield sf.clean_start(sf.trim_silence(audio, sr), sr)
+
+    return speak, sr
+
+
+def _load_chatterbox():
+    import torch
+    from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+
+    mine, base = _snap(CHATTERBOX), _snap(CHATTERBOX_BASE)
+    with tempfile.TemporaryDirectory(prefix="negar-tts-ckpt-") as tmp:
+        # from_local wants one folder with fixed file names: link the cached files together (copy where links fail)
+        links = {n: base / n for n in CHATTERBOX_BASE_FILES}
+        links["t3_mtl23ls_v2.safetensors"] = mine / "t3_fa.safetensors"
+        for name, src in links.items():
+            try:
+                (Path(tmp) / name).symlink_to(src.resolve())
+            except OSError:
+                shutil.copy(src, Path(tmp) / name)
+        model = ChatterboxMultilingualTTS.from_local(tmp, "cuda" if torch.cuda.is_available() else "cpu")
+    voice = str(mine / "voices/female.wav")
+
+    def speak(seg):
+        text = " ".join(seg.split())
+        if not re.search(r"[\u0600-\u06FF]", text):
+            return
+        for _ in range(3):  # now and then the model stops almost at once: take such a cut-off take again
+            wav = model.generate(text, language_id="ar", audio_prompt_path=voice)  # Persian uses Arabic's token
+            if wav.shape[-1] / model.sr >= len(text) / 40:  # Persian speech runs at ~12-15 characters a second
+                break
+        yield wav.squeeze().cpu().numpy()
+
+    return speak, int(model.sr)
 
 
 def _speak(engine, folder, segs):
     import numpy as np
 
-    model, state, sr, sp, sf = engine
+    speak, sr = engine
     n = 0
     for seg_no, seg in enumerate(segs):
-        text = sf.normalize(sf.with_end(" ".join(seg.split())))
-        if not text.strip():
-            continue
-        for piece in sf.split_sentences(text, lambda s: len(sp.encode(s))):
-            # one sentence per piece, never cut inside it: a cut made the model repeat words
-            audio = sf.generate_chunk(model, state, piece, frames_after_eos=0, sample_rate=sr, max_tokens=10_000)
-            audio = np.concatenate(
-                [sf.clean_start(sf.trim_silence(audio, sr), sr), np.zeros(int(PAUSE_SEC * sr), np.float32)]
-            )
+        for audio in speak(seg):
+            audio = np.concatenate([audio.astype(np.float32), np.zeros(int(PAUSE_SEC * sr), np.float32)])
             audio = audio * min(4.0, 0.9 / max(float(np.abs(audio).max()), 1e-6))  # model output peaks near 0.25
             path = str(Path(folder) / f"{n}.wav")
             n += 1
@@ -265,12 +426,12 @@ def _speak(engine, folder, segs):
                 w.writeframes((audio.clip(-1, 1) * 32767).astype("<i2").tobytes())
             _say(wav=path, seg=seg_no)
     if not n:
-        _say(err="The text has no Persian letters: English words and symbols are skipped, write them in Persian.")
+        _say(err=NO_PERSIAN)
 
 
-def _serve():
+def _serve(name):
     """Load once, then answer one JSON request per stdin line until the app closes the pipe."""
-    engine = _load()
+    engine = _load(name)
     if not engine:
         return
     for line in sys.stdin:
@@ -284,6 +445,6 @@ def _serve():
 
 if __name__ == "__main__":
     try:
-        _serve()
+        _serve(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_ENGINE)
     except Exception as e:  # noqa: BLE001  # whatever it is, tell the app instead of dying with a traceback
         _say(err=f"Could not run the TTS model: {e}")

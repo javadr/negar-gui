@@ -14,7 +14,7 @@ def test_installed_and_missing():
 def test_show_prints_a_table(capsys):
     versions.show()
     out = capsys.readouterr().out
-    assert "Dependency" in out and "Installed" in out and "PyQt6" in out and "pocket-tts" in out
+    assert "Dependency" in out and "Installed" in out and "PyQt6" in out and "chatterbox-tts" in out
 
 
 def test_about_has_python_and_platform_and_the_logo_fits_a_terminal():

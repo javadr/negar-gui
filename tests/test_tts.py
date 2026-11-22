@@ -135,4 +135,14 @@ def test_preload_starts_the_engine_only_when_the_model_is_cached(monkeypatch, tm
 def test_frozen_build_is_unavailable_and_says_why(monkeypatch):
     monkeypatch.setattr(tts, "FROZEN", True)
     assert not tts.available()
-    assert "pip" in tts.INSTALL_HINT
+    assert "pip" in tts.install_hint()
+
+
+def test_set_engine_switches_and_restarts(monkeypatch):
+    monkeypatch.setattr(tts, "_engine", "cilla")
+    tts.set_engine("chatterbox")
+    assert tts.engine() == "chatterbox" and "chatterbox-tts" in tts.install_hint()
+    tts.set_engine("nonsense")
+    assert tts.engine() == "chatterbox"
+    assert "pocket-tts" in tts.install_hint("cilla")
+    assert tts.localized(tts.install_hint("cilla"), True) != tts.install_hint("cilla")

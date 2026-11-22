@@ -91,15 +91,16 @@ If a Persian keyboard layout is installed, Negar switches to it when it starts a
 The standalone executable includes Tesseract with English, Persian and German data. With a pip install you need your own: `pacman -S tesseract tesseract-data-fas tesseract-data-eng tesseract-data-deu`, or `apt install tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu`. On Wayland the screenshot is taken through the desktop's screenshot portal (GNOME and KDE have it; on other compositors install `xdg-desktop-portal-wlr`).
 
 ### Read aloud
-*Speech → Read Aloud* (Ctrl+Shift+R, or the speaker button in the toolbar) reads the selection, or the whole text, of the box you last worked in, in Persian with the offline [Cilla Mini](https://huggingface.co/mehdi-hf/cilla-mini) voice. Each box also has its own speaker button in its top-left corner that reads just that box. It runs on the CPU, nothing is sent to a cloud, and the sentence being read is highlighted. While reading, the buttons turn into Stop; press again to stop.
+*Speech → Read Aloud* (Ctrl+Shift+R, or the speaker button in the toolbar) reads the selection, or the whole text, of the box you last worked in, in Persian, offline. Each box also has its own speaker button in its top-left corner that reads just that box. Nothing is sent to a cloud, and the sentence being read is highlighted. While reading, the buttons turn into Stop; press again to stop.
+It is optional and **only available with a pip install** (not in the standalone executable). Pick the voice in *Speech → Voice*; the choice is remembered:
 
-It is optional and **only available with a pip install** (not in the standalone executable, which would grow by several hundred MB). Set it up once:
+| Voice | Install | Download | Notes |
+|---|---|---|---|
+| **Fast**: [Cilla Mini](https://huggingface.co/mehdi-hf/cilla-mini) (default) | `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"` or `pip install --extra-index-url https://download.pytorch.org/whl/cpu "negar-gui[tts]"` | about 112 MB | Runs on the CPU, loads in seconds, about 1 GB RAM. CC BY-NC 4.0. |
+| **Balanced**: [Cilla Lite](https://huggingface.co/mehdi-hf/cilla-lite) | same packages as Fast | about 450 MB | Same engine as Fast (CPU), a bigger model. CC BY-NC 4.0. |
+| **High quality**: [Chatterbox Farsi](https://huggingface.co/mehdi-hf/chatterbox-farsi) | `pip install chatterbox-tts "setuptools<81"` or `pip install "negar-gui[tts-hq]"` | about 3 GB | Better voice, but slow to load; wants an NVIDIA GPU (on the CPU it is much slower than real time). Non-commercial license; public use must display "Powered by OncillaAI Chatterbox Farsi"; output carries an inaudible watermark. |
 
-1. `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"` (Python 3.10+). Or, from a pip install of Negar: `pip install --extra-index-url https://download.pytorch.org/whl/cpu "negar-gui[tts]"`.
-2. The voice model is gated: open [its page](https://huggingface.co/mehdi-hf/cilla-mini) and accept the terms, create a *Read* token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens), then run `hf auth login --token <your token>`.
-3. Press Read Aloud. The model (about 112 MB) downloads once, with a progress bar.
-
-The model is licensed CC BY-NC 4.0, so it is for non-commercial use only. It loads in the background when Negar starts and uses about 1 GB of RAM while the app is open. Only Persian letters are read: write English words and numbers in Persian.
+Python 3.10+. Either model is gated: open its page and accept the terms, create a *Read* token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens), then run `hf auth login --token <your token>`. The model downloads the first time you press Read Aloud, with a progress bar, and loads in the background when Negar starts. Only Persian letters are read: write English words and numbers in Persian.
 
 ### AI grammar fix
 The AI button sends the input text (typed, pasted or read by the screen reader) to a language model and shows the model's answer in the output pane. Choose or edit the instruction in *Assistant → Manage Prompts...*, and see requests and success rate per provider and prompt in *Assistant → Usage Report...*.

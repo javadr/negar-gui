@@ -1,4 +1,7 @@
 # Changelog
+## [1.5.10] - 2026-11-22
+### Added
+- Speech → Voice menu picks the Read Aloud voice: Fast (Cilla Mini, default), Balanced (Cilla Lite) or High quality (Chatterbox Farsi, optional `negar-gui[tts-hq]`). Choice is remembered; Read Aloud messages follow the UI language.
 
 ## [1.5.9] - 2026-11-21
 

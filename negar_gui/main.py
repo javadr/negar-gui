@@ -438,7 +438,15 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.tts_done.connect(self._tts_on_done)
         self._tts_gen, self._tts_stop, self._tts_queue, self._tts_dir, self._tts_player = 0, None, [], None, None
         self._tts_dlg, self._tts_busy, self._tts_ed, self._tts_spans = None, False, None, []
-        tts.preload()  # the model loads while the user starts typing
+        self._tts_actions = QtGui.QActionGroup(self)  # which engine reads aloud; exclusive, saved in the settings
+        self.menuVoice = self.menuSpeech.addMenu("")
+        for name in tts.ENGINES:
+            a = self.menuVoice.addAction("")
+            a.setCheckable(True)
+            a.setData(name)
+            self._tts_actions.addAction(a)
+        self._tts_actions.triggered.connect(lambda a: self._set_tts_engine(a.data()))
+        self._set_tts_engine(tts.DEFAULT_ENGINE, preload=False)
         self._ocr_actions = []
         for _, code in OCR_CHOICES:
             a = self.menuOCR.addAction("")
@@ -839,7 +847,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if not text.strip():
             return statusbar_timeout(self, _translate("MainWindow", "There is no text to read!"))
         if not tts.available():
-            return QMessageBox.information(self, "Negar", tts.INSTALL_HINT)
+            return self._tts_box(QMessageBox.Icon.Information, tts.install_hint())
         try:
             from PyQt6.QtMultimedia import QAudioOutput, QMediaPlayer
         except ImportError:
@@ -932,13 +940,34 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         if not self._tts_busy:  # the player's own state lags behind play(), and chunks now arrive within milliseconds
             self._tts_next()
 
+    def _set_tts_engine(self, name, preload=True):
+        tts.set_engine(name)
+        for a in self._tts_actions.actions():
+            a.setChecked(a.data() == name)
+        if preload:
+            tts.preload()  # the model loads while the user starts typing
+
+    def _retranslate_tts_engines(self):
+        persian = self.settings.get("settings", {}).get("language") == "Persian"  # not loaded yet at startup
+        self.menuVoice.setTitle("صدا" if persian else "&Voice")
+        for a in self._tts_actions.actions():
+            e = tts.ENGINES[a.data()]
+            a.setText(e["fa"] if persian else e["title"])
+
+    def _tts_box(self, icon, message):
+        persian = self.settings["settings"]["language"] == "Persian"
+        box = QMessageBox(icon, "Negar", tts.localized(message, persian), QMessageBox.StandardButton.Ok, self)
+        if persian:  # Qt's own translations are not loaded, so the stock button stays English
+            box.button(QMessageBox.StandardButton.Ok).setText("تأیید")
+        box.exec()
+
     def _tts_on_done(self, gen, error):
         if gen != self._tts_gen:
             return
         self._tts_finished = True
         if error:
             self._tts_halt()
-            QMessageBox.warning(self, "Negar", error)
+            self._tts_box(QMessageBox.Icon.Warning, error)
         elif not self._tts_busy and not self._tts_queue:
             self._tts_halt()
 
@@ -1037,6 +1066,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
         self.menuOCR.setTitle(_translate("MainWindow", "&OCR"))
         for a, (title, _) in zip(self._ocr_actions, OCR_CHOICES):
             a.setText(_translate("MainWindow", title))
+        self._retranslate_tts_engines()
 
     def qrcode(self):
         # Check if Shift is held when button clicked
@@ -1290,6 +1320,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             # fmt: on
             self.set_ui_language()
             self._set_ocr_langs(self.settings["settings"].get("ocr-language", ["fas", "eng"]))
+            self._set_tts_engine(self.settings["settings"].get("tts-engine", tts.DEFAULT_ENGINE))
             # connect interactive clipboard slot if it is checked
             if self.actionInteractive_Clipboard.isChecked():
                 self.clipboard.dataChanged.connect(self.onClipboardChanged)
@@ -1331,6 +1362,7 @@ class MyWindow(WindowSettings, QMainWindow, Ui_MainWindow):
             "settings": {
                 "interactive-clipboard": self.actionInteractive_Clipboard.isChecked(),
                 "ocr-language": self._ocr_langs(),
+                "tts-engine": tts.engine(),
                 "persian-keyboard": self.actionPersian_Keyboard.isChecked(),
                 "language": self.settings.get("settings", {"language": "English"})["language"],
                 "editing-option": {
