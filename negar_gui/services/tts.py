@@ -1,5 +1,6 @@
-"""Offline Persian text-to-speech with a choice of two engines (ENGINES):
+"""Offline Persian text-to-speech with a choice of engines (ENGINES):
 
+* tiny-ava: Tiny Ava (mehdi-hf/tiny-ava, 4.5M parameters, ONNX Runtime, no torch). Tiny (~30 MB), open repo, CPU only.
 * cilla-lite: Cilla Lite (mehdi-hf/cilla-lite), same family and files layout as Cilla Mini, 109M parameters.
 * cilla: Cilla Mini (mehdi-hf/cilla-mini, pocket-tts based). Small (112 MB), loads fast, runs on the CPU.
 * chatterbox: Chatterbox Farsi (mehdi-hf/chatterbox-farsi, a Chatterbox fine-tune). Better voice and zero-shot cloning,
@@ -23,6 +24,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import urllib.request
 import wave
 from pathlib import Path
 
@@ -30,12 +32,27 @@ PAUSE_SEC = 0.15  # between sentences
 FROZEN = getattr(sys, "frozen", False)  # PyInstaller build: no torch inside, and sys.executable is Negar itself
 CILLA = "mehdi-hf/cilla-mini"
 CILLA_LITE = "mehdi-hf/cilla-lite"
+TINY = "mehdi-hf/tiny-ava"
+TINY_G2P = (
+    "https://raw.githubusercontent.com/mallahyari/tiny-ava/main/demo/assets/g2p/"  # the G2P models are not on the hub
+)
 CHATTERBOX = "mehdi-hf/chatterbox-farsi"
 CHATTERBOX_BASE = "ResembleAI/chatterbox"
 CILLA_SKIP = ["phonon/*", "samples/*", "prompts/voice*.wav", "*.md", ".gitattributes"]  # Mac/browser runtimes, demos
 LITE_SKIP = ["samples/*", "prompts/voice2.wav", "*.md", ".gitattributes"]  # demos, the second voice, docs
 CHATTERBOX_BASE_FILES = ["ve.pt", "s3gen.pt", "conds.pt", "grapheme_mtl_merged_expanded_v1.json", "Cangjie5_TC.json"]
 ENGINES = {
+    "tiny-ava": {
+        "title": "Tiny (Tiny Ava, CPU, 30 MB)",
+        "fa": "ریز (آوای ریزمیزه، پردازنده، ۳۰ مگابایت)",
+        "packages": ("onnxruntime", "numpy"),
+        "pip": "pip install onnxruntime numpy",
+        "page": f"https://huggingface.co/{TINY}",
+        "files": {TINY: {"allow_patterns": ["onnx/*"]}},
+        "urls": [TINY_G2P + "g2p_encoder.onnx", TINY_G2P + "g2p_decoder.onnx"],
+        "license": '(CC BY 4.0: public use must say "Powered by tiny-ava (Mehdi Allahyari / OncillaAI)".)',
+        "license_fa": "(CC BY 4.0: در استفادهٔ عمومی باید نوشته شود «Powered by tiny-ava (Mehdi Allahyari / OncillaAI)».)",
+    },
     "cilla": {
         "title": "Fast (Cilla Mini, CPU)",
         "fa": "سریع (سیلا مینی، پردازنده)",
@@ -143,6 +160,15 @@ def _cached(name):
 
     for repo, kw in ENGINES[name]["files"].items():
         snapshot_download(repo, local_files_only=True, **kw)
+    for url in ENGINES[name].get("urls", []):
+        if not _url_path(url).exists():
+            raise FileNotFoundError(url)
+
+
+def _url_path(url):
+    from huggingface_hub.constants import HF_HOME
+
+    return Path(HF_HOME) / "negar-tts" / url.rsplit("/", 1)[1]
 
 
 def _download(name, progress, stop):
@@ -177,6 +203,15 @@ def _download(name, progress, stop):
 
     for repo, kw in files.items():
         snapshot_download(repo, tqdm_class=Bar, **kw)
+    for url in ENGINES[name].get("urls", []):
+        path = _url_path(url)
+        if not path.exists():
+            if stop.is_set():
+                raise Cancelled
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(".part")  # never leave a truncated model that _cached would accept
+            urllib.request.urlretrieve(url, tmp)  # noqa: S310  # fixed https URL above
+            tmp.replace(path)
 
 
 def available(name=None):
@@ -338,7 +373,8 @@ def _load(name):
     except (GatedRepoError, RepositoryNotFoundError):  # 401 until the terms are accepted and a token is set
         return _say(err=list(hints(name))[1])
     progress(0, 0)  # downloaded (or cached): now loading into memory
-    return _load_chatterbox() if name == "chatterbox" else _load_cilla(name)
+    loaders = {"chatterbox": _load_chatterbox, "tiny-ava": _load_tiny}
+    return loaders[name]() if name in loaders else _load_cilla(name)
 
 
 def _snap(repo):
@@ -380,6 +416,112 @@ def _load_cilla(name):
             yield sf.clean_start(sf.trim_silence(audio, sr), sr)
 
     return speak, sr
+
+
+TINY_IPA = {
+    "a": "a",
+    "A": "ɑ",
+    "e": "e",
+    "o": "o",
+    "i": "i",
+    "u": "u",
+    "p": "p",
+    "b": "b",
+    "t": "t",
+    "d": "d",
+    "k": "k",
+    "g": "ɡ",
+    "q": "q",
+    "?": "ʔ",
+    "f": "f",
+    "v": "v",
+    "s": "s",
+    "z": "z",
+    "S": "ʃ",
+    "Z": "ʒ",
+    "x": "x",
+    "h": "h",
+    "C": "tʃ",
+    "j": "dʒ",
+    "m": "m",
+    "n": "n",
+    "l": "l",
+    "r": "r",
+    "y": "j",
+}  # from the tiny-ava README
+TINY_VOWELS = {"a", "e", "o", "i", "u", "ɑ"}
+
+
+def _load_tiny():
+    import numpy as np
+    import onnxruntime as ort
+
+    snap = _snap(TINY) / "onnx"
+    g2p = [ort.InferenceSession(str(_url_path(u))) for u in ENGINES["tiny-ava"]["urls"]]
+    model = ort.InferenceSession(str(snap / "tiny-ava-parisa.onnx"))
+    symbols = json.loads((snap / "tiny-ava-parisa.json").read_text(encoding="utf-8"))["symbols"]
+    sym2id, phones = {s: i for i, s in enumerate(symbols)}, set(symbols[17:])
+
+    def phonemes(text):
+        enc, dec = g2p
+        ids = np.array([[b + 3 for b in text.encode("utf-8")] + [1]], dtype=np.int64)
+        attn = np.ones_like(ids)
+        (hidden,) = enc.run(None, {"input_ids": ids, "attention_mask": attn})
+        out = [0]
+        for _ in range(256):
+            (logits,) = dec.run(
+                None,
+                {
+                    "decoder_input_ids": np.array([out], dtype=np.int64),
+                    "encoder_hidden_states": hidden,
+                    "encoder_attention_mask": attn,
+                },
+            )
+            nxt = int(logits[0, -1].argmax())
+            if nxt == 1:
+                break
+            out.append(nxt)
+        return bytes(i - 3 for i in out[1:] if 3 <= i <= 258).decode("utf-8", errors="ignore").strip()
+
+    def speak(seg):
+        text = " ".join(seg.split())
+        if not re.search(r"[\u0600-\u06FF]", text):
+            return
+        syms, stress = ["<bos>"], [0]
+        for word in phonemes(text).split():
+            if syms[-1] in phones:
+                syms.append("<sp>")
+                stress.append(0)
+            stem, ez = (
+                (word[:-3], "ye") if word.endswith("-ye") else (word[:-2], "e") if word.endswith("-e") else (word, "")
+            )
+            stem = stem.replace("-", "")
+            if len(stem) >= 2 and stem[0] == "?" and stem[1] in "aAeoiu":
+                stem = stem[1:]
+            phs = [[TINY_IPA[c], 0] for c in stem if c in TINY_IPA]
+            for ph in reversed(phs):  # stress the last vowel
+                if ph[0] in TINY_VOWELS:
+                    ph[1] = 1
+                    break
+            phs += [[TINY_IPA[c], 2 if TINY_IPA[c] in TINY_VOWELS else 0] for c in ez if c in TINY_IPA]
+            syms += [p for p, _ in phs]
+            stress += [lvl for _, lvl in phs]
+        syms += [".", "<eos>"]
+        stress += [0, 0]
+        audio, _ = model.run(
+            None,
+            {
+                "tokens": np.array([[sym2id[s] for s in syms]], dtype=np.int64),
+                "stress": np.array([stress], dtype=np.int64),
+                "voice": np.array([0], dtype=np.int64),
+                "speed": np.array([1.0], dtype=np.float32),
+                "pitch_shift": np.array([0.0], dtype=np.float32),
+                "pitch_range": np.array([1.05], dtype=np.float32),
+            },
+        )
+        yield audio[0]
+
+    return speak, 24000
 
 
 def _load_chatterbox():

@@ -96,6 +96,7 @@ It is optional and **only available with a pip install** (not in the standalone 
 
 | Voice | Install | Download | Notes |
 |---|---|---|---|
+| **Tiny**: [Tiny Ava](https://huggingface.co/mehdi-hf/tiny-ava) | `pip install onnxruntime numpy` or `pip install "negar-gui[tts-tiny]"` | about 30 MB | CPU only, no torch, not gated, no login. One voice (Parisa), plainer quality. CC BY 4.0; public use must display "Powered by tiny-ava (Mehdi Allahyari / OncillaAI)". |
 | **Fast**: [Cilla Mini](https://huggingface.co/mehdi-hf/cilla-mini) (default) | `pip install --extra-index-url https://download.pytorch.org/whl/cpu torch "pocket-tts>=4.0.1"` or `pip install --extra-index-url https://download.pytorch.org/whl/cpu "negar-gui[tts]"` | about 112 MB | Runs on the CPU, loads in seconds, about 1 GB RAM. CC BY-NC 4.0. |
 | **Balanced**: [Cilla Lite](https://huggingface.co/mehdi-hf/cilla-lite) | same packages as Fast | about 450 MB | Same engine as Fast (CPU), a bigger model. CC BY-NC 4.0. |
 | **High quality**: [Chatterbox Farsi](https://huggingface.co/mehdi-hf/chatterbox-farsi) | `pip install chatterbox-tts "setuptools<81"` or `pip install "negar-gui[tts-hq]"` | about 3 GB | Better voice, but slow to load; wants an NVIDIA GPU (on the CPU it is much slower than real time). Non-commercial license; public use must display "Powered by OncillaAI Chatterbox Farsi"; output carries an inaudible watermark. |

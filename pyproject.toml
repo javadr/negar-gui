@@ -34,6 +34,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tts = ["torch", "pocket-tts>=4.0.1"]  # Read Aloud, fast voice; install torch from the CPU index, see the README
+tts-tiny = ["onnxruntime", "numpy"]  # Read Aloud, tiny voice (no torch)
 tts-hq = ["chatterbox-tts", "setuptools<81"]  # Read Aloud, high-quality voice (brings torch)
 
 [project.urls]

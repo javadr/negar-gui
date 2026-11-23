@@ -21,7 +21,7 @@ _GLYPHS = [
 _NEGAR = ["".join(g[r] + " " for g in _GLYPHS).rstrip() for r in range(6)]
 _GRADIENT = ("#f5c2e7", "#cba6f7", "#89b4fa")  # pink, mauve, blue: left to right
 _SHADE = "#313244"  # the shadow is the face colour pulled this far toward the dark
-OPTIONAL = ("torch", "pocket-tts", "chatterbox-tts")  # Read Aloud, see the README
+OPTIONAL = ("torch", "pocket-tts", "chatterbox-tts", "onnxruntime")  # Read Aloud, see the README
 
 
 def requirements():

@@ -1,4 +1,8 @@
 # Changelog
+## [1.5.11] - 2026-11-24
+### Added
+- A fourth Read Aloud voice, Tiny (Tiny Ava, Persian: آوای ریزمیزه): about 30 MB, CPU only, no torch and no Hugging Face login. Install with `pip install onnxruntime numpy` or `negar-gui[tts-tiny]`. CC BY 4.0.
+
 ## [1.5.10] - 2026-11-22
 ### Added
 - Speech → Voice menu picks the Read Aloud voice: Fast (Cilla Mini, default), Balanced (Cilla Lite) or High quality (Chatterbox Farsi, optional `negar-gui[tts-hq]`). Choice is remembered; Read Aloud messages follow the UI language.
