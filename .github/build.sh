@@ -14,15 +14,22 @@ for lang in fas eng deu; do
 	tess_args+=(--add-data "$tessdata/$lang.traineddata:tesseract/tessdata")
 done
 
+# Bundle the Tiny Ava voice (~30 MB, onnxruntime, CC BY 4.0) for Read Aloud; torch-based voices stay out
+mkdir -p tinyava-bundle
+for f in tiny-ava-parisa.onnx tiny-ava-parisa.json; do curl -fsSL "https://huggingface.co/mehdi-hf/tiny-ava/resolve/main/onnx/$f" -o "tinyava-bundle/$f"; done
+for f in g2p_encoder.onnx g2p_decoder.onnx; do curl -fsSL "https://raw.githubusercontent.com/mallahyari/tiny-ava/main/demo/assets/g2p/$f" -o "tinyava-bundle/$f"; done
+
 pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/icons/logo.ico" \
 	--collect-data pyuca --collect-data qdarktheme --noupx negar_gui/main.py -n "negar-gui-v$version" \
 	--add-data ./python-negar/negar/data/immutable.words:negar/data \
 	--add-data negar_gui/ts/fa.qm:ts \
 	--add-data negar_gui/help:help \
 	--add-data negar_gui/icons:icons \
+	--add-data tinyava-bundle:tinyava \
+	--exclude-module torch --exclude-module pocket_tts --exclude-module chatterbox --exclude-module huggingface_hub \
 	"${tess_args[@]}"
 
 chmod +x "dist/negar-gui-v$version"
 
 # Cleanup after build
-rm -rf '.\python-negar' 2>&1
+rm -rf '.\python-negar' tinyava-bundle 2>&1

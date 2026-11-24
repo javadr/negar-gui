@@ -92,7 +92,7 @@ The standalone executable includes Tesseract with English, Persian and German da
 
 ### Read aloud
 *Speech → Read Aloud* (Ctrl+Shift+R, or the speaker button in the toolbar) reads the selection, or the whole text, of the box you last worked in, in Persian, offline. Each box also has its own speaker button in its top-left corner that reads just that box. Nothing is sent to a cloud, and the sentence being read is highlighted. While reading, the buttons turn into Stop; press again to stop.
-It is optional and **only available with a pip install** (not in the standalone executable). Pick the voice in *Speech → Voice*; the choice is remembered:
+The standalone executable includes the Tiny voice (about 30 MB, no download, nothing to install); the other voices need a pip install. Pick the voice in *Speech → Voice*; the choice is remembered:
 
 | Voice | Install | Download | Notes |
 |---|---|---|---|

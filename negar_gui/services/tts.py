@@ -29,7 +29,8 @@ import wave
 from pathlib import Path
 
 PAUSE_SEC = 0.15  # between sentences
-FROZEN = getattr(sys, "frozen", False)  # PyInstaller build: no torch inside, and sys.executable is Negar itself
+FROZEN = getattr(sys, "frozen", False)  # PyInstaller build: only Tiny Ava is inside (no torch), sys.executable is Negar
+BUNDLE = Path(getattr(sys, "_MEIPASS", ".")) / "tinyava"  # the models of the standalone executable
 CILLA = "mehdi-hf/cilla-mini"
 CILLA_LITE = "mehdi-hf/cilla-lite"
 TINY = "mehdi-hf/tiny-ava"
@@ -94,6 +95,8 @@ ENGINES = {
     },
 }
 DEFAULT_ENGINE = "cilla"
+if FROZEN:  # the other engines need torch, which the executable does not carry
+    ENGINES, DEFAULT_ENGINE = {"tiny-ava": ENGINES["tiny-ava"]}, "tiny-ava"
 _engine = DEFAULT_ENGINE  # the one the app asked for; the child process of another one is replaced on the next request
 
 
@@ -215,11 +218,10 @@ def _download(name, progress, stop):
 
 
 def available(name=None):
-    return (
-        not FROZEN
-        and sys.version_info >= (3, 10)
-        and all(importlib.util.find_spec(p) for p in ENGINES[name or _engine]["packages"])
-    )
+    name = name or _engine
+    if FROZEN:
+        return name == "tiny-ava"  # models and onnxruntime are inside the executable
+    return sys.version_info >= (3, 10) and all(importlib.util.find_spec(p) for p in ENGINES[name]["packages"])
 
 
 def engine():
@@ -234,11 +236,11 @@ def set_engine(name):
         shutdown()
 
 
-_CMD = [
-    sys.executable,
-    "-m",
-    "negar_gui.services.tts",
-]  # the engine name is appended  # tests replace this with a fake worker
+_CMD = (
+    [sys.executable, "--tts-worker"]  # main.py hands this over to worker()
+    if FROZEN
+    else [sys.executable, "-m", "negar_gui.services.tts"]
+)  # the engine name is appended  # tests replace this with a fake worker
 _proc = None  # the engine stays loaded between requests: loading torch and the model takes seconds
 _err = None
 _lock = threading.Lock()
@@ -269,7 +271,7 @@ def preload():
 
     def go():
         try:
-            _cached(_engine)
+            FROZEN or _cached(_engine)
         except Exception:  # noqa: BLE001  # not downloaded (or hub missing): the first Read Aloud will explain
             return
         with _lock:
@@ -358,6 +360,8 @@ def _load(name):
 
     speak(text) yields the audio (float32 numpy) of each sentence of one segment.
     """
+    if FROZEN:  # nothing to download: the models are in the executable
+        return _load_tiny()
     from huggingface_hub.errors import GatedRepoError, RepositoryNotFoundError
 
     last = [-2]
@@ -456,8 +460,11 @@ def _load_tiny():
     import numpy as np
     import onnxruntime as ort
 
-    snap = _snap(TINY) / "onnx"
-    g2p = [ort.InferenceSession(str(_url_path(u))) for u in ENGINES["tiny-ava"]["urls"]]
+    snap = BUNDLE if FROZEN else _snap(TINY) / "onnx"
+    g2p = [
+        ort.InferenceSession(str(BUNDLE / u.rsplit("/", 1)[1] if FROZEN else _url_path(u)))
+        for u in ENGINES["tiny-ava"]["urls"]
+    ]
     model = ort.InferenceSession(str(snap / "tiny-ava-parisa.onnx"))
     symbols = json.loads((snap / "tiny-ava-parisa.json").read_text(encoding="utf-8"))["symbols"]
     sym2id, phones = {s: i for i, s in enumerate(symbols)}, set(symbols[17:])
@@ -587,6 +594,14 @@ def _serve(name):
         except Exception as e:  # noqa: BLE001  # a bad request must not take the loaded model down
             _say(err=f"Could not run the TTS model: {e}")
         _say(done=1)
+
+
+def worker(name):
+    """Entry of the child process in the standalone executable (see main.py)."""
+    if sys.stdin is None or sys.stdout is None:  # a windowed exe may start without console handles
+        sys.stdin = open(0, encoding="utf-8", closefd=False)  # noqa: SIM115
+        sys.stdout = open(1, "w", encoding="utf-8", closefd=False)  # noqa: SIM115
+    _serve(name)
 
 
 if __name__ == "__main__":

@@ -132,10 +132,10 @@ def test_preload_starts_the_engine_only_when_the_model_is_cached(monkeypatch, tm
     assert run(tmp_path) == [(str(pid), 0)]  # the request is served by the preloaded process
 
 
-def test_frozen_build_is_unavailable_and_says_why(monkeypatch):
+def test_frozen_build_has_only_tiny_ava(monkeypatch):
     monkeypatch.setattr(tts, "FROZEN", True)
-    assert not tts.available()
-    assert "pip" in tts.install_hint()
+    assert tts.available("tiny-ava") and not tts.available("cilla")
+    assert "pip" in tts.install_hint("cilla")
 
 
 def test_set_engine_switches_and_restarts(monkeypatch):

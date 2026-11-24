@@ -87,13 +87,24 @@ compile-nuitka: setup ver ## Build a standalone binary with nuitka3
 # Tesseract language data bundled into the exe for the screen reader (tessdata_fast keeps it small)
 TESSDATA ?= /usr/share/tessdata
 
+# Tiny Ava voice bundled into the exe for Read Aloud (no torch-based voice is)
+TINYAVA_HF = https://huggingface.co/mehdi-hf/tiny-ava/resolve/main/onnx/
+TINYAVA_GH = https://raw.githubusercontent.com/mallahyari/tiny-ava/main/demo/assets/g2p/
+
+tinyava-bundle:
+	mkdir -p $@
+	for f in tiny-ava-parisa.onnx tiny-ava-parisa.json; do curl -fsSL $(TINYAVA_HF)$$f -o $@/$$f; done
+	for f in g2p_encoder.onnx g2p_decoder.onnx; do curl -fsSL $(TINYAVA_GH)$$f -o $@/$$f; done
+
 .PHONY: compile-pyinstaller
-compile-pyinstaller: setup ver ## Build a standalone binary with PyInstaller
+compile-pyinstaller: setup ver tinyava-bundle ## Build a standalone binary with PyInstaller
 	@rm build/gui/ -rfv
 	pyinstaller -p negar_gui --onefile --windowed --clean -i"negar_gui/resources/icons/logo.ico" \
 	--collect-data pyuca --collect-data qdarktheme --noupx negar_gui/main.py -n negar-gui-v$(VER) \
 	--add-data negar_gui/resources/ts/fa.qm:ts \
 	--add-data negar_gui/resources/help:help \
+	--add-data tinyava-bundle:tinyava \
+	--exclude-module torch --exclude-module pocket_tts --exclude-module chatterbox --exclude-module huggingface_hub \
 	--add-data ../python-negar/negar/data/untouchable.dat:negar/data \
 	--add-binary "$$(command -v tesseract):tesseract" \
 	$$(ldd "$$(command -v tesseract)" | awk '/=> \// && $$3 !~ /\/(libc|libm|libpthread|libdl|librt|libresolv)\.so/ {print "--add-binary " $$3 ":tesseract"}') \

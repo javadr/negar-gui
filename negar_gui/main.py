@@ -105,6 +105,10 @@ if getattr(sys, "frozen", False):
 else:
     NEGARGUIPATH = (Path(__file__).parent / "resources").as_posix()
 
+if sys.argv[1:2] == ["--tts-worker"]:  # the standalone exe runs Read Aloud's engine as a copy of itself
+    tts.worker(sys.argv[2])
+    sys.exit()
+
 collator = Collator()
 
 # Configure the logging module

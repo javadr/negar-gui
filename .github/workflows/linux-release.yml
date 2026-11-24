@@ -46,7 +46,7 @@ jobs:
         # an older negar-gui from PyPI still pulls the original pyqtdarktheme (theme-less 0.1.7 on Python 3.12+); replace it with the fork
         pip uninstall -y pyqtdarktheme
         pip install --force-reinstall --no-deps pyqtdarktheme-fork darkdetect
-        pip install PyInstaller
+        pip install PyInstaller onnxruntime numpy
 
     - name: 'Clone Python-negar repository'
       shell: bash
