@@ -29,12 +29,12 @@ foreach ($f in "g2p_encoder.onnx", "g2p_decoder.onnx") { Invoke-WebRequest "http
 & "python" -m PyInstaller -p negar_gui --onefile --windowed --clean --collect-data pyuca --collect-data qdarktheme `
     --noupx negar_gui/main.py -n "negar-gui-v$versionStr" `
     --add-data "./python-negar/negar/data/immutable.words;negar\data" `
-    --add-data "negar_gui/ts/fa.qm;ts" `
-    --add-data "negar_gui/help;help" `
-    --add-data "negar_gui/icons;icons" `
+    --add-data "negar_gui/resources/ts/fa.qm;ts" `
+    --add-data "negar_gui/resources/help;help" `
+    --add-data "negar_gui/resources/icons;icons" `
     --add-data "$tiny;tinyava" `
     --exclude-module torch --exclude-module pocket_tts --exclude-module chatterbox --exclude-module huggingface_hub `
-    --icon ".\negar_gui\icons\logo.png" `
+    --icon ".\negar_gui\resources\icons\logo.png" `
     @tessArgs
 
 # Cleanup after build
