@@ -104,12 +104,12 @@ def hints(name):
     """(install hint, gated hint) in English and Persian for engine name: {english: persian}."""
     e = ENGINES[name]
     install = (
-        "Read Aloud is not part of the standalone executable.\nInstall Negar-GUI with pip to use it (see the README)."
+        "Read Aloud is only in the ocr-tts build of the standalone executable.\nDownload that one, or install Negar-GUI with pip (see the README)."
         if FROZEN
         else f"Text-to-speech needs optional packages (Python 3.10+):\n{e['pip']}"
     )
     install_fa = (
-        "خواندن متن در فایل اجرایی مستقل وجود ندارد.\nNegar-GUI را با pip نصب کنید (به README نگاه کنید)."
+        "خواندن متن فقط در نسخهٔ ocr-tts فایل اجرایی مستقل هست.\nآن نسخه را بگیرید یا Negar-GUI را با pip نصب کنید (به README نگاه کنید)."
         if FROZEN
         else f"تبدیل متن به گفتار به بسته‌های اختیاری نیاز دارد (پایتون ۳.۱۰ به بالا):\n{e['pip']}"
     )
@@ -220,7 +220,7 @@ def _download(name, progress, stop):
 def available(name=None):
     name = name or _engine
     if FROZEN:
-        return name == "tiny-ava"  # models and onnxruntime are inside the executable
+        return name == "tiny-ava" and BUNDLE.exists()  # only the ocr-tts build carries the models and onnxruntime
     return sys.version_info >= (3, 10) and all(importlib.util.find_spec(p) for p in ENGINES[name]["packages"])
 
 

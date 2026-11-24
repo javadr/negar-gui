@@ -24,6 +24,11 @@ permissions: write-all
 jobs:
   linux-build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1  # the jobs all publish to the same release: one at a time avoids a create race
+      matrix:
+        variant: [basic, ocr, ocr-tts]
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -33,6 +38,7 @@ jobs:
         python-version: ${{ env.PYTHON_VERSION }}
 
     - name: 'Install Tesseract (bundled into the executable for the screen reader)'
+      if: matrix.variant != 'basic'
       run: |
         sudo apt-get update
         sudo apt-get install -y tesseract-ocr tesseract-ocr-fas tesseract-ocr-eng tesseract-ocr-deu
@@ -46,7 +52,12 @@ jobs:
         # an older negar-gui from PyPI still pulls the original pyqtdarktheme (theme-less 0.1.7 on Python 3.12+); replace it with the fork
         pip uninstall -y pyqtdarktheme
         pip install --force-reinstall --no-deps pyqtdarktheme-fork darkdetect
-        pip install PyInstaller onnxruntime numpy
+        pip install PyInstaller
+
+    - name: 'Install onnxruntime (the bundled Tiny Ava voice)'
+      if: matrix.variant == 'ocr-tts'
+      shell: bash
+      run: pip install onnxruntime numpy
 
     - name: 'Clone Python-negar repository'
       shell: bash
@@ -55,7 +66,7 @@ jobs:
 
     - name: 'Use PyInstaller tool to get executable output'
       shell: bash
-      run: ./.github/build.sh
+      run: ./.github/build.sh ${{ matrix.variant }}
 
     - name: 'Make script executable'
       run: chmod +x ./dist/negar-gui*
@@ -63,7 +74,7 @@ jobs:
     - name: 'Upload artifacts'
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
-        name: Built
+        name: Built-linux-${{ matrix.variant }}
         path: dist/
 
     - name: 'Extract tag message'

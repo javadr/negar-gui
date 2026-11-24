@@ -132,8 +132,11 @@ def test_preload_starts_the_engine_only_when_the_model_is_cached(monkeypatch, tm
     assert run(tmp_path) == [(str(pid), 0)]  # the request is served by the preloaded process
 
 
-def test_frozen_build_has_only_tiny_ava(monkeypatch):
+def test_frozen_build_has_only_tiny_ava_and_only_with_its_models(monkeypatch, tmp_path):
     monkeypatch.setattr(tts, "FROZEN", True)
+    monkeypatch.setattr(tts, "BUNDLE", tmp_path / "missing")
+    assert not tts.available("tiny-ava")  # the basic and ocr builds
+    monkeypatch.setattr(tts, "BUNDLE", tmp_path)
     assert tts.available("tiny-ava") and not tts.available("cilla")
     assert "pip" in tts.install_hint("cilla")
 

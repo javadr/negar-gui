@@ -1,4 +1,12 @@
 # Changelog
+## [1.6.1] - 2026-11-24
+### Changed
+- Each release now carries three standalone builds per platform: `basic` (no bundled OCR or voice), `ocr` (bundled Tesseract) and `ocr-tts` (Tesseract plus the Tiny Ava voice).
+- Read Aloud in the standalone executable is only available in the `ocr-tts` build, and says so elsewhere.
+
+### Fixed
+- Release builds use the `resources/` paths after the package split.
+
 ## [1.6.0] - 2026-11-24
 ### Added
 - The standalone executable now includes Read Aloud with the Tiny voice (Tiny Ava, about 30 MB, no download, no torch). The other voices stay pip-only.
