@@ -23,5 +23,5 @@ chmod +x "$appdir/AppRun"
 curl -fsSL https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -o appimagetool
 chmod +x appimagetool
 # --appimage-extract-and-run: CI runners have no FUSE
-ARCH=x86_64 ./appimagetool --appimage-extract-and-run "$appdir" "dist/$exe-x86_64.AppImage"
+ARCH=x86_64 ./appimagetool --appimage-extract-and-run -u "gh-releases-zsync|javadr|negar-gui|latest|negar-gui-v*-$variant-x86_64.AppImage.zsync" "$appdir" "dist/$exe-x86_64.AppImage"
 rm -f appimagetool
