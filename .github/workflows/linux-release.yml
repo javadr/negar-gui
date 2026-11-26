@@ -68,6 +68,9 @@ jobs:
       shell: bash
       run: ./.github/build.sh ${{ matrix.variant }}
 
+    - name: 'Package AppImage'
+      run: ./.github/appimage.sh ${{ matrix.variant }}
+
     - name: 'Make script executable'
       run: chmod +x ./dist/negar-gui*
 
