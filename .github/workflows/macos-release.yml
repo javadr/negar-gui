@@ -1,0 +1,79 @@
+name: Deploy macOS DMG
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build"
+        required: true
+        default: "1.0.0"
+  release:
+    types: [released]
+
+env:
+  PYTHON_VERSION: '3.12'
+
+permissions:
+  contents: write
+
+jobs:
+  macos-build-and-deploy:
+    strategy:
+      fail-fast: false
+      max-parallel: 1  # both jobs publish to the same release: one at a time avoids a create race
+      matrix:
+        include:
+          # macos-latest is Apple Silicon only; the Intel runner builds the x86_64 app.
+          - {runner: macos-latest, arch: arm64}
+          - {runner: macos-15-intel, arch: x86_64}
+    runs-on: ${{ matrix.runner }}
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Pip'
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install wheel Pillow PyQt6 pyperclip pyuca qrcode Image redlines requests regex docopt pyqtdarktheme-fork toml duckdb PyQt6-Charts typing_extensions
+        pip install python-negar negar-gui
+        pip uninstall -y pyqtdarktheme
+        pip install --force-reinstall --no-deps pyqtdarktheme-fork darkdetect
+        pip install PyInstaller
+
+    - name: 'Clone Python-negar repository'
+      shell: bash
+      run: git clone https://github.com/shahinism/python-negar.git
+
+    - name: 'Build the app and DMG'
+      shell: bash
+      run: ./.github/build-macos.sh
+
+    - name: 'Upload artifacts'
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: Built-macos-${{ matrix.arch }}
+        path: dist/*.dmg
+
+    - name: 'Extract tag message'
+      shell: bash
+      run: |
+        : > /tmp/release_body.md
+        if git tag -l "${{ github.ref_name }}" | grep -q .; then
+          git tag -l --format='%(contents)' "${{ github.ref_name }}" > /tmp/release_body.md
+        fi
+
+    - name: 'Automatic release'
+      uses: "softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228" # v3.0.2
+      with:
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        body_path: /tmp/release_body.md
+        files: |
+          dist/*.dmg
